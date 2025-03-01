@@ -1,13 +1,41 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Resource;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
-builder.Services.AddAuthorization();
+builder.Services.AddControllers();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication(options =>
+    {
+        // Utilisez le cookie comme schéma par défaut pour l'authentification
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        // Le schéma par défaut pour le challenge est celui de Google
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    })
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        
+        // Mappez les champs JSON de Google vers des claims .NET
+        googleOptions.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+        googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+        googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+        googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+        
+        // Pour récupérer le profil complet, vous pouvez ajouter le scope "profile"
+        googleOptions.Scope.Add("profile");
+    });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -22,33 +50,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var scopeRequiredByApi = app.Configuration["AzureAd:Scopes"] ?? "";
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseRouting();
 
-app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-    {
-        httpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
+app.UseAuthentication();
+app.UseAuthorization();
 
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi()
-    .RequireAuthorization();
+app.MapControllers();
+
+// Mappez les contrôleurs
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

@@ -1,0 +1,52 @@
+﻿@inject NavigationManager Nav
+
+<div class="div--principal">
+    <MudCard>
+        @if (_isConnected)
+        {
+            <MudText>@_profile.Name</MudText>
+            <MudText>@_profile.Email</MudText>
+            <img src="@_profile.Picture"/>
+        }
+        <img src="Images/LogoMaClasse.png" alt="Logo_MaClasse"/>
+        <MudCardContent>
+            <div class="div--flex">
+                <div class="div--title">
+                    <MudText Typo="Typo.h5">@CurrentTitle</MudText>
+                </div>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Transparent"
+                    OnClick="@SignUpWithGoogle">
+                    <img src="Images/IconGoogle.png"
+                         alt="Google"
+                         style="width: 24px; margin-right: 8px;"/>
+                    Continuer avec Google
+                </MudButton>
+                <MudText Class="mt-3">
+                    @if (_isLoginMode)
+                    {
+                        <span class="span--flex">
+                            <MudText Typo="Typo.body2">Vous n'avez pas de compte ?</MudText>
+                            <MudLink OnClick="@ToggleMode">Inscription</MudLink>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="span--flex">
+                            <MudText Typo="Typo.body2">Vous avez déjà un compte ?</MudText>
+                            <MudLink OnClick="@ToggleMode">Connexion</MudLink>
+                        </span>
+                    }
+                </MudText>
+                <MudText Class="mt-3">
+                    <span class="span--flex">
+                        <MudLink OnClick="@(() => { })">Conditions d'utilisation</MudLink>
+                        <MudText>|</MudText>
+                        <MudLink OnClick="@(() => { })">Politique de confidentialité</MudLink>
+                    </span>
+                </MudText>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</div>

@@ -13,6 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMudServices();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSingleton(
+    new HttpClient { BaseAddress = new Uri("https://localhost:7011/") });
+
+
 // Configuration du DbContext et d'Identity
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -27,9 +33,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
-
-// Service pour l'envoi d'emails (dummy)
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 // Service pour l'envoi d'emails (dummy)
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
