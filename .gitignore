@@ -1,0 +1,34 @@
+# Dossiers de build
+[Bb]in/
+[Oo]bj/
+
+# Packages NuGet (les restaurer via NuGet)
+*.nupkg
+packages/
+
+# Fichiers générés par Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Fichiers de configuration spécifiques à Visual Studio Code
+.vscode/
+
+# Résultats de tests
+[Tt]est[Rr]esult*/
+
+# Fichiers de log et temporaires
+*.log
+*.tmp
+
+# Fichiers et dossiers générés par d'autres outils ou IDEs
+.idea/
+*.sln.iml
+
+# Fichiers de déploiement et de publication
+*.publish.xml
+
+# Fichiers système
+.DS_Store
+Thumbs.db
