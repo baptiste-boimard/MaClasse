@@ -91,7 +91,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-//* Activation de  l’authentification/autorisation dans le pipeline
+//* Activation de l’authentification/autorisation dans le pipeline
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -106,4 +106,3 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
-//
