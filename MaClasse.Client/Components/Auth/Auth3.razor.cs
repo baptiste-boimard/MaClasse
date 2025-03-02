@@ -44,7 +44,7 @@ public partial class Auth3 : ComponentBase
     
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "api/profile");
+        var request = new HttpRequestMessage(HttpMethod.Get, "api/auth/profile");
         
         // Récupérer le cookie d'authentification depuis HttpContext
         var context = _httpContextAccessor.HttpContext;
@@ -90,6 +90,8 @@ public partial class Auth3 : ComponentBase
     
     private async void SignUpWithGoogle()
     {
-        Nav.NavigateTo("https://localhost:7011/api/signup-google", forceLoad: true);
+        Nav.NavigateTo("https://localhost:7261/api/auth/signup-google", forceLoad: true);
+        // var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7261/api/auth/signup-google\"");
+
     }
 }

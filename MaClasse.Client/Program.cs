@@ -16,7 +16,7 @@ builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton(
-    new HttpClient { BaseAddress = new Uri("https://localhost:7011/") });
+    new HttpClient { BaseAddress = new Uri("https://localhost:7261/") });
 
 
 // Configuration du DbContext et d'Identity
