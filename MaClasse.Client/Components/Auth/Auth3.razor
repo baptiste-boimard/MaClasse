@@ -4,7 +4,7 @@
     <MudCard>
         @if (_isConnected)
         {
-            <MudText>@_profile.Name</MudText>
+            <MudText>@_profile.UserName</MudText>
             <MudText>@_profile.Email</MudText>
             <img src="@_profile.Picture"/>
         }
@@ -17,7 +17,17 @@
                 <MudButton
                     Variant="Variant.Outlined"
                     Color="Color.Transparent"
-                    OnClick="@SignUpWithGoogle">
+                    OnClick="@(() =>
+                        {
+                            if(_isLoginMode)
+                            {
+                                GoogleLoginAction();
+                            }
+                            else
+                            {
+                                GoogleSignupAction();
+                            }
+                        })">
                     <img src="Images/IconGoogle.png"
                          alt="Google"
                          style="width: 24px; margin-right: 8px;"/>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
 
@@ -13,11 +14,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PostgresDbContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:PostgresDBContext"]));
 
-//* Configurer Identity avec le modèle d'utilisateur que vous utilisez
-builder.Services.AddIdentity<UserProfile, IdentityRole<Guid>>()
+//* Configurer Identity (sans AddEntityFrameworkStores)
+builder.Services.AddIdentity<UserProfile, IdentityRole<Guid>>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
+    })
     .AddEntityFrameworkStores<PostgresDbContext>()
     .AddDefaultTokenProviders();
-
 
 builder.Services.AddControllers();
 

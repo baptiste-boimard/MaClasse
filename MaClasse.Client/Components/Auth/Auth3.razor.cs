@@ -16,23 +16,11 @@ public partial class Auth3 : ComponentBase
         IHttpContextAccessor httpContextAccessor
     )
     {
-        // var builder = new ConfigurationBuilder()
-        //     .SetBasePath(Directory.GetCurrentDirectory())
-        //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        //     .AddUserSecrets<Auth3>();
-        //
-        // IConfiguration configuration = builder.Build();
-        // _googleClientId = configuration["Authentification:Google:ClientId"];
-        // _googleClientSecret = configuration["Authentification:Google:ClientSecret"];
-        
         _httpContextAccessor = httpContextAccessor;
         _navigationManager = navigationManager;
         _httpClient = httpClient;
     }
-
-    private readonly string? _googleClientId;
-    private readonly string? _googleClientSecret;
-
+    
     private bool _isConnected = false;
     
     //* Variable de switch mode connexion ou inscription
@@ -45,28 +33,78 @@ public partial class Auth3 : ComponentBase
     
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "api/auth/profile");
+        //* Vérifier si le paramètre fromSignup est présent dans l'URL
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
         
-        // Récupérer le cookie d'authentification depuis HttpContext
-        var context = _httpContextAccessor.HttpContext;
-        if (context != null && context.Request.Cookies.TryGetValue(".AspNetCore.Cookies", out var cookieValue))
+        if (query.TryGetValue("fromSignup", out var fromSignupValue) && fromSignupValue == "true")
         {
-            // Ajoutez le cookie à l'en-tête de la requête
-            request.Headers.Add("Cookie", $".AspNetCore.Cookies={cookieValue}");
+            //* Appel à l'endpoint pour récupérer le profil
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/auth/profile");
+            
+            //* Récupérer le cookie d'authentification depuis HttpContext
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null && context.Request.Cookies.TryGetValue(".AspNetCore.Cookies", out var cookieValue))
+            {
+                //* Ajoutez le cookie à l'en-tête de mon client
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.Cookies={cookieValue}");
+
+            }
+            
+            var response = await _httpClient.SendAsync(request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                UserProfile userProfile = await response.Content.ReadFromJsonAsync<UserProfile>();
+                
+                var content = JsonContent.Create(userProfile);
+
+                var signupResponse = await _httpClient.PostAsync("api/auth/signup", content);
+
+                if (signupResponse.IsSuccessStatusCode)
+                {
+                    Nav.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    //! Faire un affichage de l'erreur comme quoi je ne récuépère pas les infos de Google
+                }
+            }
         }
-
-        var response = await _httpClient.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
+        
+        if (fromSignupValue == "false")
         {
-            var content = await response.Content.ReadFromJsonAsync<UserProfile>();
-            _isConnected = true;
-            _profile = content;
+            //* Appel à l'endpoint pour récupérer le profil
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/auth/profile");
+            
+            //* Récupérer le cookie d'authentification depuis HttpContext
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null && context.Request.Cookies.TryGetValue(".AspNetCore.Cookies", out var cookieValue))
+            {
+                //* Ajoutez le cookie à l'en-tête de mon client
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.Cookies={cookieValue}");
 
-        }
-        else
-        {
-            //! Faire un affichage de l'erreur
+            }
+            
+            var response = await _httpClient.SendAsync(request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                UserProfile userProfile = await response.Content.ReadFromJsonAsync<UserProfile>();
+                
+                var content = JsonContent.Create(userProfile);
+
+                var signupResponse = await _httpClient.PostAsync("api/auth/login", content);
+
+                if (signupResponse.IsSuccessStatusCode)
+                {
+                    Nav.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    //! Faire un affichage de l'erreur comme quoi je ne récuépère pas les infos de Google
+                }
+            }
         }
     }
 
@@ -76,23 +114,26 @@ public partial class Auth3 : ComponentBase
         _isLoginMode = !_isLoginMode;
     }
 
-    private void ClickGoogleButton()
+    private void GoogleLoginAction()
     {
-        if (_isLoginMode)
-        {
-            
-        }
-        else
-        {
-            SignUpWithGoogle();
-        }
-        
+        //* Lance le challenge Google pour connexion
+        //* Le returnUrl ici redirige directement vers le dashboard après authentification
+        var returnUrl = "https://localhost:7235/?fromSignup=false";
+        var encodedReturnUrl = System.Net.WebUtility.UrlEncode(returnUrl);
+        Nav.NavigateTo($"https://localhost:7261/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
+    }
+
+    private void GoogleSignupAction()
+    {
+        //* Lance le challenge Google pour inscription
+        //* Le returnUrl redirige vers une page de callback dédiée ou le composant peut déclencher une récupération du profil
+        var returnUrl = "https://localhost:7235/?fromSignup=true";
+        var encodedReturnUrl = System.Net.WebUtility.UrlEncode(returnUrl);
+        Nav.NavigateTo($"https://localhost:7261/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
     }
     
-    private async void SignUpWithGoogle()
-    {
-        Nav.NavigateTo("https://localhost:7261/api/auth/signup-google", forceLoad: true);
-        // var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7261/api/auth/signup-google\"");
-
-    }
+    // private async void SignUpWithGoogle()
+    // {
+    //     Nav.NavigateTo("https://localhost:7261/api/auth/signup-google", forceLoad: true);
+    // }
 }

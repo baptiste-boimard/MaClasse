@@ -11,8 +11,8 @@ public class AuthRepository
         _postgresDbContext = postgresDbContext;
     }
 
-    public async Task<> SignUpUser()
-    {
-        
-    }
+    // public async Task<> SignUpUser()
+    // {
+    //     
+    // }
 }

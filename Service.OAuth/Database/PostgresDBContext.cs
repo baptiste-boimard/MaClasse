@@ -18,10 +18,16 @@ public class PostgresDbContext : IdentityDbContext<UserProfile, IdentityRole<Gui
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        //* Redéfinir l'index sur NormalizedUserName pour ne plus être unique
+        modelBuilder.Entity<UserProfile>()
+            .HasIndex(u => u.NormalizedUserName)
+            .IsUnique(false);
 
         modelBuilder.Entity<UserProfile>(entity =>
         {
             entity.HasKey(a => a.Id);
+            entity.Property(a => a.UserName).IsRequired();
             entity.Property(a => a.Email).IsRequired();
             entity.Property(a => a.Name).IsRequired();
             entity.Property(a => a.Picture).IsRequired();
