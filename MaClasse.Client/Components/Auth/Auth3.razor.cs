@@ -1,4 +1,5 @@
 using MaClasse.Shared;
+using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace MaClasse.Client.Components.Auth;
