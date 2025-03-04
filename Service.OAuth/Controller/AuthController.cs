@@ -32,34 +32,6 @@ public class AuthController: ControllerBase
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
-    // [HttpGet("profile")]
-    // public IActionResult GetProfile()
-    // {
-    //     if (!User.Identity.IsAuthenticated)
-    //     {
-    //         return Unauthorized();
-    //     }
-    //
-    //     //* Récupérer les informations de Google
-    //     var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    //     var email = User.FindFirst(ClaimTypes.Email)?.Value;
-    //     var name = User.FindFirst(ClaimTypes.Name)?.Value;
-    //     var pictureUrl = User.FindFirst("urn:google:picture")?.Value;
-    //
-    //     var profile = new UserProfile
-    //     {
-    //         UserName = sub,
-    //         Email = email,
-    //         Name = name,
-    //         Picture = pictureUrl
-    //     };
-    //     
-    //     //! Création d'un token et envoi de ce token dans la réponse pour qu'il le stocke dans
-    //     //! le client
-    //     
-    //     return Ok(profile);
-    // }
-
     [HttpGet("login")]
     public async Task<IActionResult> Login()
     {
@@ -78,10 +50,13 @@ public class AuthController: ControllerBase
         
         var existingUser = await _userManager.FindByEmailAsync(email);
         
-        //! Finir la gestion de l'erreur en front
+        //* Finir la gestion de l'erreur en front
         if (existingUser == null)
         {
-            return Redirect($"https://localhost:7235");
+            var error = true;
+            var message = "Cet utilisateur n'est pas encore inscrit";
+            var encodedMessage = System.Net.WebUtility.UrlEncode(message);
+            return Redirect($"https://localhost:7235/?error={error}&message={encodedMessage}");
         }
         
         var loginUser = new UserProfile
@@ -94,7 +69,7 @@ public class AuthController: ControllerBase
             UpdatedAt = DateTime.UtcNow
         };
 
-        //! Création du token
+        //* Création du token et envoie vers le client
         var token = _jwtService.GenerateJwtToken(loginUser);
         
         var encodedToken = System.Net.WebUtility.UrlEncode(token);
@@ -120,10 +95,13 @@ public class AuthController: ControllerBase
         //* Je recherche si un user existe deja avec ce Username en BDD
         UserProfile? existingUser = await _userManager.FindByEmailAsync(email);
         
-        //! Finir la gestion de l'erreur en front
+        //* Finir la gestion de l'erreur en front
         if (existingUser != null)
         {
-            return Redirect($"https://localhost:7235");
+            var error = true;
+            var message = "Un utilisateur avec cette email existe déjà";
+            var encodedMessage = System.Net.WebUtility.UrlEncode(message);
+            return Redirect($"https://localhost:7235/?error={error}&message={encodedMessage}");
         }
         
         var newUser = new UserProfile
@@ -149,14 +127,11 @@ public class AuthController: ControllerBase
             
         }
         
-        //! Création du token
+        //* Création du token et envoi vers le client
         var token = _jwtService.GenerateJwtToken(newUser);
 
         
         var encodedToken = System.Net.WebUtility.UrlEncode(token);
         return Redirect($"https://localhost:7235/dashboard?token={encodedToken}");
     }
-    
-    //! Pour le front il faudrait que je stocke l'Id de l'utilisateur pour pouvoir le rajouter en head de requete
-    
 }

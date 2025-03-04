@@ -19,9 +19,9 @@ public partial class DashboardContent : ComponentBase
     
     protected override async Task OnInitializedAsync()
     {
-        // Récupérer l'URL complète
+        //* Récupérer l'URL complète
         var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
-        // Utiliser QueryHelpers pour parser la query string
+        //* Utiliser QueryHelpers pour parser la query string
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
     
         if (query.TryGetValue("token", out var tokenValues))

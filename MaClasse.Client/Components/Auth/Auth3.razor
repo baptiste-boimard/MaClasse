@@ -1,5 +1,7 @@
 ﻿@inject NavigationManager Nav
 
+<MudDialogProvider />
+
 <div class="div--principal">
     <MudCard>
         @if (_isConnected)
@@ -18,16 +20,16 @@
                     Variant="Variant.Outlined"
                     Color="Color.Transparent"
                     OnClick="@(() =>
-                        {
-                            if(_isLoginMode)
-                            {
-                                GoogleLoginAction();
-                            }
-                            else
-                            {
-                                GoogleSignupAction();
-                            }
-                        })">
+                             {
+                                 if(_isLoginMode)
+                                 {
+                                     GoogleLoginAction();
+                                 }
+                                 else
+                                 {
+                                     GoogleSignupAction();
+                                 }
+                             })">
                     <img src="Images/IconGoogle.png"
                          alt="Google"
                          style="width: 24px; margin-right: 8px;"/>
