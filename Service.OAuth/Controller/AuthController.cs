@@ -4,18 +4,24 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Service.OAuth.Service;
+using static Service.OAuth.Service.JwtService;
 
-namespace MaClasse.Api.Controllers;
+namespace Service.OAuth.Controller;
 
 [ApiController]
 [Route("api")]
 public class AuthController: ControllerBase
 {
     private readonly UserManager<UserProfile> _userManager;
+    private readonly JwtService _jwtService;
 
-    public AuthController(UserManager<UserProfile> userManager)
+    public AuthController(
+        UserManager<UserProfile> userManager,
+        JwtService jwtService)
     {
         _userManager = userManager;
+        _jwtService = jwtService;
     }
     
     [HttpGet("signin-google")]
@@ -26,84 +32,129 @@ public class AuthController: ControllerBase
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
-    [HttpGet("profile")]
-    public IActionResult GetProfile()
+    // [HttpGet("profile")]
+    // public IActionResult GetProfile()
+    // {
+    //     if (!User.Identity.IsAuthenticated)
+    //     {
+    //         return Unauthorized();
+    //     }
+    //
+    //     //* Récupérer les informations de Google
+    //     var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //     var email = User.FindFirst(ClaimTypes.Email)?.Value;
+    //     var name = User.FindFirst(ClaimTypes.Name)?.Value;
+    //     var pictureUrl = User.FindFirst("urn:google:picture")?.Value;
+    //
+    //     var profile = new UserProfile
+    //     {
+    //         UserName = sub,
+    //         Email = email,
+    //         Name = name,
+    //         Picture = pictureUrl
+    //     };
+    //     
+    //     //! Création d'un token et envoi de ce token dans la réponse pour qu'il le stocke dans
+    //     //! le client
+    //     
+    //     return Ok(profile);
+    // }
+
+    [HttpGet("login")]
+    public async Task<IActionResult> Login()
     {
-        if (!User.Identity.IsAuthenticated)
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+        if (!result.Succeeded)
         {
             return Unauthorized();
         }
-
-        //* Récupérer les informations de Google
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var name = User.FindFirst(ClaimTypes.Name)?.Value;
-        var pictureUrl = User.FindFirst("urn:google:picture")?.Value;
-
-        var profile = new UserProfile
-        {
-            UserName = email,
-            Email = email,
-            Name = name,
-            Picture = pictureUrl
-        };
         
-        return Ok(profile);
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserProfile user)
-    {
-        var existingUser = await _userManager.FindByEmailAsync(user.UserName);
+        //* Récupérer les informations de Google
+        var sub = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+        var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+        var pictureUrl = result.Principal.FindFirst("urn:google:picture")?.Value;
+        
+        var existingUser = await _userManager.FindByEmailAsync(email);
         
         //! Finir la gestion de l'erreur en front
-        if (existingUser == null) return Conflict();
-
+        if (existingUser == null)
+        {
+            return Redirect($"https://localhost:7235");
+        }
+        
         var loginUser = new UserProfile
         {
-            Id = existingUser.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            Name = user.Name,
-            Picture = user.Picture,
-            CreatedAt = existingUser.CreatedAt,
-            UpdatedAt = existingUser.UpdatedAt
-        };
-
-        return Ok(loginUser);
-    }
-
-    [HttpPost("signup")]
-    public async Task<IActionResult> Signup([FromBody] UserProfile user)
-    {
-        var existingUser = await _userManager.FindByEmailAsync(user.UserName);
-        
-        //! Finir la gestion de l'erreur en front
-        if (existingUser != null) return Conflict();
-
-        var newUser = new UserProfile
-        {
-            UserName = user.Email,
-            Email = user.Email,
-            Name = user.Name,
-            Picture = user.Picture,
+            UserName = sub,
+            Email = email,
+            Name = name,
+            Picture = pictureUrl,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
 
-        var result = await _userManager.CreateAsync(newUser);
+        //! Création du token
+        var token = _jwtService.GenerateJwtToken(loginUser);
+        
+        var encodedToken = System.Net.WebUtility.UrlEncode(token);
+        return Redirect($"https://localhost:7235/dashboard?token={encodedToken}");
+    }
+
+    [HttpGet("signup")]
+    public async Task<IActionResult> Signup()
+    {
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
         if (!result.Succeeded)
         {
+            return Unauthorized();
+        }
+        
+        //* Récupérer les informations de Google
+        var sub = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+        var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+        var pictureUrl = result.Principal.FindFirst("urn:google:picture")?.Value;
+        
+        //* Je recherche si un user existe deja avec ce Username en BDD
+        UserProfile? existingUser = await _userManager.FindByEmailAsync(email);
+        
+        //! Finir la gestion de l'erreur en front
+        if (existingUser != null)
+        {
+            return Redirect($"https://localhost:7235");
+        }
+        
+        var newUser = new UserProfile
+        {
+            UserName = sub,
+            Email = email,
+            Name = name,
+            Picture = pictureUrl,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var saveResult = await _userManager.CreateAsync(newUser);
+
+        if (!saveResult.Succeeded)
+        {
             // Log ou retour d'erreurs
-            foreach (var error in result.Errors)
+            foreach (var error in saveResult.Errors)
             {
                 Console.WriteLine(error.Code + ": " + error.Description);
             }
-            return BadRequest(result.Errors);
+            return BadRequest(saveResult.Errors);
             
         }
+        
+        //! Création du token
+        var token = _jwtService.GenerateJwtToken(newUser);
 
-        return Ok(newUser);
+        
+        var encodedToken = System.Net.WebUtility.UrlEncode(token);
+        return Redirect($"https://localhost:7235/dashboard?token={encodedToken}");
     }
     
     //! Pour le front il faudrait que je stocke l'Id de l'utilisateur pour pouvoir le rajouter en head de requete

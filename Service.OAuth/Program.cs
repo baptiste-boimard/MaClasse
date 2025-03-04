@@ -1,15 +1,25 @@
 using System.Security.Claims;
+using System.Text;
 using MaClasse.Shared;
 using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Service.OAuth.Database;
+using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuration JWT
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddDbContext<PostgresDbContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:PostgresDBContext"]));
@@ -30,16 +40,19 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(options =>
     {
         //* Utilisez le cookie comme schéma par défaut pour l'authentification
-        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        // options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        // options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //* Le schéma par défaut pour le challenge est celui de Google
-        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        // options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddCookie(options =>
-    {
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    })
+    // .AddCookie(options =>
+    // {
+    //     options.Cookie.SameSite = SameSiteMode.None;
+    //     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // })
     .AddGoogle(googleOptions =>
     {
         googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
@@ -52,7 +65,20 @@ builder.Services.AddAuthentication(options =>
         googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
         
         //* Pour récupérer le profil complet, vous pouvez ajouter le scope "profile"
-        googleOptions.Scope.Add("profile");
+        // googleOptions.Scope.Add("profile");
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
     });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

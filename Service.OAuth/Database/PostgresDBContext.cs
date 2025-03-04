@@ -19,11 +19,6 @@ public class PostgresDbContext : IdentityDbContext<UserProfile, IdentityRole<Gui
     {
         base.OnModelCreating(modelBuilder);
         
-        //* Redéfinir l'index sur NormalizedUserName pour ne plus être unique
-        modelBuilder.Entity<UserProfile>()
-            .HasIndex(u => u.NormalizedUserName)
-            .IsUnique(false);
-
         modelBuilder.Entity<UserProfile>(entity =>
         {
             entity.HasKey(a => a.Id);

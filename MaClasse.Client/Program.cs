@@ -46,11 +46,11 @@ builder.Services.AddAuthentication(options =>
         // Utilisation de Google pour les défis externes
         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     })
-    .AddCookie(options =>
-    {
-        // Utilisez SameSiteMode.Lax ou SameSiteMode.None selon vos besoins
-        options.Cookie.SameSite = SameSiteMode.Lax;
-    })
+    // .AddCookie(options =>
+    // {
+    //     // Utilisez SameSiteMode.Lax ou SameSiteMode.None selon vos besoins
+    //     options.Cookie.SameSite = SameSiteMode.Lax;
+    // })
     .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
