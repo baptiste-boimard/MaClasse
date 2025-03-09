@@ -16,18 +16,21 @@ public partial class Auth3 : ComponentBase
     private readonly HttpClient _httpClient;
     private readonly IDialogService _dialogService;
     private readonly ServiceHashUrl _serviceHashUrl;
+    private readonly IConfiguration _configuration;
 
     public Auth3 (
         NavigationManager navigationManager, 
         HttpClient httpClient,
         IDialogService dialogService,
-        ServiceHashUrl serviceHashUrl
+        ServiceHashUrl serviceHashUrl,
+        IConfiguration configuration
     )
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
         _dialogService = dialogService;
         _serviceHashUrl = serviceHashUrl;
+        _configuration = configuration;
     }
     
     private bool _isConnected = false;
@@ -43,10 +46,6 @@ public partial class Auth3 : ComponentBase
     private bool _isError = false;
     private string _isErrorMessage;
     private bool _isDialogOpened = false;
-    // //* Gestion du token
-    // private string _token;
-
-    
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -67,16 +66,6 @@ public partial class Auth3 : ComponentBase
                 _isError = errorOAuth.Error;
                 _isErrorMessage = errorOAuth.Message;
             }
-            
-            // if (query.TryGetValue("message", out var stringMessage))
-            // {
-            //     var tokenMessage = stringMessage;
-            //         
-            //     var token = _serviceHashUrl.DecryptErrorOAuth(tokenMessage);
-            //     
-            //     //* Enregistrement du token dans l'HEAD du client http
-            //     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
-            // }    
             
             if (_isError && !_isDialogOpened)
             {
@@ -109,7 +98,7 @@ public partial class Auth3 : ComponentBase
             
             StateHasChanged();
             
-            _navigationManager.NavigateTo("https://localhost:7235", replace: true);
+            _navigationManager.NavigateTo($"{_configuration["Url:Client"]}", replace: true);
 
 
         }
@@ -124,16 +113,16 @@ public partial class Auth3 : ComponentBase
     private void GoogleLoginAction()
     {
         //* Lance le challenge Google pour connexion
-        var returnUrl = "https://localhost:7261/api/auth/login";
+        var returnUrl = $"{_configuration["Url:ApiGateway"]}/api/auth/login";
         var encodedReturnUrl = System.Net.WebUtility.UrlEncode(returnUrl);
-        Nav.NavigateTo($"https://localhost:7261/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
+        Nav.NavigateTo($"{_configuration["Url:ApiGateway"]}/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
     }
 
     private void GoogleSignupAction()
     {
         //* Lance le challenge Google pour inscription
-        var returnUrl = "https://localhost:7261/api/auth/signup";
+        var returnUrl = $"{_configuration["Url:ApiGateway"]}/api/auth/signup";
         var encodedReturnUrl = System.Net.WebUtility.UrlEncode(returnUrl);
-        Nav.NavigateTo($"https://localhost:7261/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
+        Nav.NavigateTo($"{_configuration["Url:ApiGateway"]}/api/auth/signin-google?returnUrl={encodedReturnUrl}", forceLoad: true);
     }
 }

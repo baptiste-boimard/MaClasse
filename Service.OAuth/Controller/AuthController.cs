@@ -17,21 +17,24 @@ public class AuthController: ControllerBase
     private readonly UserManager<UserProfile> _userManager;
     private readonly JwtService _jwtService;
     private readonly ServiceHashUrl _serviceHashUrl;
+    private readonly IConfiguration _configuration;
 
     public AuthController(
         UserManager<UserProfile> userManager,
         JwtService jwtService,
-        ServiceHashUrl serviceHashUrl)
+        ServiceHashUrl serviceHashUrl,
+        IConfiguration configuration)
     {
         _userManager = userManager;
         _jwtService = jwtService;
         _serviceHashUrl = serviceHashUrl;
+        _configuration = configuration;
     }
     
     [HttpGet("signin-google")]
     public IActionResult LoginGoogle(string returnUrl = "")
     {
-        if (string.IsNullOrEmpty(returnUrl)) returnUrl = "https://localhost:7235";
+        if (string.IsNullOrEmpty(returnUrl)) returnUrl = $"{_configuration["Url:Client"]}/login";
         var properties = new AuthenticationProperties { RedirectUri = returnUrl };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
@@ -69,7 +72,7 @@ public class AuthController: ControllerBase
             
             encodedMessage = System.Net.WebUtility.UrlEncode(cryptedError);
             
-            return Redirect($"https://localhost:7235/?error={encodedMessage}");
+            return Redirect($"{_configuration["Url:Client"]}/?error={encodedMessage}");
         }
         
         var loginUser = new UserProfile
@@ -88,7 +91,7 @@ public class AuthController: ControllerBase
         var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
             
         encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
-        return Redirect($"https://localhost:7235/dashboard/?message={encodedMessage}");
+        return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
 
     [HttpGet("signup")]
@@ -124,7 +127,7 @@ public class AuthController: ControllerBase
             var cryptedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
             
             encodedMessage = System.Net.WebUtility.UrlEncode(cryptedError);
-            return Redirect($"https://localhost:7235/?error={encodedMessage}");
+            return Redirect($"{_configuration["Url:Client"]}/?error={encodedMessage}");
         }
         
         var newUser = new UserProfile
@@ -156,6 +159,6 @@ public class AuthController: ControllerBase
         var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
             
         encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
-        return Redirect($"https://localhost:7235/dashboard/?message={encodedMessage}");
+        return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
 }

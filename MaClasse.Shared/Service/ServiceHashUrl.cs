@@ -48,7 +48,7 @@ public class ServiceHashUrl
                     cryptoStream.Write(byteJson, 0, byteJson.Length);
                     cryptoStream.FlushFinalBlock();
                 }
-                // Retourne le contenu chiffré en Base64
+                //* Retourne le contenu chiffré en Base64
                 return Convert.ToBase64String(ms.ToArray());
             }
         }
