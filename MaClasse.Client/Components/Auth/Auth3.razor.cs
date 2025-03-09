@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using MaClasse.Client.Components.Errors;
 using MaClasse.Client.Components.Pages;
+using MaClasse.Client.Services;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
@@ -17,13 +18,17 @@ public partial class Auth3 : ComponentBase
     private readonly IDialogService _dialogService;
     private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
+    private readonly ServiceAuthentication _authenticationService;
+    private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
 
     public Auth3 (
         NavigationManager navigationManager, 
         HttpClient httpClient,
         IDialogService dialogService,
         ServiceHashUrl serviceHashUrl,
-        IConfiguration configuration
+        IConfiguration configuration,
+        ServiceAuthentication authenticationService,
+        CustomAuthenticationStateProvider authenticationStateProvider
     )
     {
         _navigationManager = navigationManager;
@@ -31,6 +36,8 @@ public partial class Auth3 : ComponentBase
         _dialogService = dialogService;
         _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
+        _authenticationService = authenticationService;
+        _authenticationStateProvider = authenticationStateProvider;
     }
     
     private bool _isConnected = false;
@@ -46,6 +53,38 @@ public partial class Auth3 : ComponentBase
     private bool _isError = false;
     private string _isErrorMessage;
     private bool _isDialogOpened = false;
+    //* Token d'authentification
+    private string? _token;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //* Récupérer l'URL complète
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        //* Utiliser QueryHelpers pour parser la query string
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+    
+        if (query.TryGetValue("message", out var stringMessage))
+        {
+            var tokenMessage = stringMessage;
+                    
+            _token = _serviceHashUrl.DecryptErrorOAuth(tokenMessage) as string;
+                
+            if (_token is string && !string.IsNullOrEmpty(_token))
+            {
+                //* Enregistrement du token dans le service d'authentification
+                _authenticationService.SetToken(_token);
+                //* Enregistrement du token dans l'HEAD du client http
+                _authenticationService.AttachToken(_httpClient);
+                //* Notifier que l'état d'authentification a changé
+                _authenticationStateProvider.NotifyUserAuthentication();
+                
+                _navigationManager.NavigateTo($"{_configuration["Url:Client"]}/dashboard", replace: true);
+            }
+        }    
+        
+        await base.OnInitializedAsync();
+    }
+ 
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

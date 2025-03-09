@@ -91,7 +91,8 @@ public class AuthController: ControllerBase
         var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
             
         encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
-        return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
+        return Redirect($"{_configuration["Url:Client"]}/?message={encodedMessage}");
+        // return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
 
     [HttpGet("signup")]
@@ -159,6 +160,7 @@ public class AuthController: ControllerBase
         var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
             
         encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
-        return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
+        return Redirect($"{_configuration["Url:Client"]}/?message={encodedMessage}");
+        // return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
 }

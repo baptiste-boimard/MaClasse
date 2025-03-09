@@ -1,12 +1,16 @@
+using System.Text;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MaClasse.Client.Components;
 using MaClasse.Client.Components.Account;
 using MaClasse.Client.Data;
+using MaClasse.Client.Services;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
 
 
@@ -15,6 +19,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMudServices();
 
 builder.Services.AddTransient<ServiceHashUrl>();
+
+builder.Services.AddScoped<ServiceAuthentication>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
+builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+    provider.GetRequiredService<CustomAuthenticationStateProvider>());
+
+builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -42,7 +54,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 // builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 // Configuration unique de l'authentification et de l'autorisation
-builder.Services.AddAuthenticationCore();
+// builder.Services.AddAuthenticationCore();
 // builder.Services.AddAuthentication(options =>
     // {
         // Utilisation du cookie comme schéma par défaut pour l'authentification
@@ -64,6 +76,26 @@ builder.Services.AddAuthenticationCore();
         // Vous pouvez le modifier si nécessaire, par exele :
         // options.CallbackPath = new PathString("/signin-google");
     // });
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
 
 //* Ajouter l'autorisation
 builder.Services.AddAuthorization();
