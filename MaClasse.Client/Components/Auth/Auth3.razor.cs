@@ -1,4 +1,6 @@
+using System.Net.Http.Headers;
 using MaClasse.Client.Components.Errors;
+using MaClasse.Client.Components.Pages;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
@@ -41,6 +43,8 @@ public partial class Auth3 : ComponentBase
     private bool _isError = false;
     private string _isErrorMessage;
     private bool _isDialogOpened = false;
+    // //* Gestion du token
+    // private string _token;
 
     
     
@@ -59,10 +63,20 @@ public partial class Auth3 : ComponentBase
             {
                 _error = stringParam;
                     
-                var errorOAuth = _serviceHashUrl.DecryptErrorOAuth(_error);
+                var errorOAuth = _serviceHashUrl.DecryptErrorOAuth(_error) as ErrorOAuth;
                 _isError = errorOAuth.Error;
                 _isErrorMessage = errorOAuth.Message;
-            }            
+            }
+            
+            // if (query.TryGetValue("message", out var stringMessage))
+            // {
+            //     var tokenMessage = stringMessage;
+            //         
+            //     var token = _serviceHashUrl.DecryptErrorOAuth(tokenMessage);
+            //     
+            //     //* Enregistrement du token dans l'HEAD du client http
+            //     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+            // }    
             
             if (_isError && !_isDialogOpened)
             {

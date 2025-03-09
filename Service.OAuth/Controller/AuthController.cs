@@ -39,6 +39,8 @@ public class AuthController: ControllerBase
     [HttpGet("login")]
     public async Task<IActionResult> Login()
     {
+        string encodedMessage;
+        
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
         if (!result.Succeeded)
@@ -63,9 +65,9 @@ public class AuthController: ControllerBase
                 Message = "Cet utilisateur n'est pas encore inscrit"
             };  
             
-            var hashedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
+            var cryptedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
             
-            var encodedMessage = System.Net.WebUtility.UrlEncode(hashedError);
+            encodedMessage = System.Net.WebUtility.UrlEncode(cryptedError);
             
             return Redirect($"https://localhost:7235/?error={encodedMessage}");
         }
@@ -83,13 +85,17 @@ public class AuthController: ControllerBase
         //* Création du token et envoie vers le client
         var token = _jwtService.GenerateJwtToken(loginUser);
         
-        var encodedToken = System.Net.WebUtility.UrlEncode(token);
-        return Redirect($"https://localhost:7235/dashboard?token={encodedToken}");
+        var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
+            
+        encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
+        return Redirect($"https://localhost:7235/dashboard/?message={encodedMessage}");
     }
 
     [HttpGet("signup")]
     public async Task<IActionResult> Signup()
     {
+        string encodedMessage;
+        
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
         if (!result.Succeeded)
@@ -115,9 +121,9 @@ public class AuthController: ControllerBase
                 Message = "Cet utilisateur est déjà inscrit"
             };  
             
-            var hashedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
+            var cryptedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
             
-            var encodedMessage = System.Net.WebUtility.UrlEncode(hashedError);
+            encodedMessage = System.Net.WebUtility.UrlEncode(cryptedError);
             return Redirect($"https://localhost:7235/?error={encodedMessage}");
         }
         
@@ -147,8 +153,9 @@ public class AuthController: ControllerBase
         //* Création du token et envoi vers le client
         var token = _jwtService.GenerateJwtToken(newUser);
 
-        
-        var encodedToken = System.Net.WebUtility.UrlEncode(token);
-        return Redirect($"https://localhost:7235/dashboard?token={encodedToken}");
+        var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
+            
+        encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
+        return Redirect($"https://localhost:7235/dashboard/?message={encodedMessage}");
     }
 }

@@ -15,11 +15,19 @@ public class ServiceHashUrl
         _configuration = configuration;
     }
     
-    public string EncryptErrorOAuth(ErrorOAuth errorOAuth)
+    public string EncryptErrorOAuth(object param)
     {
-        //* Sérialisation en JSON et conversion en byte[]
-        string json = JsonSerializer.Serialize(errorOAuth);
-        var byteJson = Encoding.UTF8.GetBytes(json);
+        byte[] byteJson;
+        if (param is ErrorOAuth)
+        {
+            //* Sérialisation en JSON et conversion en byte[]
+            string json = JsonSerializer.Serialize(param);
+            byteJson = Encoding.UTF8.GetBytes(json);
+        }
+        else
+        {
+            byteJson = Encoding.UTF8.GetBytes(param.ToString()!);
+        }
         
         //* Récupération des clés de cryptage
         var keyString  = _configuration["Secrets:EncryptionKey"];
@@ -46,7 +54,7 @@ public class ServiceHashUrl
         }
     }
     
-    public ErrorOAuth DecryptErrorOAuth(string encryptedBase64)
+    public object DecryptErrorOAuth(string encryptedBase64)
     {
         byte[] cipherBytes = Convert.FromBase64String(encryptedBase64);
             
@@ -66,7 +74,16 @@ public class ServiceHashUrl
             using (var reader = new StreamReader(cryptoStream, Encoding.UTF8))
             {
                 string json = reader.ReadToEnd();
-                return JsonSerializer.Deserialize<ErrorOAuth>(json);
+
+                try
+                {
+                    var errorOAuth = JsonSerializer.Deserialize<ErrorOAuth>(json);
+                    return errorOAuth;
+                }
+                catch
+                {
+                    return json;
+                }
             }
         }
     }
