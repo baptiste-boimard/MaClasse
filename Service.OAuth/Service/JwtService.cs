@@ -17,7 +17,7 @@ public class JwtService
 
     public string GenerateJwtToken(UserProfile user) {
         
-        var jwtKey = _configuration["Jwt:Key"] ?? "VotreCléSuperSecrète_à_très_long";
+        var jwtKey = _configuration["Jwt:Key"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         

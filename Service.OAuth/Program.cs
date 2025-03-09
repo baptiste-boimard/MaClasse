@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using MaClasse.Shared;
 using MaClasse.Shared.Models;
+using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -20,6 +21,7 @@ var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddTransient<ServiceHashUrl>();
 
 builder.Services.AddDbContext<PostgresDbContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:PostgresDBContext"]));

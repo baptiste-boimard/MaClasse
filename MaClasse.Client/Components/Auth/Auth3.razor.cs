@@ -1,5 +1,6 @@
 using MaClasse.Client.Components.Errors;
 using MaClasse.Shared.Models;
+using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 using MudBlazor;
@@ -12,16 +13,19 @@ public partial class Auth3 : ComponentBase
     private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
     private readonly IDialogService _dialogService;
+    private readonly ServiceHashUrl _serviceHashUrl;
 
     public Auth3 (
         NavigationManager navigationManager, 
         HttpClient httpClient,
-        IDialogService dialogService
+        IDialogService dialogService,
+        ServiceHashUrl serviceHashUrl
     )
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
         _dialogService = dialogService;
+        _serviceHashUrl = serviceHashUrl;
     }
     
     private bool _isConnected = false;
@@ -33,8 +37,9 @@ public partial class Auth3 : ComponentBase
     //* Notre utilisateur
     private UserProfile? _profile;
     //* Gestion des erreurs de login/inscription
-    private bool _error = false;
-    private string _errorMessage;
+    private string _error;
+    private bool _isError = false;
+    private string _isErrorMessage;
     private bool _isDialogOpened = false;
 
     
@@ -50,11 +55,16 @@ public partial class Auth3 : ComponentBase
             //* Extraction des paramètres de la query string
             var query = QueryHelpers.ParseQuery(uri.Query);
 
-            if (query.TryGetValue("error", out var boolParam)) bool.TryParse(boolParam, out _error);
-        
-            if (query.TryGetValue("message", out var stringParam)) _errorMessage = stringParam;
-
-            if (_error && !_isDialogOpened)
+            if (query.TryGetValue("error", out var stringParam))
+            {
+                _error = stringParam;
+                    
+                var errorOAuth = _serviceHashUrl.DecryptErrorOAuth(_error);
+                _isError = errorOAuth.Error;
+                _isErrorMessage = errorOAuth.Message;
+            }            
+            
+            if (_isError && !_isDialogOpened)
             {
                 _isDialogOpened = true;
 
@@ -62,26 +72,11 @@ public partial class Auth3 : ComponentBase
             }
         }
     }
-    
-    public void OnGet()
-    {
-        Console.WriteLine("coucou");
-        var coucou = "coucou";
-        // Vérifier si TempData contient la clé "Error" et la convertir en booléen
-        if (TempData.ContainsKey("Error"))
-        {
-            // La conversion peut être nécessaire si la valeur est stockée en tant que string
-            Error = Convert.ToBoolean(TempData["Error"]);
-        }
-        
-        // Récupérer le message (ou string vide s'il n'existe pas)
-        Message = TempData.ContainsKey("Message") ? TempData["Message"] as string : string.Empty;
-    }
 
     private async Task OpenDialogError()
     {
         //* Paramètres à transmettre à la boîte de dialogue
-        var parameters = new DialogParameters { { "Message", _errorMessage } };
+        var parameters = new DialogParameters { { "Message", _isErrorMessage } };
             
         //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
         var options = new DialogOptions { CloseOnEscapeKey = true };
@@ -90,16 +85,13 @@ public partial class Auth3 : ComponentBase
         //* Affichage de la boîte de dialogue
         var dialog = await _dialogService.ShowAsync<ErrorLoginDialog>("Erreur", parameters, options);
         
-        // dialog.Close(); // Cela fermera manuellement le dialogue
-        
-        var result = await dialog.Result;  // Attendre la fermeture de la boîte
+        var result = await dialog.Result; 
             
         if (result != null)
         {
             //* Après fermeture de la boîte, réinitialiser les variables d'erreur et de message
-
-            _error = false;
-            _errorMessage = string.Empty;
+            _isError = false;
+            _isErrorMessage = string.Empty;
             
             StateHasChanged();
             

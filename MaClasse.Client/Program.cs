@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MaClasse.Client.Components;
 using MaClasse.Client.Components.Account;
 using MaClasse.Client.Data;
+using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using MudBlazor.Services;
@@ -12,6 +13,8 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMudServices();
+
+builder.Services.AddTransient<ServiceHashUrl>();
 
 builder.Services.AddHttpContextAccessor();
 

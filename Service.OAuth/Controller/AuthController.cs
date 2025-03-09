@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using MaClasse.Shared.Models;
+using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -15,13 +16,16 @@ public class AuthController: ControllerBase
 {
     private readonly UserManager<UserProfile> _userManager;
     private readonly JwtService _jwtService;
+    private readonly ServiceHashUrl _serviceHashUrl;
 
     public AuthController(
         UserManager<UserProfile> userManager,
-        JwtService jwtService)
+        JwtService jwtService,
+        ServiceHashUrl serviceHashUrl)
     {
         _userManager = userManager;
         _jwtService = jwtService;
+        _serviceHashUrl = serviceHashUrl;
     }
     
     [HttpGet("signin-google")]
@@ -53,10 +57,17 @@ public class AuthController: ControllerBase
         //* Finir la gestion de l'erreur en front
         if (existingUser == null)
         {
-            var error = true;
-            var message = "Cet utilisateur n'est pas encore inscrit";
-            var encodedMessage = System.Net.WebUtility.UrlEncode(message);
-            return Redirect($"https://localhost:7235/?error={error}&message={encodedMessage}");
+            ErrorOAuth errorOAuth = new ErrorOAuth
+            {
+                Error = true,
+                Message = "Cet utilisateur n'est pas encore inscrit"
+            };  
+            
+            var hashedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
+            
+            var encodedMessage = System.Net.WebUtility.UrlEncode(hashedError);
+            
+            return Redirect($"https://localhost:7235/?error={encodedMessage}");
         }
         
         var loginUser = new UserProfile
@@ -98,10 +109,16 @@ public class AuthController: ControllerBase
         //* Finir la gestion de l'erreur en front
         if (existingUser != null)
         {
-            var error = true;
-            var message = "Un utilisateur avec cette email existe déjà";
-            var encodedMessage = System.Net.WebUtility.UrlEncode(message);
-            return Redirect($"https://localhost:7235/?error={error}&message={encodedMessage}");
+            ErrorOAuth errorOAuth = new ErrorOAuth
+            {
+                Error = true,
+                Message = "Cet utilisateur est déjà inscrit"
+            };  
+            
+            var hashedError = _serviceHashUrl.EncryptErrorOAuth(errorOAuth);
+            
+            var encodedMessage = System.Net.WebUtility.UrlEncode(hashedError);
+            return Redirect($"https://localhost:7235/?error={encodedMessage}");
         }
         
         var newUser = new UserProfile
