@@ -1,10 +1,9 @@
-using System.Net.Http.Headers;
 using MaClasse.Client.Components.Errors;
-using MaClasse.Client.Components.Pages;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using MudBlazor;
 
@@ -19,7 +18,9 @@ public partial class Auth3 : ComponentBase
     private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
     private readonly ServiceAuthentication _authenticationService;
-    private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+    // private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authStateProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public Auth3 (
         NavigationManager navigationManager, 
@@ -28,7 +29,9 @@ public partial class Auth3 : ComponentBase
         ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         ServiceAuthentication authenticationService,
-        CustomAuthenticationStateProvider authenticationStateProvider
+        // CustomAuthenticationStateProvider authenticationStateProvider,
+        AuthenticationStateProvider authStateProvider,
+        IHttpContextAccessor httpContextAccessor
     )
     {
         _navigationManager = navigationManager;
@@ -37,7 +40,9 @@ public partial class Auth3 : ComponentBase
         _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _authenticationService = authenticationService;
-        _authenticationStateProvider = authenticationStateProvider;
+        // _authenticationStateProvider = authenticationStateProvider;
+        _authStateProvider = authStateProvider;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     private bool _isConnected = false;
@@ -56,31 +61,91 @@ public partial class Auth3 : ComponentBase
     //* Token d'authentification
     private string? _token;
 
+    private string origin;
+
     protected override async Task OnInitializedAsync()
     {
         //* Récupérer l'URL complète
         var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
         //* Utiliser QueryHelpers pour parser la query string
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-    
-        if (query.TryGetValue("message", out var stringMessage))
+        
+        if (query.TryGetValue("from", out var fromValue))
         {
-            var tokenMessage = stringMessage;
-                    
-            _token = _serviceHashUrl.DecryptErrorOAuth(tokenMessage) as string;
-                
-            if (_token is string && !string.IsNullOrEmpty(_token))
+            origin = fromValue;
+            
+            // if (origin == "login")
+            // {
+            //     _navigationManager.NavigateTo("/isauthenticated", forceLoad: true);
+            // }
+        
+
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+
+            var coucou =  $"{_configuration["Url:ApiGateway"]}/api/auth/token";
+
+            try
             {
-                //* Enregistrement du token dans le service d'authentification
-                _authenticationService.SetToken(_token);
-                //* Enregistrement du token dans l'HEAD du client http
-                _authenticationService.AttachToken(_httpClient);
-                //* Notifier que l'état d'authentification a changé
-                _authenticationStateProvider.NotifyUserAuthentication();
+                var cookieContainer = new System.Net.CookieContainer();
+// Supposons que vous avez accès au cookie (ceci est difficile en Blazor Server car vous êtes sur le serveur)
+// Vous devez récupérer le cookie de l'HttpContext si disponible :
+                var httpContext = _httpContextAccessor.HttpContext; // Obtenez-le via IHttpContextAccessor
+                if (httpContext.Request.Cookies.TryGetValue("MaClasseAuth", out var cookieValue))
+                {
+                    cookieContainer.Add(new Uri("https://localhost:7261"), new System.Net.Cookie("MaClasseAuth", cookieValue));
+                }
+                var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+                var client = new HttpClient(handler);
+                var response = await client.GetAsync("https://localhost:7261/api/auth/token");
+                // var response =  await _httpClient.GetAsync($"{_configuration["Url:ApiGateway"]}/api/auth/token");
+
+                if (response == null)
+                {
+                    coucou = "df";
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    var token = await response.Content.ReadAsStringAsync();
+            
+                    if (token != null && !string.IsNullOrEmpty(token))
+                    {
+                        _authenticationService.SetToken(token);
+                        _authenticationService.AttachToken(_httpClient);
                 
-                _navigationManager.NavigateTo($"{_configuration["Url:Client"]}/dashboard", replace: true);
+                        _navigationManager.NavigateTo("/dashboard");
+                    }
+                }
+                else
+                {
+                    _navigationManager.NavigateTo("/");
+                }
+                base.OnInitialized();
             }
-        }    
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+    
+        // if (query.TryGetValue("message", out var stringMessage))
+        // {
+        //     var tokenMessage = stringMessage;
+        //             
+        //     _token = _serviceHashUrl.DecryptErrorOAuth(tokenMessage) as string;
+        //         
+        //     if (_token is string && !string.IsNullOrEmpty(_token))
+        //     {
+        //         //* Enregistrement du token dans le service d'authentification
+        //         _authenticationService.SetToken(_token);
+        //         //* Enregistrement du token dans l'HEAD du client http
+        //         _authenticationService.AttachToken(_httpClient);
+        //         //* Notifier que l'état d'authentification a changé
+        //         _authenticationStateProvider.NotifyUserAuthentication();
+        //         
+        //         _navigationManager.NavigateTo($"{_configuration["Url:Client"]}/dashboard", replace: true);
+        //     }
+        // }    
         
         await base.OnInitializedAsync();
     }

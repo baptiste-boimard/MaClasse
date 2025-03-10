@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,112 +8,85 @@ using MaClasse.Client.Components.Account;
 using MaClasse.Client.Data;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Service;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ajout des services MudBlazor
 builder.Services.AddMudServices();
 
+// Enregistrement de vos services personnalisés
 builder.Services.AddTransient<ServiceHashUrl>();
-
 builder.Services.AddScoped<ServiceAuthentication>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-
-builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
-    provider.GetRequiredService<CustomAuthenticationStateProvider>());
-
-builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton(
-    new HttpClient { BaseAddress = new Uri("https://localhost:7261/") });
+builder.Services.AddHttpContextAccessor();
 
+// Enregistrement d'un HttpClient avec BaseAddress (pour vos appels API)
+builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://localhost:7261/") });
 
-//* Configuration du DbContext et d'Identity
+// Configuration du DbContext et d'Identity
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => 
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddSignInManager()
+.AddDefaultTokenProviders();
 
-// Service pour l'envoi d'emails (dummy)
-// builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
-// Configuration unique de l'authentification et de l'autorisation
-// builder.Services.AddAuthenticationCore();
-// builder.Services.AddAuthentication(options =>
-    // {
-        // Utilisation du cookie comme schéma par défaut pour l'authentification
-        // options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        // options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        // Utilisation de Google pour les défis externes
-        // options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-    // })
-    // .AddCookie(options =>
-    // {
-        // Utilisez SameSiteMode.Lax ou SameSiteMode.None selon vos besoins
-        // options.Cookie.SameSite = SameSiteMode.Lax;
-    // });
-    // .AddGoogle(options =>
-    // {
-    //     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    //     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-        // Le CallbackPath par défaut est "/signin-google"
-        // Vous pouvez le modifier si nécessaire, par exele :
-        // options.CallbackPath = new PathString("/signin-google");
-    // });
-
+// Configuration de l'authentification par cookies et Google
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.Cookie.Name = "MaClasseAuth";
+    // Pour HTTPS et pour autoriser potentiellement le cross-site, utilisez SameSite.None
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+})
+.AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
+    
+    // Mappage des champs de Google vers des claims .NET
+    googleOptions.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+    googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+    googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+});
 
-
-//* Ajouter l'autorisation
+// Ajout de l'autorisation
 builder.Services.AddAuthorization();
 
-
-//* Add services to the container.
+// Configuration des services Blazor Server
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
+// Utilisation de l'AuthenticationStateProvider fourni par Identity (IdentityRevalidatingAuthenticationStateProvider)
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+// Autres services spécifiques à Identity (si nécessaires)
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -120,7 +94,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -128,10 +101,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-//* Activation de l’authentification/autorisation dans le pipeline
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.UseAntiforgery();
 
@@ -139,7 +110,7 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Add additional endpoints required by the Identity /Account Razor components.
+// Ajout d'endpoints supplémentaires pour Identity (si nécessaire)
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();

@@ -1,10 +1,15 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Service.OAuth.Service;
 using static Service.OAuth.Service.JwtService;
 
@@ -59,7 +64,6 @@ public class AuthController: ControllerBase
         
         var existingUser = await _userManager.FindByEmailAsync(email);
         
-        //* Finir la gestion de l'erreur en front
         if (existingUser == null)
         {
             ErrorOAuth errorOAuth = new ErrorOAuth
@@ -88,10 +92,61 @@ public class AuthController: ControllerBase
         //* Création du token et envoie vers le client
         var token = _jwtService.GenerateJwtToken(loginUser);
         
-        var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
-            
-        encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
-        return Redirect($"{_configuration["Url:Client"]}/?message={encodedMessage}");
+        // var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
+        
+        //* Validation du token pour créer le ClaimsPrincipal
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = _configuration["Jwt:Issuer"],
+            ValidAudience = _configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+        
+        ClaimsPrincipal principal;
+
+        try
+        {
+            principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+        }
+        catch (Exception ex)
+        {
+            //! Voir pour une redirection vers le login
+            return Unauthorized($"Token invalide: {ex.Message}");
+        }
+        
+        //* Création d'une identité personalisée avec un claim contenant le token
+        var claims = new List<Claim>(principal.Claims)
+        {
+            // Ajout d'une claim personnalisée "jwtToken"
+            new Claim("jwtToken", token)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        principal = new ClaimsPrincipal(identity);
+        
+        //* Émettre le cookie d'authentification
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
+        };
+
+        await HttpContext.SignInAsync(
+            IdentityConstants.ApplicationScheme,
+            principal,
+            authProperties
+        );
+
+        return Redirect($"{_configuration["Url:Client"]}/?from=login");
+
+        // encodedMessage = System.Net.WebUtility.UrlEncode(cryptedtoken);
+        // return Redirect($"{_configuration["Url:Client"]}/?message={encodedMessage}");
         // return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
 
@@ -163,4 +218,35 @@ public class AuthController: ControllerBase
         return Redirect($"{_configuration["Url:Client"]}/?message={encodedMessage}");
         // return Redirect($"{_configuration["Url:Client"]}/dashboard/?message={encodedMessage}");
     }
+    
+    [HttpGet("token")]
+    public IActionResult Token()
+    {   
+        //* On récupére le token depuis le CLaim Principal
+        //! ici le probleme ?
+        var token = User.FindFirst("jwtToken")?.Value;
+
+        if (token == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(token);
+    }
+    
+    [HttpGet("ping")]
+    public IActionResult Ping()
+    {   
+        // //* On récupére le token depuis le CLaim Principal
+        // var token = User.FindFirst("jwtToken")?.Value;
+        //
+        // if (token == null)
+        // {
+        //     return NotFound();
+        // }
+        
+        // return Ok(token);
+        return Ok();
+    }
+    
 }

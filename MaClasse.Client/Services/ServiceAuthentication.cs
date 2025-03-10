@@ -24,4 +24,6 @@ public class ServiceAuthentication
     {
         JwtToken = null;
     }
+    
+    //! Ajout d'une méthode pour enlever le token des Headers
 }
