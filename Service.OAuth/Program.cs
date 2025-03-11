@@ -47,6 +47,7 @@ builder.Services.AddAuthentication(options =>
 {
     // On utilise le schéma de cookies pour l'authentification et le challenge.
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
@@ -66,6 +67,12 @@ builder.Services.AddAuthentication(options =>
     googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
     googleOptions.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
     googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Authenticated", policy =>
+        policy.RequireAuthenticatedUser());
 });
 
 // (Optionnel) Pour Swagger/OpenAPI

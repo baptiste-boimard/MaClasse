@@ -99,10 +99,10 @@ public partial class Auth3 : ComponentBase
                 var response = await client.GetAsync("https://localhost:7261/api/auth/token");
                 // var response =  await _httpClient.GetAsync($"{_configuration["Url:ApiGateway"]}/api/auth/token");
 
-                if (response == null)
-                {
-                    coucou = "df";
-                }
+                // if (response == null)
+                // {
+                //     coucou = "df";
+                // }
                 if (response.IsSuccessStatusCode)
                 {
                     var token = await response.Content.ReadAsStringAsync();
@@ -112,7 +112,7 @@ public partial class Auth3 : ComponentBase
                         _authenticationService.SetToken(token);
                         _authenticationService.AttachToken(_httpClient);
                 
-                        _navigationManager.NavigateTo("/dashboard");
+                        await InvokeAsync(() => _navigationManager.NavigateTo("/dashboard"));
                     }
                 }
                 else

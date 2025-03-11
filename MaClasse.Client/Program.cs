@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MaClasse.Client.Components;
-using MaClasse.Client.Components.Account;
-using MaClasse.Client.Data;
+// using MaClasse.Client.Components.Account;
+// using MaClasse.Client.Data;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -32,16 +32,17 @@ builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://lo
 // Configuration du DbContext et d'Identity
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = false;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>()
+// .AddEntityFrameworkStores<ApplicationDbContext>()
+.AddUserStore<InMemoryUserStore>()
 .AddSignInManager()
 .AddDefaultTokenProviders();
 
@@ -78,12 +79,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
-// Utilisation de l'AuthenticationStateProvider fourni par Identity (IdentityRevalidatingAuthenticationStateProvider)
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
-// Autres services spécifiques à Identity (si nécessaires)
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
+// // Utilisation de l'AuthenticationStateProvider fourni par Identity (IdentityRevalidatingAuthenticationStateProvider)
+// builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+//
+// // Autres services spécifiques à Identity (si nécessaires)
+// builder.Services.AddScoped<IdentityUserAccessor>();
+// builder.Services.AddScoped<IdentityRedirectManager>();
 
 var app = builder.Build();
 
@@ -111,6 +112,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 // Ajout d'endpoints supplémentaires pour Identity (si nécessaire)
-app.MapAdditionalIdentityEndpoints();
+// app.MapAdditionalIdentityEndpoints();
 
 app.Run();

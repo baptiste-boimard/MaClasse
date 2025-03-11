@@ -18,6 +18,9 @@ public class ServiceAuthentication
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", JwtToken);
         }
+        
+        client.DefaultRequestHeaders.Add("Cookie", "MaClasseAuth=VotreCookieValue");
+
     }
     
     public void RemoveToken()

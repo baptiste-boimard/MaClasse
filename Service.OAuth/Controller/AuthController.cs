@@ -47,6 +47,12 @@ public class AuthController: ControllerBase
     [HttpGet("login")]
     public async Task<IActionResult> Login()
     {
+        // var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+        // if (!result.Succeeded)
+        // {
+        //     return Unauthorized();
+        // }
+        
         string encodedMessage;
         
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
@@ -89,59 +95,75 @@ public class AuthController: ControllerBase
             UpdatedAt = DateTime.UtcNow
         };
 
+        // Optionnel : nettoyer le cookie externe pour s'assurer qu'il n'interfère plus
+        // await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        
         //* Création du token et envoie vers le client
         var token = _jwtService.GenerateJwtToken(loginUser);
         
         // var cryptedtoken = _serviceHashUrl.EncryptErrorOAuth(token);
         
-        //* Validation du token pour créer le ClaimsPrincipal
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = _configuration["Jwt:Issuer"],
-            ValidAudience = _configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
+        // //* Validation du token pour créer le ClaimsPrincipal
+        // var tokenHandler = new JwtSecurityTokenHandler();
+        // var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+        // var validationParameters = new TokenValidationParameters
+        // {
+        //     ValidateIssuer = true,
+        //     ValidateAudience = true,
+        //     ValidateLifetime = true,
+        //     ValidateIssuerSigningKey = true,
+        //     ValidIssuer = _configuration["Jwt:Issuer"],
+        //     ValidAudience = _configuration["Jwt:Audience"],
+        //     IssuerSigningKey = new SymmetricSecurityKey(key)
+        // };
         
-        ClaimsPrincipal principal;
-
-        try
+        // Créez une identité avec le token comme claim
+        var claims = new List<Claim>
         {
-            principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-        }
-        catch (Exception ex)
-        {
-            //! Voir pour une redirection vers le login
-            return Unauthorized($"Token invalide: {ex.Message}");
-        }
-        
-        //* Création d'une identité personalisée avec un claim contenant le token
-        var claims = new List<Claim>(principal.Claims)
-        {
-            // Ajout d'une claim personnalisée "jwtToken"
             new Claim("jwtToken", token)
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        principal = new ClaimsPrincipal(identity);
+        var principal = new ClaimsPrincipal(identity);
         
-        //* Émettre le cookie d'authentification
+        // ClaimsPrincipal principal;
+        // Créez les propriétés du cookie
+        
         var authProperties = new AuthenticationProperties
         {
             IsPersistent = true,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
         };
+        
+        // try
+        // {
+        //     principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+        // }
+        // catch (Exception ex)
+        // {
+        //     //! Voir pour une redirection vers le login
+        //     return Unauthorized($"Token invalide: {ex.Message}");
+        // }
+        
+        // //* Création d'une identité personalisée avec un claim contenant le token
+        // var claims = new List<Claim>(principal.Claims)
+        // {
+        //     // Ajout d'une claim personnalisée "jwtToken"
+        //     new Claim("jwtToken", token)
+        // };
 
-        await HttpContext.SignInAsync(
-            IdentityConstants.ApplicationScheme,
-            principal,
-            authProperties
-        );
+        // var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        // principal = new ClaimsPrincipal(identity);
+        //
+        // //* Émettre le cookie d'authentification
+        // var authProperties = new AuthenticationProperties
+        // {
+        //     IsPersistent = true,
+        //     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
+        // };
+
+        // Connectez l'utilisateur en émettant le cookie d'authentification
+        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal, authProperties);
 
         return Redirect($"{_configuration["Url:Client"]}/?from=login");
 
@@ -220,18 +242,77 @@ public class AuthController: ControllerBase
     }
     
     [HttpGet("token")]
-    public IActionResult Token()
+    [Authorize]
+    public async Task<IActionResult> Token()
     {   
-        //* On récupére le token depuis le CLaim Principal
-        //! ici le probleme ?
-        var token = User.FindFirst("jwtToken")?.Value;
-
-        if (token == null)
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+        if (!result.Succeeded)
         {
-            return NotFound();
+            return Unauthorized();
         }
         
+        var user = HttpContext.User;
+        
+        foreach (var claim in user.Claims)
+        {
+            Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+        }
+        
+        // Créez un objet UserProfile à partir des claims de l'utilisateur
+        var userProfile = new UserProfile
+        {
+            UserName = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value,  // Récupérer le nom d'utilisateur
+            Email = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value,  // Récupérer l'email
+            Name = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value,  // Récupérer le nom complet
+            Picture = user.FindFirst("urn:google:picture")?.Value,  // Récupérer la photo de profil (si elle est dans les claims)
+            CreatedAt = null,  // Convertir la date de création
+            UpdatedAt = null   // Convertir la date de mise à jour
+        };
+        
+        
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier, Claim Value: 112987561183767145373
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name, Claim Value: Baptiste Boimard
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname, Claim Value: Baptiste
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname, Claim Value: Boimard
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress, Claim Value: bouketin27@gmail.com
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier, Claim Value: 112987561183767145373
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name, Claim Value: Baptiste Boimard
+        // Claim Type: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress, Claim Value: bouketin27@gmail.com
+        // Claim Type: urn:google:picture, Claim Value: https://lh3.googleusercontent.com/a/ACg8ocJE-fI4gV-e8_1nlt7lg-MWLZ0w6AoIVCNTtgwcKdjxIJ6xhA=s96-c
+
+        // Générez un token JWT
+        var token = _jwtService.GenerateJwtToken(userProfile);
+    
+        // Ajoutez le token JWT en tant que claim
+        var claims = new List<Claim>
+        {
+            new Claim("jwtToken", token)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        // Créez un cookie d'authentification
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+        };
+
+        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal, authProperties);
+    
+        // Redirigez l'utilisateur vers le frontend
+        // return Redirect($"{_configuration["Url:Client"]}/?from=login");
         return Ok(token);
+
+        // var token = User.FindFirst("jwtToken")?.Value;
+
+        // if (token == null)
+        // {
+        //     return NotFound();
+        // }
+        //
+        // return Ok(token);
     }
     
     [HttpGet("ping")]

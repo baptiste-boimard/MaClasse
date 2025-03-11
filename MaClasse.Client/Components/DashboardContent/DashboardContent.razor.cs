@@ -8,24 +8,25 @@ namespace MaClasse.Client.Components.DashboardContent;
 
 public partial class DashboardContent : ComponentBase
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
-    private readonly ServiceHashUrl _serviceHashUrl;
-    private readonly ServiceAuthentication _authenticationService;
-    private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+    // private readonly HttpClient _httpClient;
+    // private readonly NavigationManager _navigationManager;
+    // private readonly ServiceHashUrl _serviceHashUrl;
+    // private readonly ServiceAuthentication _authenticationService;
+    // private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
 
     public DashboardContent(
-        HttpClient httpClient,
-        NavigationManager navigationManager,
-        ServiceHashUrl serviceHashUrl,
-        ServiceAuthentication authenticationService,
-        CustomAuthenticationStateProvider authenticationStateProvider)
+        // HttpClient httpClient,
+        // NavigationManager navigationManager,
+        // ServiceHashUrl serviceHashUrl,
+        // ServiceAuthentication authenticationService,
+        // CustomAuthenticationStateProvider authenticationStateProvider
+        )
     {
-        _httpClient = httpClient;
-        _navigationManager = navigationManager;
-        _serviceHashUrl = serviceHashUrl;
-        _authenticationService = authenticationService;
-        _authenticationStateProvider = authenticationStateProvider;
+        // _httpClient = httpClient;
+        // _navigationManager = navigationManager;
+        // _serviceHashUrl = serviceHashUrl;
+        // _authenticationService = authenticationService;
+        // _authenticationStateProvider = authenticationStateProvider;
     }
 
     private string? _token;
