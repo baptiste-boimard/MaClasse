@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 @using System.Security.Claims
 @using MaClasse.Client.Components.Auth
+@using MaClasse.Shared.Models
 @using Microsoft.AspNetCore.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -8,19 +9,16 @@
 
 <h3>Dashboard</h3>
 <p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
-<p><strong>Id :</strong> @loginUser.Id</p>
-<p><strong>Email :</strong> @loginUser.Email</p>
-<p><strong>Name :</strong> @loginUser.Name</p>
-<p><strong>GivenName :</strong> @loginUser.GivenName</p>
-<p><strong>FamilyName :</strong> @loginUser.FamilyName</p>
-<p><strong>Picture :</strong> @loginUser.Picture</p>
+<p><strong>Id :</strong> @_userProfile!.Id</p>
+<p><strong>Email :</strong> @_userProfile.Email</p>
+<p><strong>Name :</strong> @_userProfile.Name</p>
+<p><strong>GivenName :</strong> @_userProfile.GivenName</p>
+<p><strong>FamilyName :</strong> @_userProfile.FamilyName</p>
+<p><strong>Picture :</strong> @_userProfile.Picture</p>
 
 @code {
 
-    private Components.Auth.Auth.LoginResult loginUser;
-    private string userName = "Non défini";
-    private string userEmail = "Non défini";
-    private string userRoles = "Aucun rôle";
+    private UserProfile? _userProfile;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,7 +28,7 @@
 
         if (user.Identity is { IsAuthenticated: true })
         {
-            Components.Auth.Auth.LoginResult loginResult = new Components.Auth.Auth.LoginResult
+            UserProfile? loginResult = new UserProfile
             {
                 Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Email inconnu",
                 Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",
@@ -41,7 +39,7 @@
 
             };
 
-            loginUser = loginResult;
+            _userProfile = loginResult;
             
             Console.WriteLine($"[DEBUG] Utilisateur connecté : {loginResult}");
         }

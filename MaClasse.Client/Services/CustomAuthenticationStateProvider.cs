@@ -14,15 +14,17 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         return Task.FromResult(new AuthenticationState(_currentUser));
     }
 
-    public async Task NotifyUserAuthentication(ClaimsPrincipal user)
+    public Task NotifyUserAuthentication(ClaimsPrincipal user)
     {
         _currentUser = user;
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        return Task.CompletedTask;
     }
 
-    public async Task NotifyUserLogout()
+    public Task NotifyUserLogout()
     {
         _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
+        return Task.CompletedTask;
     }
 }

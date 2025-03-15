@@ -9,7 +9,7 @@ public partial class ErrorLoginDialog : ComponentBase
     private IMudDialogInstance? MudDialog { get; set; }
     
     [Parameter]
-    public string Message { get; set; }
+    public string? Message { get; set; }
     
     private void Close()
     {

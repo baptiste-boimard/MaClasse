@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 //* Service de Hash pour la gestion des erreurs lors du login ou inscription
 builder.Services.AddTransient<ServiceHashUrl>();
+
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<ValidateGoogleTokenService>();
 
 //* Gestion des cors
 builder.Services.AddCors(options =>

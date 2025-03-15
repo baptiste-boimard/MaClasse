@@ -32,8 +32,8 @@ public class ServiceHashUrl
         //* Récupération des clés de cryptage
         var keyString  = _configuration["Secrets:EncryptionKey"];
         var ivString   = _configuration["Secrets:EncryptionIV"];
-        byte[] key = Encoding.UTF8.GetBytes(keyString);
-        byte[] iv = Encoding.UTF8.GetBytes(ivString);
+        byte[] key = Encoding.UTF8.GetBytes(keyString!);
+        byte[] iv = Encoding.UTF8.GetBytes(ivString!);
         
         //* Chiffrement
         using (Aes aes = Aes.Create())
@@ -54,15 +54,15 @@ public class ServiceHashUrl
         }
     }
     
-    public object DecryptErrorOAuth(string encryptedBase64)
+    public object? DecryptErrorOAuth(string encryptedBase64)
     {
         byte[] cipherBytes = Convert.FromBase64String(encryptedBase64);
             
         var keyString = _configuration["Secrets:EncryptionKey"];
         var ivString = _configuration["Secrets:EncryptionIV"];
             
-        byte[] key = Encoding.UTF8.GetBytes(keyString);
-        byte[] iv = Encoding.UTF8.GetBytes(ivString);
+        byte[] key = Encoding.UTF8.GetBytes(keyString!);
+        byte[] iv = Encoding.UTF8.GetBytes(ivString!);
             
         using (Aes aes = Aes.Create())
         {
@@ -73,7 +73,7 @@ public class ServiceHashUrl
             using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
             using (var reader = new StreamReader(cryptoStream, Encoding.UTF8))
             {
-                string json = reader.ReadToEnd();
+                string? json = reader.ReadToEnd();
 
                 try
                 {
