@@ -1,4 +1,3 @@
-using System.Net;
 using System.Security.Claims;
 using MaClasse.Client.Components.Errors;
 using MaClasse.Client.Services;
@@ -6,8 +5,6 @@ using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.JSInterop;
 using MudBlazor;
 using Service.OAuth.Controller;
@@ -15,7 +12,7 @@ using Service.OAuth.Controller;
 
 namespace MaClasse.Client.Components.Auth;
 
-public partial class Auth3 : ComponentBase
+public partial class Auth : ComponentBase
 {
     private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
@@ -29,7 +26,7 @@ public partial class Auth3 : ComponentBase
     // private readonly IHttpContextAccessor _httpContextAccessor;
     // private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
 
-    public Auth3 (
+    public Auth (
         NavigationManager navigationManager, 
         HttpClient httpClient,
         IDialogService dialogService,
@@ -55,7 +52,7 @@ public partial class Auth3 : ComponentBase
     
     [Parameter] public EventCallback<string> OnTokenReceived { get; set; }
     private const string GoogleClientId = "419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com";
-    private DotNetObjectReference<Auth3>? dotNetRef;
+    private DotNetObjectReference<Auth>? dotNetRef;
     
     
     

@@ -17,7 +17,7 @@
 
 @code {
 
-    private Auth3.LoginResult loginUser;
+    private Components.Auth.Auth.LoginResult loginUser;
     private string userName = "Non défini";
     private string userEmail = "Non défini";
     private string userRoles = "Aucun rôle";
@@ -30,7 +30,7 @@
 
         if (user.Identity is { IsAuthenticated: true })
         {
-            Auth3.LoginResult loginResult = new Auth3.LoginResult
+            Components.Auth.Auth.LoginResult loginResult = new Components.Auth.Auth.LoginResult
             {
                 Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Email inconnu",
                 Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",

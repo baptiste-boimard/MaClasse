@@ -101,7 +101,7 @@
       <_ContentIncludedByDefault Remove="Components\Components\Account\Shared\ShowRecoveryCodes.razor" />
       <_ContentIncludedByDefault Remove="Components\Components\Account\Shared\StatusMessage.razor" />
       <_ContentIncludedByDefault Remove="Components\Components\App.razor" />
-      <_ContentIncludedByDefault Remove="Components\Components\Auth\Auth3.razor" />
+      <_ContentIncludedByDefault Remove="Components\Components\Auth\Auth.razor" />
       <_ContentIncludedByDefault Remove="Components\Components\Layout\MainLayout.razor" />
       <_ContentIncludedByDefault Remove="Components\Components\Layout\NavMenu.razor" />
       <_ContentIncludedByDefault Remove="Components\Components\Pages\Auth.razor" />
