@@ -1,12 +1,53 @@
 ﻿@page "/dashboard"
-@using MaClasse.Client.Components.DashboardContent
+@using System.Security.Claims
+@using MaClasse.Client.Components.Auth
 @using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
-<PageTitle>Dashboard</PageTitle>
-<h1>Coucou</h1>
-<div>
-    Dashboard
-    <DashboardContent/>
-</div>
+<h3>Dashboard</h3>
+<p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
+<p><strong>Id :</strong> @loginUser.Id</p>
+<p><strong>Email :</strong> @loginUser.Email</p>
+<p><strong>Name :</strong> @loginUser.Name</p>
+<p><strong>GivenName :</strong> @loginUser.GivenName</p>
+<p><strong>FamilyName :</strong> @loginUser.FamilyName</p>
+<p><strong>Picture :</strong> @loginUser.Picture</p>
+
+@code {
+
+    private Auth3.LoginResult loginUser;
+    private string userName = "Non défini";
+    private string userEmail = "Non défini";
+    private string userRoles = "Aucun rôle";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            Auth3.LoginResult loginResult = new Auth3.LoginResult
+            {
+                Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Email inconnu",
+                Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",
+                Name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Email inconnu",
+                GivenName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? "Email inconnu",
+                FamilyName = user.FindFirst(ClaimTypes.Surname)?.Value ?? "Email inconnu",
+                Picture = user.FindFirst("picture")?.Value ?? "Email inconnu",
+
+            };
+
+            loginUser = loginResult;
+            
+            Console.WriteLine($"[DEBUG] Utilisateur connecté : {loginResult}");
+        }
+        else
+        {
+            Console.WriteLine("[DEBUG] Aucun utilisateur connecté.");
+        }
+    }
+}

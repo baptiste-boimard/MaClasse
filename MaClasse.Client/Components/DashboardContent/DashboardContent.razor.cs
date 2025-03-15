@@ -8,21 +8,25 @@ namespace MaClasse.Client.Components.DashboardContent;
 
 public partial class DashboardContent : ComponentBase
 {
-    // private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
+
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
     // private readonly NavigationManager _navigationManager;
     // private readonly ServiceHashUrl _serviceHashUrl;
     // private readonly ServiceAuthentication _authenticationService;
     // private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
 
     public DashboardContent(
-        // HttpClient httpClient,
+        HttpClient httpClient,
+        AuthenticationStateProvider authenticationStateProvider
         // NavigationManager navigationManager,
         // ServiceHashUrl serviceHashUrl,
         // ServiceAuthentication authenticationService,
         // CustomAuthenticationStateProvider authenticationStateProvider
         )
     {
-        // _httpClient = httpClient;
+        _httpClient = httpClient;
+        _authenticationStateProvider = authenticationStateProvider;
         // _navigationManager = navigationManager;
         // _serviceHashUrl = serviceHashUrl;
         // _authenticationService = authenticationService;
@@ -31,8 +35,23 @@ public partial class DashboardContent : ComponentBase
 
     private string? _token;
     
-    // protected override async Task OnInitializedAsync()
-    // {
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        var response = await _httpClient.GetAsync("https://localhost:7261/api/auth/whoami");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(content);
+        }
+        else
+        {
+            Console.WriteLine("Error");
+        }
     //     //* Récupérer l'URL complète
     //     var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
     //     //* Utiliser QueryHelpers pour parser la query string
@@ -55,6 +74,6 @@ public partial class DashboardContent : ComponentBase
     //         }
     //     }    
     //     
-    //     await base.OnInitializedAsync();
-    // }
+        await base.OnInitializedAsync();
+    }
 }
