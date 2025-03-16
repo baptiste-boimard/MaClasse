@@ -3,9 +3,16 @@ using MaClasse.Client.Components;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Server;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//* Pour des erreurs plus détaillée
+builder.Services.Configure<CircuitOptions>(options =>
+{
+    options.DetailedErrors = true;
+});
 
 //* Ajout des services MudBlazor
 builder.Services.AddMudServices();

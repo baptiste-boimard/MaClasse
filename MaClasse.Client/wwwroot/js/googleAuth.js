@@ -1,4 +1,4 @@
-function initializeGoogeLogin(dotNetObjRef, clientId) {
+function initializeGoogleLogin(dotNetObjRef, clientId) {
     if (!window.google) {
         console.error("Google SDK not loaded!");
         return;
@@ -13,6 +13,6 @@ function initializeGoogeLogin(dotNetObjRef, clientId) {
 
     google.accounts.id.renderButton(
         document.getElementById("google-button"),
-        { theme: "outline", size: "large" }
+        { theme: "outline", size: "large", width: "400" }
     );
 }

@@ -1,8 +1,7 @@
 ﻿@inject NavigationManager Nav
 
 <MudDialogProvider />
-
-<div id="google-button"></div>
+@* <div id="google-button" class="google-button"></div> *@
 
 <div class="div--principal">
     <MudCard>
@@ -10,39 +9,39 @@
         <MudCardContent>
             <div class="div--flex">
                 <div class="div--title">
-                    <MudText Typo="Typo.h5">@CurrentTitle</MudText>
+                    <MudText Typo="Typo.h5">@_currentTitle</MudText>
                 </div>
-                <MudButton
-                    Variant="Variant.Outlined"
-                    Color="Color.Transparent"
-                    OnClick="@(() =>
-                             {
-                                 if(_isLoginMode)
-                                 {
-                                     GoogleLoginAction();
-                                 }
-                             })">
-                    <img src="Images/IconGoogle.png"
-                         alt="Google"
-                         style="width: 24px; margin-right: 8px;"/>
-                    Continuer avec Google
-                </MudButton>
-                <MudText Class="mt-3">
-                    @if (_isLoginMode)
-                    {
-                        <span class="span--flex">
-                            <MudText Typo="Typo.body2">Vous n'avez pas de compte ?</MudText>
-                            <MudLink OnClick="@ToggleMode">Inscription</MudLink>
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="span--flex">
-                            <MudText Typo="Typo.body2">Vous avez déjà un compte ?</MudText>
-                            <MudLink OnClick="@ToggleMode">Connexion</MudLink>
-                        </span>
-                    }
-                </MudText>
+                <div>
+                    @* <div id="g_id_onload" *@
+                    @*      data-client_id="419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com" *@
+                    @*      data-context="signin" *@
+                    @*      data-ux_mode="popup" *@
+                    @*      data-login_uri="/signin-google" *@
+                    @*      data-auto_prompt="false"> *@
+                    @* </div> *@
+
+                    <div id="google-button" class="google-button"></div>
+
+                    @* <div class="g_id_signin" *@
+                    @*      data-type="standard" *@
+                    @*      data-size="large" *@
+                    @*      data-theme="outline" *@
+                    @*      data-text="sign_in_with" *@
+                    @*      data-shape="rectangular" *@
+                    @*      data-logo_alignment="left"> *@
+                    @* </div> *@
+                </div>
+                
+                @* <MudButton *@
+                @*     Variant="Variant.Outlined" *@
+                @*     Color="Color.Transparent" *@
+                @*     OnClick="@(() => GoogleLoginAction())"> *@
+                @*     <img src="Images/IconGoogle.png" *@
+                @*          alt="Google" *@
+                @*          style="width: 24px; margin-right: 8px;"/> *@
+                @*     Continuer avec Google *@
+                @* </MudButton> *@
+                
                 <MudText Class="mt-3">
                     <span class="span--flex">
                         <MudLink OnClick="@(() => { })">Conditions d'utilisation</MudLink>
