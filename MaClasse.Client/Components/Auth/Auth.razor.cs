@@ -2,11 +2,11 @@ using System.Security.Claims;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
-
 
 namespace MaClasse.Client.Components.Auth;
 
@@ -21,6 +21,9 @@ public partial class Auth : ComponentBase
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ServiceAuthentication _serviceAuthentication;
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    // private readonly HttpContext _httpContext;
+
 
     public Auth (
         NavigationManager navigationManager, 
@@ -30,8 +33,9 @@ public partial class Auth : ComponentBase
         IConfiguration configuration,
         IJSRuntime jsRuntime,
         AuthenticationStateProvider authenticationStateProvider,
-        ServiceAuthentication serviceAuthentication
-    )
+        ServiceAuthentication serviceAuthentication,
+        IHttpContextAccessor httpContextAccessor)
+        // HttpContext httpContext)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -41,6 +45,7 @@ public partial class Auth : ComponentBase
         _jsRuntime = jsRuntime;
         _authenticationStateProvider = authenticationStateProvider;
         _serviceAuthentication = serviceAuthentication;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     
@@ -94,17 +99,47 @@ public partial class Auth : ComponentBase
     {
         if (firstRender)
         {
-            var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", new object[] { "./js/google-signin.js" });
-            var dotNetRef = DotNetObjectReference.Create(this);
+            var coucou = _configuration["Authentication:Google:ClientId"];
+            // var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", new object[] { "./js/google-signin.js" });
+            dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
         }
     }
     
     private async Task GoogleLoginAction()
     {
+    
+            
 
-            dotNetRef = DotNetObjectReference.Create(this);
-            await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
+            // dotNetRef = DotNetObjectReference.Create(this);
+            // await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef,  _configuration["Authentication:Google:ClientId"]);
+            // await _httpContextAccessor.HttpContext.SignOutAsync();
+            // _navigationManager.NavigateTo("https://accounts.google.com/logout", forceLoad: true);
+
+            // await _jsRuntime.InvokeVoidAsync("google.accounts.id.disableAutoSelect");
+           //! Supprime les cookies d'authentification du navigateur.
+           var httpContext = _httpContextAccessor.HttpContext;
+           //
+           // await httpContext.SignOutAsync();
+
+           var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+           await authStateProvider.NotifyUserLogout();
+           // Exemple de log pour l'utilisateur
+           Console.WriteLine($"User après SignOut: {httpContext.User.Identity.IsAuthenticated}");
+
+// Exemple de log pour les cookies
+           foreach (var cookie in httpContext.Request.Cookies)
+           {
+               Console.WriteLine($"Cookie après SignOut: {cookie.Key} = {cookie.Value}");
+           }
+
+           // _navigationManager.NavigateTo("https://accounts.google.com/logout", forceLoad: true);
+           await _jsRuntime.InvokeVoidAsync("google.accounts.id.disableAutoSelect");
+            // await _jsRuntime.InvokeVoidAsync("googleaccounts");
+            // _navigationManager.NavigateTo("/", forceLoad: true);
+
+            // _navigationManager.NavigateTo("/"); // Rediriger vers la page d'accueil
+
 
     }
     

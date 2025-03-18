@@ -8,6 +8,9 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 //* Pour des erreurs plus détaillée
 builder.Services.Configure<CircuitOptions>(options =>
 {
@@ -44,8 +47,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/"; // Page de connexion
-        options.Cookie.HttpOnly = false;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Sécurité renforcée
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Sécurité renforcée
     });
 builder.Services.AddScoped(_ => new HttpClient());
 
