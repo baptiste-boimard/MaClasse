@@ -2,12 +2,17 @@ using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
+using Service.OAuth.Interfaces;
+using Service.OAuth.Repositories;
 using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //* Service de Hash pour la gestion des erreurs lors du login ou inscription
 builder.Services.AddTransient<ServiceHashUrl>();
+
+//* Ajout des interfaces et repositories
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<ValidateGoogleTokenService>();

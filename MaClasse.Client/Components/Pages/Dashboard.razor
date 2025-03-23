@@ -15,6 +15,8 @@
 <p><strong>GivenName :</strong> @_userProfile.GivenName</p>
 <p><strong>FamilyName :</strong> @_userProfile.FamilyName</p>
 <p><strong>Picture :</strong> @_userProfile.Picture</p>
+<p><strong>CreatedAt :</strong> @_userProfile.CreatedAt</p>
+<p><strong>UpdatedAt :</strong> @_userProfile.UpdatedAt</p>
 
 @code {
 
@@ -30,13 +32,14 @@
         {
             UserProfile? loginResult = new UserProfile
             {
-                Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Email inconnu",
+                Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Id inconnu",
                 Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",
-                Name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Email inconnu",
-                GivenName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? "Email inconnu",
-                FamilyName = user.FindFirst(ClaimTypes.Surname)?.Value ?? "Email inconnu",
-                Picture = user.FindFirst("picture")?.Value ?? "Email inconnu",
-
+                Name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Name inconnu",
+                GivenName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? "GivenName inconnu",
+                FamilyName = user.FindFirst(ClaimTypes.Surname)?.Value ?? "FamilyName inconnu",
+                Picture = user.FindFirst("picture")?.Value ?? "Picture inconnu",
+                CreatedAt = DateTime.TryParse(user.FindFirst("createdAt")?.Value, out var createdAt) ? createdAt : null,
+                UpdatedAt = DateTime.TryParse(user.FindFirst("updatedAt")?.Value, out var updatedAt) ? updatedAt : null
             };
 
             _userProfile = loginResult;

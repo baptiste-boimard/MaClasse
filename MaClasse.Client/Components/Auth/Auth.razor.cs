@@ -2,7 +2,6 @@ using System.Security.Claims;
 using MaClasse.Client.Services;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
@@ -53,44 +52,8 @@ public partial class Auth : ComponentBase
     private string _currentTitle = "Bienvenue sur votre application MaClasse";
     //* Variable pour la gestion du bouton Google
     private bool _isGoogleLogin = false;
-    // //* Gestion des erreurs de login/inscription
-    // private string _error = null!;
-    // private bool _isError = false;
-    // private string _isErrorMessage = null!;
-    // private bool _isDialogOpened = false;
-    
-    // private async Task OpenDialogError()
-    // {
-    //     //* Paramètres à transmettre à la boîte de dialogue
-    //     var parameters = new DialogParameters { { "Message", _isErrorMessage } };
-    //         
-    //     //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
-    //     var options = new DialogOptions { CloseOnEscapeKey = true };
-    //         
-    //             
-    //     //* Affichage de la boîte de dialogue
-    //     var dialog = await _dialogService.ShowAsync<ErrorLoginDialog>("Erreur", parameters, options);
-    //     
-    //     var result = await dialog.Result; 
-    //         
-    //     if (result != null)
-    //     {
-    //         //* Après fermeture de la boîte, réinitialiser les variables d'erreur et de message
-    //         _isError = false;
-    //         _isErrorMessage = string.Empty;
-    //         
-    //         StateHasChanged();
-    //         
-    //         _navigationManager.NavigateTo($"{_configuration["Url:Client"]}", replace: true);
-    //     }
-    // }
-
-    // //* Fonction pour changer du mode
-    // private void ToggleMode()
-    // {
-    //     _isLoginMode = !_isLoginMode;
-    // }
-    
+    //* Retour de la reponse d'Auth
+    private AuthReturn? returnResponse;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -99,50 +62,6 @@ public partial class Auth : ComponentBase
             dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
         }
-    }
-  
-    
-    private async Task ClickNormalButton()
-    {
-        // Appelle le script JS pour cliquer sur le bouton Google caché
-        await _jsRuntime.InvokeVoidAsync("clickHiddenButton", "google-button");
-    }
-    
-    private async Task GoogleLoginAction()
-    {
-    
-            
-
-            // dotNetRef = DotNetObjectReference.Create(this);
-            // await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef,  _configuration["Authentication:Google:ClientId"]);
-            // await _httpContextAccessor.HttpContext.SignOutAsync();
-            // _navigationManager.NavigateTo("https://accounts.google.com/logout", forceLoad: true);
-
-            // await _jsRuntime.InvokeVoidAsync("google.accounts.id.disableAutoSelect");
-           //! Supprime les cookies d'authentification du navigateur.
-           var httpContext = _httpContextAccessor.HttpContext;
-           //
-           // await httpContext.SignOutAsync();
-
-           var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
-           await authStateProvider.NotifyUserLogout();
-           // Exemple de log pour l'utilisateur
-           Console.WriteLine($"User après SignOut: {httpContext.User.Identity.IsAuthenticated}");
-
-// Exemple de log pour les cookies
-           foreach (var cookie in httpContext.Request.Cookies)
-           {
-               Console.WriteLine($"Cookie après SignOut: {cookie.Key} = {cookie.Value}");
-           }
-
-           // _navigationManager.NavigateTo("https://accounts.google.com/logout", forceLoad: true);
-           await _jsRuntime.InvokeVoidAsync("google.accounts.id.disableAutoSelect");
-            // await _jsRuntime.InvokeVoidAsync("googleaccounts");
-            // _navigationManager.NavigateTo("/", forceLoad: true);
-
-            // _navigationManager.NavigateTo("/"); // Rediriger vers la page d'accueil
-
-
     }
     
     [JSInvokable]
@@ -153,22 +72,25 @@ public partial class Auth : ComponentBase
 
         var response = await _httpClient.PostAsJsonAsync(
             "https://localhost:7011/api/google-login", new GoogleTokenRequest{ Token = jwtToken });
+        
         if (response.IsSuccessStatusCode)
         {
             //* Stock le token
             _serviceAuthentication.SetToken(jwtToken);
             _serviceAuthentication.AttachToken(_httpClient);
             
-            var result = await response.Content.ReadFromJsonAsync<UserProfile>();
+            returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
     
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, result!.Id), // `sub` = ID Google
-                new Claim(ClaimTypes.Email, result.Email), // `email`
-                new Claim(ClaimTypes.Name, result.Name), // `name`
-                new Claim(ClaimTypes.GivenName, result.GivenName), // `given_name`
-                new Claim(ClaimTypes.Surname, result.FamilyName), // `family_name`
-                new Claim("picture", result.Picture), // URL de la photo
+                new Claim(ClaimTypes.NameIdentifier, returnResponse!.User!.Id), // `sub` = ID Google
+                new Claim(ClaimTypes.Email, returnResponse!.User!.Email), // `email`
+                new Claim(ClaimTypes.Name, returnResponse!.User!.Name), // `name`
+                new Claim(ClaimTypes.GivenName, returnResponse!.User!.GivenName), // `given_name`
+                new Claim(ClaimTypes.Surname, returnResponse!.User!.FamilyName), // `family_name`
+                new Claim("picture", returnResponse!.User!.Picture), // URL de la photo
+                new Claim("createdAt", returnResponse!.User!.CreatedAt.ToString()!), 
+                new Claim("updatedAt", returnResponse!.User!.UpdatedAt.ToString()!),
             };
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "MaClasse"));
@@ -176,8 +98,45 @@ public partial class Auth : ComponentBase
             //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
             var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
             await authStateProvider.NotifyUserAuthentication(principal);
+
+            //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre   la modal de complément d'infos
+            if (returnResponse.IsNewUser)
+            {
+                await OpenDialogAuth(returnResponse.User);
+            }
             
             _navigationManager.NavigateTo("/dashboard");
         }
+    }
+    
+    private async Task OpenDialogAuth(UserProfile user)
+    {
+        //* Paramètres à transmettre à la boîte de dialogue
+        var parameters = new DialogParameters { { "user", user } };
+            
+        //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = false,
+            CloseButton = false,
+            FullWidth = true,          // design
+            MaxWidth = MaxWidth.Small, // design
+        };
+            
+                
+        //* Affichage de la boîte de dialogue
+        var dialog = await _dialogService.ShowAsync<AuthDialog>("", parameters, options);
+        
+        var result = await dialog.Result; 
+        
+        if (!result.Canceled && result.Data is string role && !string.IsNullOrWhiteSpace(role))
+        {
+            _navigationManager.NavigateTo("/dashboard");
+        }
+        else
+        {
+            await OpenDialogAuth(user); // 💥 relance si fermé sans valider
+        }
+
     }
 }

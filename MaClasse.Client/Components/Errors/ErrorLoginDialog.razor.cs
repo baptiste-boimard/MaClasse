@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using MaClasse.Shared.Models;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace MaClasse.Client.Components.Errors;
@@ -9,7 +10,7 @@ public partial class ErrorLoginDialog : ComponentBase
     private IMudDialogInstance? MudDialog { get; set; }
     
     [Parameter]
-    public string? Message { get; set; }
+    public UserProfile Message { get; set; }
     
     private void Close()
     {

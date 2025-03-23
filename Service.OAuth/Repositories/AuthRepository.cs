@@ -1,8 +1,11 @@
-﻿using Service.OAuth.Database;
+﻿using MaClasse.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using Service.OAuth.Database;
+using Service.OAuth.Interfaces;
 
 namespace Service.OAuth.Repositories;
 
-public class AuthRepository
+public class AuthRepository : IAuthRepository
 {
     private readonly PostgresDbContext _postgresDbContext;
 
@@ -11,8 +14,37 @@ public class AuthRepository
         _postgresDbContext = postgresDbContext;
     }
 
-    // public async Task<> SignUpUser()
-    // {
-    //     
-    // }
+    public async Task<UserProfile?> GetOneUserByGoogleId(string googleId)
+    {
+        var user = await _postgresDbContext.UserProfiles.FirstOrDefaultAsync(u => u.Id == googleId);
+
+        if (user != null)
+        {
+            return user;
+        }
+
+        return null;
+    }
+
+    public async Task<UserProfile> AddUser(UserProfile user)
+    {
+        var newUser = new UserProfile
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Name = user.Name,
+            GivenName = user.GivenName,
+            FamilyName = user.FamilyName,
+            Picture = user.Picture,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        var coucou =  _postgresDbContext.Database.GetConnectionString();
+
+        _postgresDbContext.UserProfiles.Add(newUser);
+        var saved = await _postgresDbContext.SaveChangesAsync();
+        Console.WriteLine($"✅ Utilisateur ajouté : {user.Email} — {saved} changement(s) détecté(s)");
+
+        return newUser;
+    }
 }
