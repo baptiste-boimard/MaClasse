@@ -102,8 +102,16 @@ public partial class Auth : ComponentBase
             var coucou = _configuration["Authentication:Google:ClientId"];
             // var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", new object[] { "./js/google-signin.js" });
             dotNetRef = DotNetObjectReference.Create(this);
+
             await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
         }
+    }
+  
+    
+    private async Task ClickNormalButton()
+    {
+        // Appelle le script JS pour cliquer sur le bouton Google caché
+        await _jsRuntime.InvokeVoidAsync("clickHiddenButton", "google-button");
     }
     
     private async Task GoogleLoginAction()

@@ -27,9 +27,17 @@ function initializeGoogleLogin(dotNetObjRef, clientId) {
 
 function openGoogleAccountMenu() {
     window.open(
-        "https://accounts.google.com/AccountChooser?hl=fr",
+        // "https://accounts.google.com/SignOutOptions?hl=fr&continue=https://myaccount.google.com/%3Futm_source%3Dsign_in_no_continue&ec=GBRAwAE",
+        // "https://accounts.google.com/AccountChooser?hl=fr",
         // "https://accounts.google.com/SignOutOptions?hl=fr",
         "GoogleAccountChooser",
         "width=500,height=600"
     );
 }
+window.onload = function () {
+    google.accounts.id.renderButton(
+        document.querySelector(".g_id_signin"),
+        { theme: "outline", size: "large" } // Personnalisation
+    );
+    console.log("Bouton Google initialisé");
+};

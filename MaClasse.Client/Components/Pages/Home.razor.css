@@ -1,1 +1,4 @@
-﻿
+﻿.div--principal{
+    display: flex;
+    justify-content: center;
+}

@@ -20,11 +20,21 @@
                     @*      data-auto_prompt="false"> *@
                     @* </div> *@
 
-                    <div id="google-button" class="google-button"></div>
-                    <button @onclick="GoogleLoginAction">Changer de compte</button>
-                    <button onclick="openGoogleAccountMenu()">Changer de compte</button>
+                    @* <button @onclick="GoogleLoginAction">Changer de compte</button> *@
+                    @* <button onclick="openGoogleAccountMenu()">Se connecter avec Google</button> *@
+                    @* <button> *@
+                    @*     <div id="google-button" class="google-button" style="display:none;"></div> *@
+                    @* </button> *@
+                    <div id="google-button"></div>
+                    @* <button @onclick="ClickNormalButton">Bouton Normal</button> *@
+                    @* <button id="google-button">Connexion Google</button> *@
 
+                    <div id="g_id_onload"
+                         data-client_id="419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com"
+                         data-callback="handleCredentialResponse">
+                    </div>
 
+                    <div class="g_id_signin" data-type="standard"></div>
                     @* <div class="g_id_signin" *@
                     @*      data-type="standard" *@
                     @*      data-size="large" *@
