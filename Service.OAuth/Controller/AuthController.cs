@@ -78,6 +78,14 @@ public class AuthController: ControllerBase
         
         return Ok(_returnResponse);
     }
+
+    [HttpPost]
+    [Route("finished-signup")]
+    public async Task<IActionResult> FinishedSignUp([FromBody] CompleteProfileRequest request)
+    {
+        //! Implementer la mise a  jour du profil dans la base de données + création idendifiant
+        return Ok(request);
+    }
 }
 
 

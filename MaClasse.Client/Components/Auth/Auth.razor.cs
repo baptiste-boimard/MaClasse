@@ -71,7 +71,7 @@ public partial class Auth : ComponentBase
         StateHasChanged();
 
         var response = await _httpClient.PostAsJsonAsync(
-            "https://localhost:7011/api/google-login", new GoogleTokenRequest{ Token = jwtToken });
+            $"{_configuration["Url:ApiGateway"]}/api/auth/google-login", new GoogleTokenRequest{ Token = jwtToken });
         
         if (response.IsSuccessStatusCode)
         {
@@ -104,8 +104,11 @@ public partial class Auth : ComponentBase
             {
                 await OpenDialogAuth(returnResponse.User);
             }
+            else
+            {
+                _navigationManager.NavigateTo("/dashboard");
+            }
             
-            _navigationManager.NavigateTo("/dashboard");
         }
     }
     
@@ -131,7 +134,17 @@ public partial class Auth : ComponentBase
         
         if (!result.Canceled && result.Data is string role && !string.IsNullOrWhiteSpace(role))
         {
-            _navigationManager.NavigateTo("/dashboard");
+            var payload = new { Role = role };
+            //* Requete vers le back pour compléter le profil
+            var response = await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/auth/finished-signup", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var coucouc = "coucou";
+                _navigationManager.NavigateTo("/dashboard");
+            }
+            
         }
         else
         {
