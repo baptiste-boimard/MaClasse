@@ -20,9 +20,7 @@ public partial class Auth : ComponentBase
     private readonly IJSRuntime _jsRuntime;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ServiceAuthentication _serviceAuthentication;
-
     private readonly IHttpContextAccessor _httpContextAccessor;
-    // private readonly HttpContext _httpContext;
 
 
     public Auth (
@@ -35,7 +33,6 @@ public partial class Auth : ComponentBase
         AuthenticationStateProvider authenticationStateProvider,
         ServiceAuthentication serviceAuthentication,
         IHttpContextAccessor httpContextAccessor)
-        // HttpContext httpContext)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -99,10 +96,7 @@ public partial class Auth : ComponentBase
     {
         if (firstRender)
         {
-            var coucou = _configuration["Authentication:Google:ClientId"];
-            // var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", new object[] { "./js/google-signin.js" });
             dotNetRef = DotNetObjectReference.Create(this);
-
             await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
         }
     }

@@ -12,10 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée
-builder.Services.Configure<CircuitOptions>(options =>
-{
-    options.DetailedErrors = true;
-});
+// builder.Services.Configure<CircuitOptions>(options =>
+// {
+//     options.DetailedErrors = true;
+// });
 
 //* Ajout des services MudBlazor
 builder.Services.AddMudServices();
@@ -51,6 +51,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Sécurité renforcée
     });
 builder.Services.AddScoped(_ => new HttpClient());
+
 
 builder.Services.AddAuthorizationCore();
 
