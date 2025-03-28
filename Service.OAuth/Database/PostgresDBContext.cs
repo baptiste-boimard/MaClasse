@@ -3,6 +3,7 @@ using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Service.OAuth.Database;
 
@@ -14,6 +15,7 @@ public class PostgresDbContext : DbContext
     }
     
     public DbSet<UserProfile> UserProfiles { get; set; }
+    public DbSet<SessionData> SessionDatas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,11 +26,20 @@ public class PostgresDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Email).IsRequired();
             entity.Property(a => a.Name).IsRequired();
+            entity.Property(a => a.Role).IsRequired();
             entity.Property(a => a.GivenName).IsRequired();
             entity.Property(a => a.FamilyName).IsRequired();
             entity.Property(a => a.Picture).IsRequired();
             entity.Property(a => a.CreatedAt);
             entity.Property(a => a.UpdatedAt);
+        });
+
+        modelBuilder.Entity<SessionData>(entity =>
+        {
+            entity.HasKey(a => a.Token);
+            entity.Property(a => a.UserId).IsRequired();
+            entity.Property(a => a.Role);
+            entity.Property(a => a.Expiration);
         });
     }
 }

@@ -16,17 +16,20 @@ public class AuthController: ControllerBase
     private readonly IConfiguration _configuration;
     private readonly ValidateGoogleTokenService _validateGoogleTokenService;
     private readonly IAuthRepository _authRepository;
+    private readonly ISessionRepository _sessionRepository;
 
     public AuthController(
         ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         ValidateGoogleTokenService validateGoogleTokenService,
-        IAuthRepository authRepository)
+        IAuthRepository authRepository,
+        ISessionRepository sessionRepository)
     {
         _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
         _authRepository = authRepository;
+        _sessionRepository = sessionRepository;
     }
 
     private AuthReturn _returnResponse = new();
@@ -56,18 +59,59 @@ public class AuthController: ControllerBase
 
         if (existingUser != null)
         {
-            _returnResponse = new AuthReturn
+            //* Création du token de session
+            var sessionTokenLogin = Guid.NewGuid().ToString();
+
+            var newSessionTokenLogin = new SessionData
             {
-                IsNewUser = true,
-                User = user
-            }; 
+                Token = sessionTokenLogin,
+                UserId = existingUser.Id,
+                // Role = existingUser.Role,
+                Expiration = DateTime.UtcNow.AddHours(3)
+            };
             
-            return Ok(_returnResponse);
+            //* On le stock dans la table Session
+            var sessionSaveLogin = await _sessionRepository.SaveNewSession(newSessionTokenLogin);
+
+            if (sessionSaveLogin != null)
+            {
+                _returnResponse = new AuthReturn
+                {
+                    IsNewUser = true,
+                    User = user
+                }; 
+            
+                return Ok(_returnResponse);
+            }
+            
+            //! Gérer l'erreur de non enrngistrement de la sesison
         }
         
         //* Si l'utilisateur n'existe pas il faut le créer en BDD
         var newUser = await _authRepository.AddUser(user);
+        
+        //* Création du token de session
+        var sessionTokenSignup = Guid.NewGuid().ToString();
 
+        var newSessionTokenSignup = new SessionData
+        {
+            Token = sessionTokenSignup,
+            UserId = existingUser.Id,
+            // Role = existingUser.Role,
+            Expiration = DateTime.UtcNow.AddHours(3)
+        };
+        
+        //* On le stock dans la table Session
+        var sessionSaveSignup = await _sessionRepository.SaveNewSession(newSessionTokenSignup);
+        
+        Response.Cookies.Append("MaClasseAuth", sessionSaveSignup.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddHours(3)
+        });
+        
         _returnResponse = new AuthReturn
         {
             IsNewUser = true,
@@ -83,7 +127,13 @@ public class AuthController: ControllerBase
     [Route("finished-signup")]
     public async Task<IActionResult> FinishedSignUp([FromBody] CompleteProfileRequest request)
     {
+        //* Récupérer la valeur du cookie
+        var cookieValue = Request.Cookies["MaClasseAuth"];   
+
         //! Implementer la mise a  jour du profil dans la base de données + création idendifiant
+        
+        
+        
         return Ok(request);
     }
 }

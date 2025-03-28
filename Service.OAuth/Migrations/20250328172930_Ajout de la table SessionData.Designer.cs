@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Service.OAuth.Database;
@@ -11,9 +12,11 @@ using Service.OAuth.Database;
 namespace Service.OAuth.Migrations
 {
     [DbContext(typeof(PostgresDbContext))]
-    partial class PostgresDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328172930_Ajout de la table SessionData")]
+    partial class AjoutdelatableSessionData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace Service.OAuth.Migrations
 
                     b.HasKey("Token");
 
-                    b.ToTable("SessionDatas");
+                    b.ToTable("SessionData");
                 });
 
             modelBuilder.Entity("MaClasse.Shared.Models.UserProfile", b =>
@@ -74,11 +77,6 @@ namespace Service.OAuth.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<string>("Picture")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");

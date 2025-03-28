@@ -60,7 +60,10 @@ public partial class Auth : ComponentBase
         if (firstRender)
         {
             dotNetRef = DotNetObjectReference.Create(this);
-            await _jsRuntime.InvokeVoidAsync("initializeGoogleLogin", dotNetRef, _configuration["Authentication:Google:ClientId"]);
+            await _jsRuntime.InvokeVoidAsync(
+                "initializeGoogleLogin",
+                dotNetRef,
+                _configuration["Authentication:Google:ClientId"]);
         }
     }
     
@@ -71,7 +74,8 @@ public partial class Auth : ComponentBase
         StateHasChanged();
 
         var response = await _httpClient.PostAsJsonAsync(
-            $"{_configuration["Url:ApiGateway"]}/api/auth/google-login", new GoogleTokenRequest{ Token = jwtToken });
+            $"{_configuration["Url:ApiGateway"]}/api/auth/google-login",
+            new GoogleTokenRequest{ Token = jwtToken });
         
         if (response.IsSuccessStatusCode)
         {
@@ -99,7 +103,7 @@ public partial class Auth : ComponentBase
             var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
             await authStateProvider.NotifyUserAuthentication(principal);
 
-            //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre   la modal de complément d'infos
+            //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
             if (returnResponse.IsNewUser)
             {
                 await OpenDialogAuth(returnResponse.User);

@@ -39,12 +39,11 @@ public class AuthRepository : IAuthRepository
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        var coucou =  _postgresDbContext.Database.GetConnectionString();
-
+        
         _postgresDbContext.UserProfiles.Add(newUser);
-        var saved = await _postgresDbContext.SaveChangesAsync();
-        Console.WriteLine($"✅ Utilisateur ajouté : {user.Email} — {saved} changement(s) détecté(s)");
-
+        await _postgresDbContext.SaveChangesAsync();
         return newUser;
     }
+    
+    // public async Task<UserProfile> UpdateUser(UserProfile user)
 }
