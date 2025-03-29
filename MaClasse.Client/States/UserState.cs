@@ -36,4 +36,18 @@ public class UserState
     {
         return this;
     }
+
+    public void ResetUserState()
+    {
+        IdSession = "";
+        Id = "";
+        Email = "";
+        Name = "";
+        Role = "";
+        GivenName = "";
+        FamilyName = "";
+        Picture = "";
+        CreatedAt = null;
+        UpdatedAt = null;
+    }
 }
