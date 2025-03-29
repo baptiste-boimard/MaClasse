@@ -32,7 +32,10 @@ public class SessionRepository : ISessionRepository
 
     public async Task<SessionData> DeleteSessionData(SessionData sessionData)
     {
-        return null;
+        _postgresDbContext.SessionDatas.Remove(sessionData);
+        await _postgresDbContext.SaveChangesAsync();
+        
+        return sessionData;
     }
 
     public async Task<SessionData> UpdateSession(SessionData sessionData)
@@ -41,6 +44,16 @@ public class SessionRepository : ISessionRepository
         await _postgresDbContext.SaveChangesAsync();
         
         return sessionData;
+    }
+
+    public async Task<SessionData> GetSessionByUserId(string userId)
+    {
+        var existingSession = await _postgresDbContext.SessionDatas.FirstOrDefaultAsync(
+            s => s.UserId == userId);
+
+        if (existingSession == null) return null;
+        
+        return existingSession;
     }
     
 }

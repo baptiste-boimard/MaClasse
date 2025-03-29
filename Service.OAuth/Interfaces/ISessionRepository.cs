@@ -8,4 +8,5 @@ public interface ISessionRepository
     Task<SessionData> SaveNewSession(SessionData sessionData);
     Task<SessionData> DeleteSessionData(SessionData sessionData);
     Task<SessionData> UpdateSession(SessionData sessionData);
+    Task<SessionData> GetSessionByUserId(string userId);
 }

@@ -19,7 +19,6 @@ public partial class Auth : ComponentBase
     private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
     private readonly IJSRuntime _jsRuntime;
-    // private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserService _userService;
@@ -33,7 +32,6 @@ public partial class Auth : ComponentBase
         ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         IJSRuntime jsRuntime,
-        // AuthenticationStateProvider authenticationStateProvider,
         ServiceAuthentication serviceAuthentication,
         IHttpContextAccessor httpContextAccessor,
         UserService userService,
@@ -45,13 +43,11 @@ public partial class Auth : ComponentBase
         _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _jsRuntime = jsRuntime;
-        // _authenticationStateProvider = authenticationStateProvider;
         _serviceAuthentication = serviceAuthentication;
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
         _userState = userState;
     }
-    
     
     [Parameter] public EventCallback<string> OnTokenReceived { get; set; }
     private DotNetObjectReference<Auth>? dotNetRef;
@@ -87,10 +83,6 @@ public partial class Auth : ComponentBase
         
         if (response.IsSuccessStatusCode)
         {
-            //* Stock le token
-            _serviceAuthentication.SetToken(jwtToken);
-            _serviceAuthentication.AttachToken(_httpClient);
-            
             returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
             
             //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
@@ -122,7 +114,6 @@ public partial class Auth : ComponentBase
             {
                 _navigationManager.NavigateTo("/dashboard");
             }
-            
         }
     }
     
@@ -136,8 +127,8 @@ public partial class Auth : ComponentBase
         {
             CloseOnEscapeKey = false,
             CloseButton = false,
-            FullWidth = true,          // design
-            MaxWidth = MaxWidth.Small, // design
+            FullWidth = true,         
+            MaxWidth = MaxWidth.Small,
         };
             
                 
@@ -173,8 +164,6 @@ public partial class Auth : ComponentBase
                 };
                 
                 _userState.SetUser(newUserState);
-                
-                //! Peut etre enrengistré le user dans un state ou deja le trcu d'auth
                 
                 _navigationManager.NavigateTo("/dashboard");
             }

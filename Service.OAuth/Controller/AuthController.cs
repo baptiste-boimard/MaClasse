@@ -59,6 +59,17 @@ public class AuthController: ControllerBase
 
         if (existingUser != null)
         {
+            //* Je regarde si une ancienne session existe pour ce user
+            var alreadySession = await _sessionRepository.GetSessionByUserId(user.Id);
+
+            if (alreadySession != null)
+            {
+                //* Je suprrime l'ancienne session
+                var deleteSession = await _sessionRepository.DeleteSessionData(alreadySession);
+
+                if (deleteSession == null) return Unauthorized();
+            }
+            
             //* Création du token de session
             var sessionTokenLogin = Guid.NewGuid().ToString();
 
@@ -72,15 +83,6 @@ public class AuthController: ControllerBase
             
             //* On le stock dans la table Session
             var sessionSaveLogin = await _sessionRepository.SaveNewSession(newSessionTokenLogin);
-            
-            //* On le place dans le cookies renvoyé
-            Response.Cookies.Append("MaClasseAuth", sessionSaveLogin.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                // SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(3)
-            });
             
             if (sessionSaveLogin != null)
             {
@@ -108,8 +110,7 @@ public class AuthController: ControllerBase
         {
             Token = sessionTokenSignup,
             UserId = newUser.Id,
-            Role = "existingUser.Role",
-            // Role = existingUser.Role,
+            Role = "",
             Expiration = DateTime.UtcNow.AddHours(3)
         };
         
@@ -124,13 +125,14 @@ public class AuthController: ControllerBase
                 HttpOnly = true,
                 Secure = true,
                 // SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(3)
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
             });
         
             _returnResponse = new AuthReturn
             {
                 IsNewUser = true,
-                User = newUser
+                User = newUser,
+                IdSession = sessionSaveSignup.Token
             };
             
             return Ok(_returnResponse);
