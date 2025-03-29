@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using MaClasse.Client.Services;
+using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
@@ -18,10 +19,11 @@ public partial class Auth : ComponentBase
     private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
     private readonly IJSRuntime _jsRuntime;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    // private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserService _userService;
+    private readonly UserState _userState;
 
 
     public Auth (
@@ -31,10 +33,11 @@ public partial class Auth : ComponentBase
         ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         IJSRuntime jsRuntime,
-        AuthenticationStateProvider authenticationStateProvider,
+        // AuthenticationStateProvider authenticationStateProvider,
         ServiceAuthentication serviceAuthentication,
         IHttpContextAccessor httpContextAccessor,
-        UserService userService)
+        UserService userService,
+        UserState userState)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -42,10 +45,11 @@ public partial class Auth : ComponentBase
         _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _jsRuntime = jsRuntime;
-        _authenticationStateProvider = authenticationStateProvider;
+        // _authenticationStateProvider = authenticationStateProvider;
         _serviceAuthentication = serviceAuthentication;
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
+        _userState = userState;
     }
     
     
@@ -92,24 +96,22 @@ public partial class Auth : ComponentBase
             //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
             _userService.AuthenticateUser(returnResponse.User);
             
-            // var claims = new List<Claim>
-            // {
-            //     new Claim(ClaimTypes.NameIdentifier, returnResponse!.User!.Id),
-            //     new Claim(ClaimTypes.Email, returnResponse!.User!.Email), 
-            //     new Claim(ClaimTypes.Name, returnResponse!.User!.Name), 
-            //     new Claim(ClaimTypes.Role, returnResponse!.User!.Role), 
-            //     new Claim(ClaimTypes.GivenName, returnResponse!.User!.GivenName),
-            //     new Claim(ClaimTypes.Surname, returnResponse!.User!.FamilyName),
-            //     new Claim("picture", returnResponse!.User!.Picture), 
-            //     new Claim("createdAt", returnResponse!.User!.CreatedAt.ToString()!), 
-            //     new Claim("updatedAt", returnResponse!.User!.UpdatedAt.ToString()!),
-            // };
-
-            // var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "MaClasse"));
-            //
-            // //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
-            // var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
-            // await authStateProvider.NotifyUserAuthentication(principal);
+            //* Enregistrement dans le UserState
+            var newUserState = new UserState
+            {
+                IdSession = returnResponse.IdSession,
+                Id = returnResponse.User.Id,
+                Email = returnResponse.User.Email,
+                Name = returnResponse.User.Name,
+                Role = returnResponse.User.Role,
+                GivenName = returnResponse.User.GivenName,
+                FamilyName = returnResponse.User.FamilyName,
+                Picture = returnResponse.User.Picture,
+                CreatedAt = returnResponse.User.CreatedAt,
+                UpdatedAt = returnResponse.User.UpdatedAt
+            };
+                
+            _userState.SetUser(newUserState);
 
             //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
             if (returnResponse.IsNewUser)
@@ -155,8 +157,23 @@ public partial class Auth : ComponentBase
             {   
                 returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
                 _userService.AuthenticateUser(returnResponse.User);
-                //! recuperé le user avec son role
-                //! FAut fermer la boxdialog ou elle se reouvre toute seul
+
+                var newUserState = new UserState
+                {
+                    IdSession = returnResponse.IdSession,
+                    Id = returnResponse.User.Id,
+                    Email = returnResponse.User.Email,
+                    Name = returnResponse.User.Name,
+                    Role = returnResponse.User.Role,
+                    GivenName = returnResponse.User.GivenName,
+                    FamilyName = returnResponse.User.FamilyName,
+                    Picture = returnResponse.User.Picture,
+                    CreatedAt = returnResponse.User.CreatedAt,
+                    UpdatedAt = returnResponse.User.UpdatedAt
+                };
+                
+                _userState.SetUser(newUserState);
+                
                 //! Peut etre enrengistré le user dans un state ou deja le trcu d'auth
                 
                 _navigationManager.NavigateTo("/dashboard");

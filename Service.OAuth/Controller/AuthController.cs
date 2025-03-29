@@ -87,13 +87,15 @@ public class AuthController: ControllerBase
                 _returnResponse = new AuthReturn
                 {
                     IsNewUser = false,
-                    User = existingUser
+                    User = existingUser,
+                    IdSession = sessionSaveLogin.Token
+
                 }; 
             
                 return Ok(_returnResponse);
             }
-            
-            //! Gérer l'erreur de non enrngistrement de la sesison
+
+            return Unauthorized();
         }
         
         //* Si l'utilisateur n'existe pas il faut le créer en BDD
@@ -113,25 +115,29 @@ public class AuthController: ControllerBase
         
         //* On le stock dans la table Session
         var sessionSaveSignup = await _sessionRepository.SaveNewSession(newSessionTokenSignup);
-        
-        //* On le place dans le cookies renvoyé
-        Response.Cookies.Append("MaClasseAuth", sessionSaveSignup.Token, new CookieOptions
+
+        if (sessionSaveSignup != null)
         {
-            HttpOnly = true,
-            Secure = true,
-            // SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddHours(3)
-        });
+            //* On le place dans le cookies renvoyé
+            Response.Cookies.Append("MaClasseAuth", sessionSaveSignup.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                // SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(3)
+            });
         
-        _returnResponse = new AuthReturn
-        {
-            IsNewUser = true,
-            User = newUser
-        };
-        
-        //! Gestion de l'erreur d'enregistrement ????
-        
-        return Ok(_returnResponse);
+            _returnResponse = new AuthReturn
+            {
+                IsNewUser = true,
+                User = newUser
+            };
+            
+            return Ok(_returnResponse);
+        }
+
+        return Unauthorized();
+
     }
 
     [HttpPost]
@@ -144,27 +150,33 @@ public class AuthController: ControllerBase
         //* Avec l'id de session on réucpére le userId
         var userSession = await _sessionRepository.GetUserIdByCookies(cookieValue);
 
-        if (userSession == null) return Unauthorized();
+        userSession.Role = request.Role;
+        //* Je mets a jour mon cookies de Session avec le Role
+        var updateSession = await _sessionRepository.UpdateSession(userSession);
+
+        if (updateSession == null) return Unauthorized();
         
         //* Je récupére le user concerné
-        var updateUser = await _authRepository.GetOneUserByGoogleId(userSession.UserId);
+        var updateUser = await _authRepository.GetOneUserByGoogleId(updateSession.UserId);
 
-        updateUser.Role = userSession.Role;
+        updateUser.Role = updateSession.Role;
         updateUser.UpdatedAt = DateTime.UtcNow;
 
         //* Si j'ai bien un user j'update son role
         var updatedUser = await _authRepository.UpdateUser(updateUser);
 
-        if (updateUser != null)
+        if (updatedUser != null)
         {
             _returnResponse = new AuthReturn
             {
                 IsNewUser = false,
-                User = updateUser
+                User = updateUser,
+                IdSession = userSession.Token
             };
+            
             return Ok(_returnResponse);
         }
-
+        
         return Unauthorized();
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 @using System.Security.Claims
 @using MaClasse.Client.Components.Auth
+@using MaClasse.Client.States
 @using MaClasse.Shared.Models
 @using Microsoft.AspNetCore.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -9,19 +10,26 @@
 
 <h3>Dashboard</h3>
 <p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
-<p><strong>Id :</strong> @_userProfile!.Id</p>
-<p><strong>Email :</strong> @_userProfile.Email</p>
-<p><strong>Name :</strong> @_userProfile.Name</p>
-<p><strong>Role :</strong> @_userProfile.Role</p>
-<p><strong>GivenName :</strong> @_userProfile.GivenName</p>
-<p><strong>FamilyName :</strong> @_userProfile.FamilyName</p>
-<p><strong>Picture :</strong> @_userProfile.Picture</p>
-<p><strong>CreatedAt :</strong> @_userProfile.CreatedAt</p>
-<p><strong>UpdatedAt :</strong> @_userProfile.UpdatedAt</p>
+<p><strong>IdSession :</strong> @userInformation!.Id</p>
+<p><strong>Id :</strong> @userInformation!.Id</p>
+<p><strong>Email :</strong> @userInformation.Email</p>
+<p><strong>Name :</strong> @userInformation.Name</p>
+<p><strong>Role :</strong> @userInformation.Role</p>
+<p><strong>GivenName :</strong> @userInformation.GivenName</p>
+<p><strong>FamilyName :</strong> @userInformation.FamilyName</p>
+<p><strong>Picture :</strong> @userInformation.Picture</p>
+<p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
+<p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
 
 @code {
+    private readonly UserState _userState;
 
-    private UserProfile? _userProfile;
+    public Dashboard(UserState userState)
+    {
+        _userState = userState;
+    }
+
+    private UserState? userInformation;
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,26 +39,10 @@
 
         if (user.Identity is { IsAuthenticated: true })
         {
-            UserProfile? loginResult = new UserProfile
-            {
-                Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Id inconnu",
-                Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",
-                Name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Name inconnu",
-                Role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Role inconnu",
-                GivenName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? "GivenName inconnu",
-                FamilyName = user.FindFirst(ClaimTypes.Surname)?.Value ?? "FamilyName inconnu",
-                Picture = user.FindFirst("picture")?.Value ?? "Picture inconnu",
-                CreatedAt = DateTime.TryParse(user.FindFirst("createdAt")?.Value, out var createdAt) ? createdAt : null,
-                UpdatedAt = DateTime.TryParse(user.FindFirst("updatedAt")?.Value, out var updatedAt) ? updatedAt : null
-            };
-
-            _userProfile = loginResult;
-            
-            Console.WriteLine($"[DEBUG] Utilisateur connecté : {loginResult}");
+            //* Récupére les infos dans le UserState
+            userInformation = _userState.GetUser();
         }
-        else
-        {
-            Console.WriteLine("[DEBUG] Aucun utilisateur connecté.");
-        }
+        
+        //! Gestion de l'erreur retour à la page de login
     }
 }

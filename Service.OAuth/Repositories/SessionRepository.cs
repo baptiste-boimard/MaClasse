@@ -34,5 +34,13 @@ public class SessionRepository : ISessionRepository
     {
         return null;
     }
+
+    public async Task<SessionData> UpdateSession(SessionData sessionData)
+    {
+        _postgresDbContext.Update(sessionData);
+        await _postgresDbContext.SaveChangesAsync();
+        
+        return sessionData;
+    }
     
 }

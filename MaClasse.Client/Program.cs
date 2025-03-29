@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using MaClasse.Client.Components;
 using MaClasse.Client.Services;
+using MaClasse.Client.States;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Server;
@@ -10,6 +11,7 @@ using Service.OAuth.Service;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserState>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée
