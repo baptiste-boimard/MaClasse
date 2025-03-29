@@ -16,7 +16,8 @@ public class AuthRepository : IAuthRepository
 
     public async Task<UserProfile?> GetOneUserByGoogleId(string googleId)
     {
-        var user = await _postgresDbContext.UserProfiles.FirstOrDefaultAsync(u => u.Id == googleId);
+        var user = await _postgresDbContext.UserProfiles.FirstOrDefaultAsync(
+            u => u.Id == googleId);
 
         if (user != null)
         {
@@ -44,6 +45,12 @@ public class AuthRepository : IAuthRepository
         await _postgresDbContext.SaveChangesAsync();
         return newUser;
     }
-    
-    // public async Task<UserProfile> UpdateUser(UserProfile user)
+
+    public async Task<UserProfile> UpdateUser(UserProfile user)
+    {
+        _postgresDbContext.UserProfiles.Update(user);
+        await _postgresDbContext.SaveChangesAsync();
+        
+        return user;
+    }
 }

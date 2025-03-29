@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
 using Service.OAuth.Interfaces;
 
@@ -14,6 +15,11 @@ public class SessionRepository : ISessionRepository
     }
     public async Task<SessionData> GetUserIdByCookies(string token)
     {
+        var user = await _postgresDbContext.SessionDatas.FirstOrDefaultAsync(
+            s => s.Token == token);
+
+        if (user != null) return user;
+        
         return null;
     }
 

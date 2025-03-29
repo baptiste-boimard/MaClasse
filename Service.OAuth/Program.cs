@@ -13,6 +13,7 @@ builder.Services.AddTransient<ServiceHashUrl>();
 
 //* Ajout des interfaces et repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<ValidateGoogleTokenService>();

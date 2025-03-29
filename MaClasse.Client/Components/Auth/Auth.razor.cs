@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
+using Service.OAuth.Service;
 
 namespace MaClasse.Client.Components.Auth;
 
@@ -20,6 +21,7 @@ public partial class Auth : ComponentBase
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserService _userService;
 
 
     public Auth (
@@ -31,7 +33,8 @@ public partial class Auth : ComponentBase
         IJSRuntime jsRuntime,
         AuthenticationStateProvider authenticationStateProvider,
         ServiceAuthentication serviceAuthentication,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        UserService userService)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -42,6 +45,7 @@ public partial class Auth : ComponentBase
         _authenticationStateProvider = authenticationStateProvider;
         _serviceAuthentication = serviceAuthentication;
         _httpContextAccessor = httpContextAccessor;
+        _userService = userService;
     }
     
     
@@ -84,24 +88,28 @@ public partial class Auth : ComponentBase
             _serviceAuthentication.AttachToken(_httpClient);
             
             returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
-    
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, returnResponse!.User!.Id), // `sub` = ID Google
-                new Claim(ClaimTypes.Email, returnResponse!.User!.Email), // `email`
-                new Claim(ClaimTypes.Name, returnResponse!.User!.Name), // `name`
-                new Claim(ClaimTypes.GivenName, returnResponse!.User!.GivenName), // `given_name`
-                new Claim(ClaimTypes.Surname, returnResponse!.User!.FamilyName), // `family_name`
-                new Claim("picture", returnResponse!.User!.Picture), // URL de la photo
-                new Claim("createdAt", returnResponse!.User!.CreatedAt.ToString()!), 
-                new Claim("updatedAt", returnResponse!.User!.UpdatedAt.ToString()!),
-            };
+            
+            //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
+            _userService.AuthenticateUser(returnResponse.User);
+            
+            // var claims = new List<Claim>
+            // {
+            //     new Claim(ClaimTypes.NameIdentifier, returnResponse!.User!.Id),
+            //     new Claim(ClaimTypes.Email, returnResponse!.User!.Email), 
+            //     new Claim(ClaimTypes.Name, returnResponse!.User!.Name), 
+            //     new Claim(ClaimTypes.Role, returnResponse!.User!.Role), 
+            //     new Claim(ClaimTypes.GivenName, returnResponse!.User!.GivenName),
+            //     new Claim(ClaimTypes.Surname, returnResponse!.User!.FamilyName),
+            //     new Claim("picture", returnResponse!.User!.Picture), 
+            //     new Claim("createdAt", returnResponse!.User!.CreatedAt.ToString()!), 
+            //     new Claim("updatedAt", returnResponse!.User!.UpdatedAt.ToString()!),
+            // };
 
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "MaClasse"));
-
-            //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
-            var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
-            await authStateProvider.NotifyUserAuthentication(principal);
+            // var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "MaClasse"));
+            //
+            // //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
+            // var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+            // await authStateProvider.NotifyUserAuthentication(principal);
 
             //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
             if (returnResponse.IsNewUser)
@@ -144,8 +152,13 @@ public partial class Auth : ComponentBase
                 $"{_configuration["Url:ApiGateway"]}/api/auth/finished-signup", payload);
 
             if (response.IsSuccessStatusCode)
-            {
-                var coucouc = "coucou";
+            {   
+                returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
+                _userService.AuthenticateUser(returnResponse.User);
+                //! recuperé le user avec son role
+                //! FAut fermer la boxdialog ou elle se reouvre toute seul
+                //! Peut etre enrengistré le user dans un state ou deja le trcu d'auth
+                
                 _navigationManager.NavigateTo("/dashboard");
             }
             

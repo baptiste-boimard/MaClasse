@@ -66,19 +66,28 @@ public class AuthController: ControllerBase
             {
                 Token = sessionTokenLogin,
                 UserId = existingUser.Id,
-                // Role = existingUser.Role,
+                Role = existingUser.Role,
                 Expiration = DateTime.UtcNow.AddHours(3)
             };
             
             //* On le stock dans la table Session
             var sessionSaveLogin = await _sessionRepository.SaveNewSession(newSessionTokenLogin);
-
+            
+            //* On le place dans le cookies renvoyé
+            Response.Cookies.Append("MaClasseAuth", sessionSaveLogin.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                // SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(3)
+            });
+            
             if (sessionSaveLogin != null)
             {
                 _returnResponse = new AuthReturn
                 {
-                    IsNewUser = true,
-                    User = user
+                    IsNewUser = false,
+                    User = existingUser
                 }; 
             
                 return Ok(_returnResponse);
@@ -96,7 +105,8 @@ public class AuthController: ControllerBase
         var newSessionTokenSignup = new SessionData
         {
             Token = sessionTokenSignup,
-            UserId = existingUser.Id,
+            UserId = newUser.Id,
+            Role = "existingUser.Role",
             // Role = existingUser.Role,
             Expiration = DateTime.UtcNow.AddHours(3)
         };
@@ -104,11 +114,12 @@ public class AuthController: ControllerBase
         //* On le stock dans la table Session
         var sessionSaveSignup = await _sessionRepository.SaveNewSession(newSessionTokenSignup);
         
+        //* On le place dans le cookies renvoyé
         Response.Cookies.Append("MaClasseAuth", sessionSaveSignup.Token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            // SameSite = SameSiteMode.Strict,
             Expires = DateTimeOffset.UtcNow.AddHours(3)
         });
         
@@ -130,11 +141,31 @@ public class AuthController: ControllerBase
         //* Récupérer la valeur du cookie
         var cookieValue = Request.Cookies["MaClasseAuth"];   
 
-        //! Implementer la mise a  jour du profil dans la base de données + création idendifiant
+        //* Avec l'id de session on réucpére le userId
+        var userSession = await _sessionRepository.GetUserIdByCookies(cookieValue);
+
+        if (userSession == null) return Unauthorized();
         
-        
-        
-        return Ok(request);
+        //* Je récupére le user concerné
+        var updateUser = await _authRepository.GetOneUserByGoogleId(userSession.UserId);
+
+        updateUser.Role = userSession.Role;
+        updateUser.UpdatedAt = DateTime.UtcNow;
+
+        //* Si j'ai bien un user j'update son role
+        var updatedUser = await _authRepository.UpdateUser(updateUser);
+
+        if (updateUser != null)
+        {
+            _returnResponse = new AuthReturn
+            {
+                IsNewUser = false,
+                User = updateUser
+            };
+            return Ok(_returnResponse);
+        }
+
+        return Unauthorized();
     }
 }
 

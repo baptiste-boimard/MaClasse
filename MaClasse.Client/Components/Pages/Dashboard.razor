@@ -12,6 +12,7 @@
 <p><strong>Id :</strong> @_userProfile!.Id</p>
 <p><strong>Email :</strong> @_userProfile.Email</p>
 <p><strong>Name :</strong> @_userProfile.Name</p>
+<p><strong>Role :</strong> @_userProfile.Role</p>
 <p><strong>GivenName :</strong> @_userProfile.GivenName</p>
 <p><strong>FamilyName :</strong> @_userProfile.FamilyName</p>
 <p><strong>Picture :</strong> @_userProfile.Picture</p>
@@ -35,6 +36,7 @@
                 Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Id inconnu",
                 Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "Email inconnu",
                 Name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Name inconnu",
+                Role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Role inconnu",
                 GivenName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? "GivenName inconnu",
                 FamilyName = user.FindFirst(ClaimTypes.Surname)?.Value ?? "FamilyName inconnu",
                 Picture = user.FindFirst("picture")?.Value ?? "Picture inconnu",

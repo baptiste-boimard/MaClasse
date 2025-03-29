@@ -5,10 +5,11 @@ using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Server;
 using MudBlazor.Services;
+using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée
