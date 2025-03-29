@@ -58,6 +58,8 @@ public partial class Auth : ComponentBase
     private bool _isGoogleLogin = false;
     //* Retour de la reponse d'Auth
     private AuthReturn? returnResponse;
+    //*  Evite l'ouverture de 2 modals
+    private bool _dialogOpen = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -69,6 +71,11 @@ public partial class Auth : ComponentBase
                 dotNetRef,
                 _configuration["Authentication:Google:ClientId"]);
         }
+    }
+    
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("📦 ThermsDialog initialisé");
     }
     
     [JSInvokable]
@@ -174,5 +181,41 @@ public partial class Auth : ComponentBase
             await OpenDialogAuth(user); // 💥 relance si fermé sans valider
         }
 
+    }
+
+    public async Task OpenDialogTherms()
+    {
+        if (_dialogOpen)
+        {
+            Console.WriteLine("⛔️ Modale déjà ouverte !");
+            return;
+        }
+
+        _dialogOpen = true;
+        Console.WriteLine("✅ Ouverture modale demandée");
+            
+        //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,         
+            MaxWidth = MaxWidth.Small,
+        };
+
+        try
+        {
+            //* Affichage de la boîte de dialogue
+            // await _dialogService.ShowAsync<ThermsDialog>("", options);
+            var dialog = await _dialogService.ShowAsync<ThermsDialog>("", options);
+            await dialog.Result;
+            Console.WriteLine("FERMETURE");
+            _dialogOpen = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

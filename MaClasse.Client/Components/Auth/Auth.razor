@@ -1,9 +1,4 @@
-﻿@inject NavigationManager Nav
-
-<MudDialogProvider />
-@* <div id="google-button" class="google-button"></div> *@
-
-<div class="div--principal">
+﻿<div class="div--principal">
     <MudCard>
         <img src="Images/LogoMaClasse.png" alt="Logo_MaClasse"/>
         <MudCardContent>
@@ -16,9 +11,9 @@
                 </div>
                 <MudText Class="mt-3">
                     <span class="span--flex">
-                        <MudLink OnClick="@(() => { })">Conditions d'utilisation</MudLink>
+                        <MudLink OnClick="@OpenDialogTherms">Conditions d'utilisation</MudLink>
                         <MudText>|</MudText>
-                        <MudLink OnClick="@(() => { })">Politique de confidentialité</MudLink>
+                        <MudLink OnClick="@OpenDialogTherms">Politique de confidentialité</MudLink>
                     </span>
                 </MudText>
             </div>
