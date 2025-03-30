@@ -187,12 +187,10 @@ public partial class Auth : ComponentBase
     {
         if (_dialogOpen)
         {
-            Console.WriteLine("⛔️ Modale déjà ouverte !");
             return;
         }
 
         _dialogOpen = true;
-        Console.WriteLine("✅ Ouverture modale demandée");
             
         //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
         var options = new DialogOptions
@@ -202,20 +200,33 @@ public partial class Auth : ComponentBase
             FullWidth = true,         
             MaxWidth = MaxWidth.Small,
         };
+        
+        //* Affichage de la boîte de dialogue
+        var dialog = await _dialogService.ShowAsync<ThermsDialog>("", options);
+        await dialog.Result;
+        _dialogOpen = false;
+    }
+    
+    public async Task OpenDialogPolicy()
+    {
+        if (_dialogOpen)
+        {
+            return;
+        }
 
-        try
+        _dialogOpen = true;
+            
+        //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
+        var options = new DialogOptions
         {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,         
+            MaxWidth = MaxWidth.Small,
+        };
             //* Affichage de la boîte de dialogue
-            // await _dialogService.ShowAsync<ThermsDialog>("", options);
-            var dialog = await _dialogService.ShowAsync<ThermsDialog>("", options);
+            var dialog = await _dialogService.ShowAsync<PolicyDialog>("", options);
             await dialog.Result;
-            Console.WriteLine("FERMETURE");
             _dialogOpen = false;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
     }
 }
