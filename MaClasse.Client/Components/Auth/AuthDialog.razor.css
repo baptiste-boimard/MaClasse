@@ -1,1 +1,10 @@
-﻿
+﻿.div--principal{
+    border: #1E88E5 solid 1px;
+    border-radius: 0.8rem;
+    margin: 0.5rem;
+    margin-top: -1.5rem;
+}
+
+.title{
+    margin-bottom: 1rem;
+}
