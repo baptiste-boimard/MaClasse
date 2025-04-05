@@ -1,10 +1,12 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
 using MudBlazor;
 using Service.OAuth.Service;
@@ -23,6 +25,8 @@ public partial class Auth : ComponentBase
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserService _userService;
     private readonly UserState _userState;
+    private readonly ProtectedLocalStorage _protectedLocalStorage;
+    private readonly RefreshService _refreshService;
 
 
     public Auth (
@@ -35,7 +39,9 @@ public partial class Auth : ComponentBase
         ServiceAuthentication serviceAuthentication,
         IHttpContextAccessor httpContextAccessor,
         UserService userService,
-        UserState userState)
+        UserState userState,
+        ProtectedLocalStorage protectedLocalStorage,
+        RefreshService refreshService)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -47,6 +53,8 @@ public partial class Auth : ComponentBase
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
         _userState = userState;
+        _protectedLocalStorage = protectedLocalStorage;
+        _refreshService = refreshService;
     }
     
     [Parameter] public EventCallback<string> OnTokenReceived { get; set; }
@@ -64,18 +72,13 @@ public partial class Auth : ComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
+        {            
             dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync(
                 "initializeGoogleLogin",
                 dotNetRef,
                 _configuration["Authentication:Google:ClientId"]);
         }
-    }
-    
-    protected override void OnInitialized()
-    {
-        Console.WriteLine("📦 ThermsDialog initialisé");
     }
     
     [JSInvokable]
@@ -91,6 +94,9 @@ public partial class Auth : ComponentBase
         if (response.IsSuccessStatusCode)
         {
             returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
+            
+            //* Enregistrement dans le ProtectedLocalStorage
+            await _protectedLocalStorage.SetAsync("MaClasseAuth", returnResponse.IdSession);
             
             //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
             _userService.AuthenticateUser(returnResponse.User);
@@ -225,7 +231,7 @@ public partial class Auth : ComponentBase
             MaxWidth = MaxWidth.Small,
         };
             //* Affichage de la boîte de dialogue
-            var dialog = await _dialogService.ShowAsync<PolicyDialog>("", options);
+            var dialog = await _dialogService.ShowAsync<Menu.ProfileDialog>("", options);
             await dialog.Result;
             _dialogOpen = false;
     }

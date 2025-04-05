@@ -16,4 +16,8 @@
         <PackageReference Include="Ocelot" Version="23.4.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

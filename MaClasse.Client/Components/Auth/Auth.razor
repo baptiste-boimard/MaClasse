@@ -1,16 +1,24 @@
-﻿<div class="div--principal">
+﻿<div style="width: 30%;">
     <MudCard>
         <img src="Images/LogoMaClasse.png" alt="Logo_MaClasse"/>
         <MudCardContent>
-            <div class="div--flex">
-                <div class="div--title">
+            <div style="display: flex;
+                        flex-direction: column;
+                        gap: 2rem;">
+                <div style="display: flex;
+                            justify-content: center;">
                     <MudText Typo="Typo.h5">@_currentTitle</MudText>
                 </div>
                 <div>
-                    <div id="google-button"></div>
+                    <div style="display: flex;
+                                justify-content: center;"
+                         id="google-button"></div>
                 </div>
                 <MudText Class="mt-3">
-                    <span class="span--flex">
+                    <span style="display: flex;
+                                flex-direction: row;
+                                justify-content: center !important;
+                                gap: 1rem;">
                         <MudLink OnClick="@OpenDialogTherms">Conditions d'utilisation</MudLink>
                         <MudText>|</MudText>
                         <MudLink OnClick="@OpenDialogPolicy">Politique de confidentialité</MudLink>

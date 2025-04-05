@@ -167,4 +167,10 @@
       <UpToDateCheckInput Remove="Components\Account\Shared\StatusMessage.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="Components\Auth\ProfileDialog.razor">
+        <DependentUpon>PolicyDialog.razor.cs</DependentUpon>
+      </Content>
+    </ItemGroup>
+
 </Project>

@@ -11,7 +11,9 @@
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToUpstream": {"Set-Cookie": ""},
+      "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
     }
   ],
   "GlobalConfiguration": {

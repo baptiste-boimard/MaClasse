@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace MaClasse.Client.Components.Auth;
+namespace MaClasse.Client.Components.Menu;
 
 public partial class ProfileDialog : ComponentBase
 {

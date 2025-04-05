@@ -86,6 +86,15 @@ public class AuthController: ControllerBase
             
             if (sessionSaveLogin != null)
             {
+                //* Envoi du cookie de session
+                Response.Cookies.Append("MaClasseAuth", sessionTokenLogin, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddHours(3)
+                });
+                
                 _returnResponse = new AuthReturn
                 {
                     IsNewUser = false,
@@ -124,8 +133,8 @@ public class AuthController: ControllerBase
             {
                 HttpOnly = true,
                 Secure = true,
-                // SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddHours(3)
             });
         
             _returnResponse = new AuthReturn
@@ -180,6 +189,36 @@ public class AuthController: ControllerBase
         }
         
         return Unauthorized();
+    }
+    
+    [HttpPost]
+    [Route("refresh-user")]
+    public async Task<IActionResult> GetUser([FromBody] GoogleTokenRequest request)
+    {
+        //* Je récupére le userId avec le token de session
+        var userSession = await _sessionRepository.GetUserIdByCookies(request.Token);
+
+        if (userSession == null) return Unauthorized();
+        
+        //* Je vérifie la validité de la session
+        if(userSession.Expiration < DateTime.UtcNow)
+        {
+            return Unauthorized();
+        }
+
+        //* Je récupére le user concerné
+        var user = await _authRepository.GetOneUserByGoogleId(userSession.UserId);
+
+        if (user == null) return Unauthorized();
+
+        _returnResponse = new AuthReturn
+        {
+            IsNewUser = false,
+            User = user,
+            IdSession = userSession.Token
+        };
+        
+        return Ok(_returnResponse);
     }
 }
 

@@ -1,0 +1,106 @@
+﻿@using MaClasse.Client.Components.Utils
+
+<div style="display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            border: #1E88E5 solid 1px;
+            border-radius: 0.8rem;
+            margin: 0.5rem;
+            padding: 0.3rem">
+    <img style="padding-left: 1rem;
+                max-width: 5rem"
+         src="Images/IconMaClasse.png" alt="Logo_MaClasse"/>
+    
+    <div style="display: flex;
+                flex-direction: row;
+                gap: 1rem">
+        <MudMenu
+            Label="Classes"
+            Color="Color.Secondary"
+            Size="Size.Small"
+            Variant="Variant.Filled "
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Item 1" />
+            <MudMenuItem Label="Item 2" />
+            <MudMenuItem Label="Item 3" />
+        </MudMenu>
+
+        <MudMenu
+            Label="Matières"
+            Color="Color.Primary"
+            Size="Size.Small"
+            Variant="Variant.Filled "
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Item 1" />
+            <MudMenuItem Label="Item 2" />
+            <MudMenuItem Label="Item 3" />
+        </MudMenu>
+
+        <MudMenu
+            Label="Elèves"
+            Color="Color.Warning"
+            Size="Size.Small"
+            Variant="Variant.Filled "
+            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Label="Item 1" />
+            <MudMenuItem Label="Item 2" />
+            <MudMenuItem Label="Item 3" />
+        </MudMenu>
+    </div>
+    
+    <div>
+        <MudButton 
+            Variant="Variant.Outlined" 
+            Color="Color.Primary" 
+            Size="Size.Small" 
+            Style="padding: 0 0.8rem">
+            <Date />
+        </MudButton>
+
+        <MudButton 
+            Variant="Variant.Outlined" 
+            Color="Color.Primary" 
+            Size="Size.Small" 
+            Style="margin-left: 1rem;
+                   padding: 0 0.8rem">
+            <Hour />
+        </MudButton>
+    </div>
+    
+    <div style="padding-right: 1rem;
+                display: flex;
+                align-items: center">
+        <img 
+            src="@Picture" 
+            title="Mon profil"
+            style="width: 40px; 
+                   height: 40px; 
+                   border-radius: 50%;
+                   cursor: pointer"
+            alt="avatar google"
+            referrerpolicy="no-referrer"
+            @onclick="@OpenProfileDialog" />
+        
+        <div>
+            <a href="https://mail.google.com"
+               title="Se rendre sur votre Gmail"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="margin-left: 0.5rem">
+                <strong>@Email</strong>
+            </a>
+        </div>
+        
+        <div style="margin-left: 0.5rem">
+            <MudButton
+                title="Se déconnecter"
+                Variant="Variant.Filled"
+                Size="Size.Small"
+                Color="Color.Primary"
+                OnClick="@Logout">
+                    Se déconnecter
+            </MudButton>
+        </div>
+    </div>
+</div>

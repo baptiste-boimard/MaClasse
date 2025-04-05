@@ -3,6 +3,14 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="div--principal">
-    <Auth />
-</div>
+@if (isCheckingAuth)
+{
+    <div></div>
+}
+else
+{
+    <div style="display: flex;
+                justify-content: center;">
+        <Auth />
+    </div>
+}

@@ -5,9 +5,12 @@
 @using MaClasse.Client.States
 @using MaClasse.Shared.Models
 @using Microsoft.AspNetCore.Authorization
+@using MaClasse.Client.Components.Menu
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
+
+<TopMenu Picture="@userInformation!.Picture" Email="@userInformation.Email"/>
 
 <h3>Dashboard</h3>
 <div>
@@ -44,6 +47,7 @@
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly NavigationManager _navigationManager;
+    private readonly ServiceLogout _serviceLogout;
     private bool isLogged = false;
 
     public Dashboard(
@@ -51,13 +55,15 @@
         AuthenticationStateProvider authenticationStateProvider,
         HttpClient httpClient,
         IConfiguration configuration,
-        NavigationManager navigationManager)
+        NavigationManager navigationManager,
+        ServiceLogout serviceLogout)
     {
         _userState = userState;
         _authenticationStateProvider = authenticationStateProvider;
         _httpClient = httpClient;
         _configuration = configuration;
         _navigationManager = navigationManager;
+        _serviceLogout = serviceLogout;
     }
 
     private UserState? userInformation;
@@ -81,24 +87,6 @@
 
     private async Task Logout()
     {
-        //* J'efface la session avec un appel api
-        var payload = JsonContent.Create(new { IdSession = _userState.IdSession });
-
-        var response = await _httpClient.PostAsync($"{_configuration["Url:ApiGateway"]}/api/auth/logout-session", payload);
-
-        
-        //* J'efface le UserState
-        _userState.ResetUserState();
-        
-        //* J'efface le user des identity
-        //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
-        var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
-        await authStateProvider.NotifyUserLogout();
-        
-        if (response.IsSuccessStatusCode)
-        {
-            _navigationManager.NavigateTo("/");
-
-        }
+        _serviceLogout.Logout(_userState.IdSession);
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System.Security.Claims;
-using MaClasse.Client.Services;
 using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 
-
-namespace Service.OAuth.Service;
+namespace MaClasse.Client.Services;
 
 public class UserService
 {
