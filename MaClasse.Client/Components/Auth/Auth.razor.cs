@@ -1,15 +1,11 @@
-using System.Security.Claims;
-using System.Security.Cryptography;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
 using MudBlazor;
-using Service.OAuth.Service;
 
 namespace MaClasse.Client.Components.Auth;
 
@@ -109,6 +105,7 @@ public partial class Auth : ComponentBase
                 Email = returnResponse.User.Email,
                 Name = returnResponse.User.Name,
                 Role = returnResponse.User.Role,
+                Zone = returnResponse.User.Zone,
                 GivenName = returnResponse.User.GivenName,
                 FamilyName = returnResponse.User.FamilyName,
                 Picture = returnResponse.User.Picture,
@@ -150,9 +147,15 @@ public partial class Auth : ComponentBase
         
         var result = await dialog.Result; 
         
-        if (!result.Canceled && result.Data is string role && !string.IsNullOrWhiteSpace(role))
+        if (!result.Canceled && result.Data is SignupDialogResult dialogResult)
         {
-            var payload = new { Role = role };
+            var payload = new SignupDialogResult
+                { 
+                    Role = dialogResult.Role,
+                    Zone = dialogResult.Zone
+                    
+                };
+            
             //* Requete vers le back pour compléter le profil
             var response = await _httpClient.PostAsJsonAsync(
                 $"{_configuration["Url:ApiGateway"]}/api/auth/finished-signup", payload);
@@ -169,6 +172,7 @@ public partial class Auth : ComponentBase
                     Email = returnResponse.User.Email,
                     Name = returnResponse.User.Name,
                     Role = returnResponse.User.Role,
+                    Zone = returnResponse.User.Zone,
                     GivenName = returnResponse.User.GivenName,
                     FamilyName = returnResponse.User.FamilyName,
                     Picture = returnResponse.User.Picture,

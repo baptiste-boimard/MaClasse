@@ -12,6 +12,7 @@ public class UserState
     public string Email { get; set; }
     public string Name { get; set; } 
     public string Role { get; set; } 
+    public string Zone { get; set; }
     public string GivenName { get; set; } 
     public string FamilyName { get; set; } 
     public string Picture { get; set; } 
@@ -25,6 +26,7 @@ public class UserState
         Email = userState.Email;
         Name = userState.Name;
         Role = userState.Role;
+        Zone = userState.Zone;
         GivenName = userState.GivenName;
         FamilyName = userState.FamilyName;
         Picture = userState.Picture;
@@ -44,6 +46,7 @@ public class UserState
         Email = "";
         Name = "";
         Role = "";
+        Zone = "";
         GivenName = "";
         FamilyName = "";
         Picture = "";

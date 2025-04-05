@@ -50,35 +50,4 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
         return Task.CompletedTask;
     }
-
-    // public override async Task<AuthenticationState> GetAuthenticationStateAsync()
-    // {
-    //     var context = _httpContextAccessor.HttpContext;
-    //     var sessionToken = context?.Request.Cookies["MaClasseAuth"];
-    //
-    //     if (string.IsNullOrEmpty(sessionToken))
-    //         return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        
-        // return await Task.FromResult(new AuthenticationState(_currentUser));
-
-        //* Appel à la base de données de session
-        //* Ajout des informations du user dans le UserState
-
-        //     var session = await _sessionRepository.GetSessionByToken(sessionToken);
-        //     if (session == null || session.Expiration < DateTime.UtcNow)
-        //         return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        //
-        //     var claims = new List<Claim>
-        //     {
-        //         new Claim(ClaimTypes.NameIdentifier, session.UserId.ToString()),
-        //         new Claim(ClaimTypes.Role, session.Role),
-        //         new Claim("session_token", session.Token)
-        //     };
-        //
-        //     var identity = new ClaimsIdentity(claims, "session");
-        //     var user = new ClaimsPrincipal(identity);
-        //
-        //     return new AuthenticationState(user);
-    //     return null;
-    // }
 }

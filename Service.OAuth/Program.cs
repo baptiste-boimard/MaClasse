@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;
-using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +14,6 @@ builder.Services.AddTransient<ServiceHashUrl>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
-builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<ValidateGoogleTokenService>();
 
 //* Gestion des cors

@@ -12,16 +12,21 @@ public partial class AuthDialog : ComponentBase
     public UserProfile? User { get; set; }
 
     public string roleSelection;
+    public string zoneSelection;
     public bool isClosed = false;
     
     private void TryValidate()
     {
-        if (string.IsNullOrWhiteSpace(roleSelection))
+        if (string.IsNullOrWhiteSpace(roleSelection) | string.IsNullOrWhiteSpace(zoneSelection))
         {
             return;
         }
         
-        MudDialog?.Close(DialogResult.Ok(roleSelection));
+        MudDialog?.Close(DialogResult.Ok(new SignupDialogResult
+        {
+            Role = roleSelection,
+            Zone = zoneSelection
+        }));
 
     }
 }

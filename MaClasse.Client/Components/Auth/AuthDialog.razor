@@ -19,11 +19,21 @@
                 </MudRadioGroup>
             </MudForm>
             <br/>
+            <p>Choisissez votre zone :</p>
+            <MudForm>
+                <MudRadioGroup @bind-Value="zoneSelection">
+                    <MudRadio Value="@("Zone A")">Zone A</MudRadio>
+                    <MudRadio Value="@("Zone B")">Zone B</MudRadio>
+                    <MudRadio Value="@("Zone C")">Zone C</MudRadio>
+                </MudRadioGroup>
+            </MudForm>
+            <br/>
+
             <p>Le rôle de Directeur/Directrice permet de visualiser les tableaux de bord des professeurs qui vous sont rattachés</p>
 
             <p>Après validation un n° d'idendifiant vous sera attribué pour permettre de vous rattacher à un/une Directeur/Directrice.</p>
             <p>Cet idendifiant est consultable depuis votre Profil.</p>
-            <p>Vous pourrez vous rattacher dans votre page de Profil.</p>
+            <p>Vous pourrez vous rattacher et changer de zone dans votre page de Profil.</p>
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="@TryValidate" Color="Color.Primary" Variant="Variant.Filled">Valider</MudButton>

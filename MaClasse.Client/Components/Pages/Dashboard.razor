@@ -21,48 +21,25 @@
         <p><strong>Email :</strong> @userInformation.Email</p>
         <p><strong>Name :</strong> @userInformation.Name</p>
         <p><strong>Role :</strong> @userInformation.Role</p>
+        <p><strong>Zone : </strong> @userInformation.Zone</p>
         <p><strong>GivenName :</strong> @userInformation.GivenName</p>
         <p><strong>FamilyName :</strong> @userInformation.FamilyName</p>
         <p><strong>Picture :</strong> @userInformation.Picture</p>
         <p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
         <p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
     </div>
-    @if (isLogged)
-    {
-    <div>
-        <MudButton
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            OnClick="@Logout">
-            Se déconnecter
-        </MudButton>
-    </div>
-    }
 </div>
 
 
 @code {
     private readonly UserState _userState;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _configuration;
-    private readonly NavigationManager _navigationManager;
     private readonly ServiceLogout _serviceLogout;
-    private bool isLogged = false;
 
     public Dashboard(
         UserState userState,
-        AuthenticationStateProvider authenticationStateProvider,
-        HttpClient httpClient,
-        IConfiguration configuration,
-        NavigationManager navigationManager,
         ServiceLogout serviceLogout)
     {
         _userState = userState;
-        _authenticationStateProvider = authenticationStateProvider;
-        _httpClient = httpClient;
-        _configuration = configuration;
-        _navigationManager = navigationManager;
         _serviceLogout = serviceLogout;
     }
 
@@ -78,15 +55,8 @@
         {
             //* Récupére les infos dans le UserState
             userInformation = _userState.GetUser();
-            //* Affiche le boutton de deconnexion
-            isLogged = true;
         }
         
         //! Gestion de l'erreur retour à la page de login
-    }
-
-    private async Task Logout()
-    {
-        _serviceLogout.Logout(_userState.IdSession);
     }
 }

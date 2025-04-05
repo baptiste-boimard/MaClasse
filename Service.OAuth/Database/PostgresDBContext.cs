@@ -27,6 +27,7 @@ public class PostgresDbContext : DbContext
             entity.Property(a => a.Email).IsRequired();
             entity.Property(a => a.Name).IsRequired();
             entity.Property(a => a.Role).IsRequired();
+            entity.Property(a => a.Zone).IsRequired();
             entity.Property(a => a.GivenName).IsRequired();
             entity.Property(a => a.FamilyName).IsRequired();
             entity.Property(a => a.Picture).IsRequired();

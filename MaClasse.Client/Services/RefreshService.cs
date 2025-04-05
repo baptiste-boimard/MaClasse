@@ -48,6 +48,7 @@ public class RefreshService
                 Email = returnResponse.User.Email,
                 Name = returnResponse.User.Name,
                 Role = returnResponse.User.Role,
+                Zone = returnResponse.User.Zone,
                 GivenName = returnResponse.User.GivenName,
                 FamilyName = returnResponse.User.FamilyName,
                 Picture = returnResponse.User.Picture,

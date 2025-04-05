@@ -1,10 +1,7 @@
-﻿using Google.Apis.Auth;
-using MaClasse.Shared.Models;
+﻿using MaClasse.Shared.Models;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
-using Service.OAuth.Repositories;
-using Service.OAuth.Service;
 
 namespace Service.OAuth.Controller;
 
@@ -86,15 +83,6 @@ public class AuthController: ControllerBase
             
             if (sessionSaveLogin != null)
             {
-                //* Envoi du cookie de session
-                Response.Cookies.Append("MaClasseAuth", sessionTokenLogin, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTimeOffset.UtcNow.AddHours(3)
-                });
-                
                 _returnResponse = new AuthReturn
                 {
                     IsNewUser = false,
@@ -134,7 +122,7 @@ public class AuthController: ControllerBase
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddHours(3)
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
             });
         
             _returnResponse = new AuthReturn
@@ -153,7 +141,7 @@ public class AuthController: ControllerBase
 
     [HttpPost]
     [Route("finished-signup")]
-    public async Task<IActionResult> FinishedSignUp([FromBody] CompleteProfileRequest request)
+    public async Task<IActionResult> FinishedSignUp([FromBody] SignupDialogResult result)
     {
         //* Récupérer la valeur du cookie
         var cookieValue = Request.Cookies["MaClasseAuth"];   
@@ -161,7 +149,7 @@ public class AuthController: ControllerBase
         //* Avec l'id de session on réucpére le userId
         var userSession = await _sessionRepository.GetUserIdByCookies(cookieValue);
 
-        userSession.Role = request.Role;
+        userSession.Role = result.Role;
         //* Je mets a jour mon cookies de Session avec le Role
         var updateSession = await _sessionRepository.UpdateSession(userSession);
 
@@ -171,6 +159,7 @@ public class AuthController: ControllerBase
         var updateUser = await _authRepository.GetOneUserByGoogleId(updateSession.UserId);
 
         updateUser.Role = updateSession.Role;
+        updateUser.Zone = result.Zone;
         updateUser.UpdatedAt = DateTime.UtcNow;
 
         //* Si j'ai bien un user j'update son role

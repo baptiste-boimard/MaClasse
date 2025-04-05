@@ -4,9 +4,7 @@ using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Server;
 using MudBlazor.Services;
-using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 

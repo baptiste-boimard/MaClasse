@@ -9,6 +9,7 @@ public class UserProfile
     [Required] [EmailAddress] [MaxLength(255)] public string Email { get; set; } = "";
     [Required] [MaxLength(255)] public string Name { get; set; } = "";
     [Required] [MaxLength(255)] public string Role { get; set; } = "";
+    [Required] [MaxLength(255)] public string Zone { get; set; } = "";
     [MaxLength(255)] public string GivenName { get; set; } = "";
     [MaxLength(255)] public string FamilyName { get; set; } = "";
     [MaxLength(255)] public string Picture { get; set; } = "";
