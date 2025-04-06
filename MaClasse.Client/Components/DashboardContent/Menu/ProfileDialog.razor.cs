@@ -29,6 +29,8 @@ public partial class ProfileDialog : ComponentBase
     public string Zone => _userState.Zone;
     public List<Rattachment> AsDirecteur => _userState.AsDirecteur;
     public List<Rattachment> AsProfesseur => _userState.AsProfesseur;
+    public string AddDirecteurValue;
+    public string AddProfesseurValue;
 
     public void ClosePolicy()
     {
@@ -57,11 +59,6 @@ public partial class ProfileDialog : ComponentBase
         }
     }
 
-    private void OnChipClicked(string role)
-    {
-        _userState.Role = role;
-    }
-
     private void SetZone(string zone)
     {
         _userState.Zone = zone;
@@ -70,5 +67,22 @@ public partial class ProfileDialog : ComponentBase
     private void SetRole(string role)
     {
         _userState.Role = role;
+    }
+
+    private async void AddRattachment()
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/auth/add-rattachment",
+            new RattachmentRequest
+            {   
+                IdSession = _userState.IdSession,
+                IdDirecteur = AddDirecteurValue,
+                IdProfesseur = AddProfesseurValue
+            });
+
+        if (response.IsSuccessStatusCode)
+        {
+            
+        }
     }
 }
