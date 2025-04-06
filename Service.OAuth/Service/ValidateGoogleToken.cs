@@ -1,6 +1,6 @@
 ﻿using Google.Apis.Auth;
 
-namespace MaClasse.Shared.Service;
+namespace Service.OAuth.Service;
 
 public class ValidateGoogleTokenService
 {

@@ -1,23 +1,21 @@
 ﻿@page "/dashboard"
-@using System.Security.Claims
-@using MaClasse.Client.Components.Auth
+@using MaClasse.Client.Components.DashboardContent.Menu
 @using MaClasse.Client.Services
 @using MaClasse.Client.States
-@using MaClasse.Shared.Models
 @using Microsoft.AspNetCore.Authorization
-@using MaClasse.Client.Components.Menu
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
-<TopMenu Picture="@userInformation!.Picture" Email="@userInformation.Email"/>
+<TopMenu />
 
 <h3>Dashboard</h3>
 <div>
     <div>
         <p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
-        <p><strong>IdSession :</strong> @userInformation!.Id</p>
+        <p><strong>IdSession :</strong> @userInformation!.IdSession</p>
         <p><strong>Id :</strong> @userInformation!.Id</p>
+        <p><strong>IdRole :</strong> @userInformation.IdRole</p>
         <p><strong>Email :</strong> @userInformation.Email</p>
         <p><strong>Name :</strong> @userInformation.Name</p>
         <p><strong>Role :</strong> @userInformation.Role</p>
@@ -27,20 +25,31 @@
         <p><strong>Picture :</strong> @userInformation.Picture</p>
         <p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
         <p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
+        <p><strong>AsDirecteur :</strong> @userInformation.AsDirecteur</p>
+        <ul>
+            @foreach (var directeur in userInformation.AsDirecteur)
+            {
+                <li>@directeur</li>
+            }
+        </ul>
+        <p><strong>AsProfesseur :</strong> @userInformation.AsProfesseur</p>
+        <ul>
+            @foreach (var prof in userInformation.AsProfesseur)
+            {
+                <li>@prof</li>
+            }
+        </ul>
     </div>
 </div>
 
 
 @code {
     private readonly UserState _userState;
-    private readonly ServiceLogout _serviceLogout;
 
     public Dashboard(
-        UserState userState,
-        ServiceLogout serviceLogout)
+        UserState userState)
     {
         _userState = userState;
-        _serviceLogout = serviceLogout;
     }
 
     private UserState? userInformation;

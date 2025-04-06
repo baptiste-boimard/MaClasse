@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using MaClasse.Client.Components;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
-using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor.Services;
 
@@ -22,9 +21,6 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Ajout des services MudBlazor
 builder.Services.AddMudServices();
-
-//* Service de Hash pour la gestion des erreurs lors du login ou inscription
-builder.Services.AddTransient<ServiceHashUrl>();
 
 //* Service de stockage du token
 builder.Services.AddScoped<ServiceAuthentication>();

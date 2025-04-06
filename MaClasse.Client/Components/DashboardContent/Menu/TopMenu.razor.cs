@@ -3,7 +3,7 @@ using MaClasse.Client.States;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace MaClasse.Client.Components.Menu;
+namespace MaClasse.Client.Components.DashboardContent.Menu;
 
 public partial class TopMenu : ComponentBase
 {
@@ -20,9 +20,10 @@ public partial class TopMenu : ComponentBase
         _serviceLogout = serviceLogout;
         _userState = userState;
     }
-    [Parameter] public string Picture { get; set; }
-    [Parameter] public string Email { get; set; }
 
+    public string Picture => _userState.Picture;
+    public string Email => _userState.Email;
+    
     public async Task OpenProfileDialog()
     {
         //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors

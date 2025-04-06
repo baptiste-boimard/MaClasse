@@ -1,4 +1,6 @@
-﻿namespace MaClasse.Client.States;
+﻿using MaClasse.Shared.Models;
+
+namespace MaClasse.Client.States;
 
 public class UserState
 {
@@ -9,6 +11,7 @@ public class UserState
     
     public string IdSession { get; set; }
     public string Id { get; set; } 
+    public string IdRole { get; set; }
     public string Email { get; set; }
     public string Name { get; set; } 
     public string Role { get; set; } 
@@ -18,11 +21,15 @@ public class UserState
     public string Picture { get; set; } 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public List<Rattachment> AsDirecteur { get; set; }
+    public List<Rattachment> AsProfesseur { get; set; }
+    
 
     public void SetUser(UserState userState)
     {
         IdSession = userState.IdSession;
         Id = userState.Id;
+        IdRole = userState.IdRole;
         Email = userState.Email;
         Name = userState.Name;
         Role = userState.Role;
@@ -32,6 +39,8 @@ public class UserState
         Picture = userState.Picture;
         CreatedAt = userState.CreatedAt;
         UpdatedAt = userState.UpdatedAt;
+        AsDirecteur = userState.AsDirecteur;
+        AsProfesseur = userState.AsProfesseur;
     }
 
     public UserState GetUser()
@@ -43,6 +52,7 @@ public class UserState
     {
         IdSession = "";
         Id = "";
+        IdRole = "";
         Email = "";
         Name = "";
         Role = "";
@@ -52,5 +62,7 @@ public class UserState
         Picture = "";
         CreatedAt = null;
         UpdatedAt = null;
+        AsDirecteur = new List<Rattachment>();
+        AsProfesseur = new List<Rattachment>();
     }
 }

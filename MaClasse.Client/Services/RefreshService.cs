@@ -39,21 +39,24 @@ public class RefreshService
         if (response.IsSuccessStatusCode)
         {
             var returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
-            _userService.AuthenticateUser(returnResponse.User);
+            _userService.AuthenticateUser(returnResponse.UserWithRattachment.UserProfile);
             
             var newUserState = new UserState
             {
                 IdSession = returnResponse.IdSession,
-                Id = returnResponse.User.Id,
-                Email = returnResponse.User.Email,
-                Name = returnResponse.User.Name,
-                Role = returnResponse.User.Role,
-                Zone = returnResponse.User.Zone,
-                GivenName = returnResponse.User.GivenName,
-                FamilyName = returnResponse.User.FamilyName,
-                Picture = returnResponse.User.Picture,
-                CreatedAt = returnResponse.User.CreatedAt,
-                UpdatedAt = returnResponse.User.UpdatedAt
+                Id = returnResponse.UserWithRattachment.UserProfile.Id,
+                IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
+                Email = returnResponse.UserWithRattachment.UserProfile.Email,
+                Name = returnResponse.UserWithRattachment.UserProfile.Name,
+                Role = returnResponse.UserWithRattachment.UserProfile.Role,
+                Zone = returnResponse.UserWithRattachment.UserProfile.Zone,
+                GivenName = returnResponse.UserWithRattachment.UserProfile.GivenName,
+                FamilyName = returnResponse.UserWithRattachment.UserProfile.FamilyName,
+                Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
+                CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
+                UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
+                AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
+                AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
             };
                 
             _userState.SetUser(newUserState);

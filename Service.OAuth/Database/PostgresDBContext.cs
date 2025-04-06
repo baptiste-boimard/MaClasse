@@ -16,6 +16,7 @@ public class PostgresDbContext : DbContext
     
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<SessionData> SessionDatas { get; set; }
+    public DbSet<Rattachment> Rattachments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,7 @@ public class PostgresDbContext : DbContext
         modelBuilder.Entity<UserProfile>(entity =>
         {
             entity.HasKey(a => a.Id);
+            entity.Property(a => a.IdRole).IsRequired();
             entity.Property(a => a.Email).IsRequired();
             entity.Property(a => a.Name).IsRequired();
             entity.Property(a => a.Role).IsRequired();
@@ -41,6 +43,13 @@ public class PostgresDbContext : DbContext
             entity.Property(a => a.UserId).IsRequired();
             entity.Property(a => a.Role);
             entity.Property(a => a.Expiration);
+        });
+
+        modelBuilder.Entity<Rattachment>(entity =>
+        {
+            entity.HasKey(a => a.IdGuid);
+            entity.Property(a => a.IdDirecteur).IsRequired();
+            entity.Property(a => a.IdProfesseur).IsRequired();
         });
     }
 }

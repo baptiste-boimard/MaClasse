@@ -1,0 +1,128 @@
+﻿<div style="border: #1E88E5 solid 1px;
+            border-radius: 0.8rem;
+            margin: 0.5rem;
+            margin-top: 2rem;">
+    <MudDialog>
+        <DialogContent>
+            <h4> Profil</h4>
+            <br/>
+            <p>Vous êtes inscrit sous le mail : <strong>@Email</strong></p>
+            <br/>
+            <p>Votre rôle est : <strong>@Role</strong></p>
+            <br/>
+            <div style="display: flex;
+                        justify-content: space-between">
+                <div>
+                    <MudChip T="string"
+                             Color="@(Role == "Professeur(e)" ? Color.Primary : Color.Default)"
+                             @onclick="@(() => SetRole("Professeur(e)"))">
+                        Professeur(e)
+                    </MudChip>
+
+                    <MudChip T="string"
+                             Color="@(Role == "Directeur/Directrice" ? Color.Primary : Color.Default)"
+                             @onclick="@(() => SetRole("Directeur/Directrice"))">
+                        Directeur/Directrice
+                    </MudChip>
+                </div>
+                
+                <MudButton
+                    title="Sauvegarder"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    OnClick="@ChangeProfil"
+                    Size="Size.Small">
+                    Sauvegarder
+                </MudButton>
+
+            </div>
+            <br/>
+            <p>Vous avez séléctionné : <strong>@Zone</strong></p>
+            <br/>
+            <div style="display: flex;
+                        justify-content: space-between">
+                <div>
+                    <MudChip T="string"
+                             Color="@(Zone == "Zone A" ? Color.Primary : Color.Default)"
+                             @onclick="@(() => SetZone("Zone A"))">
+                        Zone A
+                    </MudChip>
+
+                    <MudChip T="string"
+                             Color="@(Zone == "Zone B" ? Color.Primary : Color.Default)"
+                             @onclick="@(() => SetZone("Zone B"))">
+                        Zone B
+                    </MudChip>
+
+                    <MudChip T="string"
+                             Color="@(Zone == "Zone C" ? Color.Primary : Color.Default)"
+                             @onclick="@(() => SetZone("Zone C"))">
+                        Zone C
+                    </MudChip>
+                </div>
+                
+
+                <MudButton
+                    title="Sauvegarder"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    OnClick="@ChangeProfil"
+                    Size="Size.Small">
+                    Sauvegarder
+                </MudButton>
+            </div>
+            <br/>
+            
+            @if (Role == "Professeur(e)")
+            {
+                <p>Vous êtes rattaché aux Directeur/Directrice suivant : </p>
+                <br/>
+                <div>
+                    @* Je fais un foreach pour chaque directeur rattaché*@
+                    <MudTable Items="@AsProfesseur" Dense="true" Hover="true">
+                        <HeaderContent>
+                            <MudTh>N° d'utilisateur</MudTh>
+                            @* <MudTh>Nom</MudTh> *@
+                            @* <MudTh>Email</MudTh> *@
+
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Nr">@context.IdDirecteur</MudTd>
+                            @* <MudTd DataLabel="Sign">@context.FamillyName</MudTd> *@
+                            @* <MudTd DataLabel="Name">@context.Email</MudTd> *@
+                        </RowTemplate>
+                    </MudTable>
+                </div>
+            }
+            else
+            {
+                <p> Les Professeur(e) suivant vous sont rattachés : </p>
+                <br/>
+                <div>
+                    @* Je fais un foreach pour chaque directeur rattaché*@
+                    <MudTable Items="@AsDirecteur" Dense="true" Hover="true">
+                        <HeaderContent>
+                            <MudTh>N° d'utilisateur</MudTh>
+                            @* <MudTh>Nom</MudTh> *@
+                            @* <MudTh>Email</MudTh> *@
+
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Nr">@context.IdDirecteur</MudTd>
+                            @* <MudTd DataLabel="Sign">@context.FamillyName</MudTd> *@
+                            @* <MudTd DataLabel="Name">@context.Email</MudTd> *@
+                        </RowTemplate>
+                    </MudTable>
+                </div>
+            }
+            
+            
+        </DialogContent>
+        <DialogActions>
+            @* <MudButton OnClick="" Color="Color.Primary" Variant="Variant.Filled">Fermer</MudButton> *@
+        </DialogActions>
+    </MudDialog>
+</div>
+
+
+

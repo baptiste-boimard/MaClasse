@@ -1,7 +1,6 @@
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models;
-using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
@@ -14,7 +13,6 @@ public partial class Auth : ComponentBase
     private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
     private readonly IDialogService _dialogService;
-    private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
     private readonly IJSRuntime _jsRuntime;
     private readonly ServiceAuthentication _serviceAuthentication;
@@ -29,7 +27,6 @@ public partial class Auth : ComponentBase
         NavigationManager navigationManager, 
         HttpClient httpClient,
         IDialogService dialogService,
-        ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         IJSRuntime jsRuntime,
         ServiceAuthentication serviceAuthentication,
@@ -42,7 +39,6 @@ public partial class Auth : ComponentBase
         _navigationManager = navigationManager;
         _httpClient = httpClient;
         _dialogService = dialogService;
-        _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _jsRuntime = jsRuntime;
         _serviceAuthentication = serviceAuthentication;
@@ -95,22 +91,26 @@ public partial class Auth : ComponentBase
             await _protectedLocalStorage.SetAsync("MaClasseAuth", returnResponse.IdSession);
             
             //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
-            _userService.AuthenticateUser(returnResponse.User);
+            _userService.AuthenticateUser(returnResponse.UserWithRattachment.UserProfile);
             
             //* Enregistrement dans le UserState
             var newUserState = new UserState
             {
                 IdSession = returnResponse.IdSession,
-                Id = returnResponse.User.Id,
-                Email = returnResponse.User.Email,
-                Name = returnResponse.User.Name,
-                Role = returnResponse.User.Role,
-                Zone = returnResponse.User.Zone,
-                GivenName = returnResponse.User.GivenName,
-                FamilyName = returnResponse.User.FamilyName,
-                Picture = returnResponse.User.Picture,
-                CreatedAt = returnResponse.User.CreatedAt,
-                UpdatedAt = returnResponse.User.UpdatedAt
+                Id = returnResponse.UserWithRattachment.UserProfile.Id,
+                IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
+                Email = returnResponse.UserWithRattachment.UserProfile.Email,
+                Name = returnResponse.UserWithRattachment.UserProfile.Name,
+                Role = returnResponse.UserWithRattachment.UserProfile.Role,
+                Zone = returnResponse.UserWithRattachment.UserProfile.Zone,
+                GivenName = returnResponse.UserWithRattachment.UserProfile.GivenName,
+                FamilyName = returnResponse.UserWithRattachment.UserProfile.FamilyName,
+                Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
+                CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
+                UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
+                AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
+                AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
+                
             };
                 
             _userState.SetUser(newUserState);
@@ -118,7 +118,7 @@ public partial class Auth : ComponentBase
             //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
             if (returnResponse.IsNewUser)
             {
-                await OpenDialogAuth(returnResponse.User);
+                await OpenDialogAuth(returnResponse.UserWithRattachment.UserProfile);
             }
             else
             {
@@ -163,21 +163,24 @@ public partial class Auth : ComponentBase
             if (response.IsSuccessStatusCode)
             {   
                 returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
-                _userService.AuthenticateUser(returnResponse.User);
+                _userService.AuthenticateUser(returnResponse.UserWithRattachment.UserProfile);
 
                 var newUserState = new UserState
                 {
                     IdSession = returnResponse.IdSession,
-                    Id = returnResponse.User.Id,
-                    Email = returnResponse.User.Email,
-                    Name = returnResponse.User.Name,
-                    Role = returnResponse.User.Role,
-                    Zone = returnResponse.User.Zone,
-                    GivenName = returnResponse.User.GivenName,
-                    FamilyName = returnResponse.User.FamilyName,
-                    Picture = returnResponse.User.Picture,
-                    CreatedAt = returnResponse.User.CreatedAt,
-                    UpdatedAt = returnResponse.User.UpdatedAt
+                    Id = returnResponse.UserWithRattachment.UserProfile.Id,
+                    IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
+                    Email = returnResponse.UserWithRattachment.UserProfile.Email,
+                    Name = returnResponse.UserWithRattachment.UserProfile.Name,
+                    Role = returnResponse.UserWithRattachment.UserProfile.Role,
+                    Zone = returnResponse.UserWithRattachment.UserProfile.Zone,
+                    GivenName = returnResponse.UserWithRattachment.UserProfile.GivenName,
+                    FamilyName = returnResponse.UserWithRattachment.UserProfile.FamilyName,
+                    Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
+                    CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
+                    UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
+                    AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
+                    AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
                 };
                 
                 _userState.SetUser(newUserState);
@@ -235,7 +238,7 @@ public partial class Auth : ComponentBase
             MaxWidth = MaxWidth.Small,
         };
             //* Affichage de la boîte de dialogue
-            var dialog = await _dialogService.ShowAsync<Menu.ProfileDialog>("", options);
+            var dialog = await _dialogService.ShowAsync<DashboardContent.Menu.ProfileDialog>("", options);
             await dialog.Result;
             _dialogOpen = false;
     }

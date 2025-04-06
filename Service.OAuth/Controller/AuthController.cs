@@ -1,7 +1,7 @@
 ﻿using MaClasse.Shared.Models;
-using MaClasse.Shared.Service;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
+using Service.OAuth.Service;
 
 namespace Service.OAuth.Controller;
 
@@ -9,24 +9,27 @@ namespace Service.OAuth.Controller;
 [Route("api")]
 public class AuthController: ControllerBase
 {
-    private readonly ServiceHashUrl _serviceHashUrl;
     private readonly IConfiguration _configuration;
     private readonly ValidateGoogleTokenService _validateGoogleTokenService;
     private readonly IAuthRepository _authRepository;
     private readonly ISessionRepository _sessionRepository;
+    private readonly UserServiceRattachment _userServiceRattachment;
+    private readonly GenerateIdRole _generateIdRole;
 
     public AuthController(
-        ServiceHashUrl serviceHashUrl,
         IConfiguration configuration,
         ValidateGoogleTokenService validateGoogleTokenService,
         IAuthRepository authRepository,
-        ISessionRepository sessionRepository)
+        ISessionRepository sessionRepository,
+        UserServiceRattachment userServiceRattachment,
+        GenerateIdRole generateIdRole)
     {
-        _serviceHashUrl = serviceHashUrl;
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
         _authRepository = authRepository;
         _sessionRepository = sessionRepository;
+        _userServiceRattachment = userServiceRattachment;
+        _generateIdRole = generateIdRole;
     }
 
     private AuthReturn _returnResponse = new();
@@ -40,7 +43,7 @@ public class AuthController: ControllerBase
         {
             return Unauthorized("Token invalide.");
         }
-
+        
         var user = new UserProfile
         {
             Id = payload.Subject,
@@ -83,14 +86,10 @@ public class AuthController: ControllerBase
             
             if (sessionSaveLogin != null)
             {
-                _returnResponse = new AuthReturn
-                {
-                    IsNewUser = false,
-                    User = existingUser,
-                    IdSession = sessionSaveLogin.Token
-
-                }; 
-            
+                //* On rechercher les rattachements de l'utilisateur
+                _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
+                    existingUser, false, sessionSaveLogin.Token );
+               
                 return Ok(_returnResponse);
             }
 
@@ -98,6 +97,12 @@ public class AuthController: ControllerBase
         }
         
         //* Si l'utilisateur n'existe pas il faut le créer en BDD
+        
+        //* Création de l'idRole
+        var idRole = await _generateIdRole.GenerateIdAsync();
+        
+        user.IdRole = idRole;
+        
         var newUser = await _authRepository.AddUser(user);
         
         //* Création du token de session
@@ -124,13 +129,9 @@ public class AuthController: ControllerBase
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddMinutes(5)
             });
-        
-            _returnResponse = new AuthReturn
-            {
-                IsNewUser = true,
-                User = newUser,
-                IdSession = sessionSaveSignup.Token
-            };
+
+            _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
+                newUser, true, sessionSaveSignup.Token);
             
             return Ok(_returnResponse);
         }
@@ -167,12 +168,8 @@ public class AuthController: ControllerBase
 
         if (updatedUser != null)
         {
-            _returnResponse = new AuthReturn
-            {
-                IsNewUser = false,
-                User = updateUser,
-                IdSession = userSession.Token
-            };
+            _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
+                updatedUser, false, userSession.Token);
             
             return Ok(_returnResponse);
         }
@@ -200,14 +197,43 @@ public class AuthController: ControllerBase
 
         if (user == null) return Unauthorized();
 
-        _returnResponse = new AuthReturn
-        {
-            IsNewUser = false,
-            User = user,
-            IdSession = userSession.Token
-        };
+        _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
+            user, false, userSession.Token);
         
         return Ok(_returnResponse);
+    }
+
+    [HttpPost]
+    [Route("change-profil")]
+    public async Task<IActionResult> ChangeRole([FromBody] ChangeProfilRequest request)
+    {
+        var existingSession = await _sessionRepository.GetUserIdByCookies(request.IdSession);
+
+        if (existingSession != null)
+        {
+            var user = await _authRepository.GetOneUserByGoogleId(existingSession.UserId);
+
+            if (user != null)
+            {
+                user.Zone = request.Zone;
+                user.Role = request.Role;
+                user.UpdatedAt = DateTime.UtcNow;
+                var updatedUser = await _authRepository.UpdateUser(user);
+                
+                if (updatedUser != null)
+                {
+                    return Ok(updatedUser);
+                }
+                
+                return Unauthorized();
+            }
+            
+            return Unauthorized();
+        }
+        else
+        {
+            return Unauthorized();   
+        }
     }
 }
 

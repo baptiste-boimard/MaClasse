@@ -120,6 +120,8 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
       <_ContentIncludedByDefault Remove="Components\Routes.razor" />
       <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
+      <_ContentIncludedByDefault Remove="Components\Menu\ProfileDialog.razor" />
+      <_ContentIncludedByDefault Remove="Components\Menu\TopMenu.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -171,6 +173,15 @@
       <Content Update="Components\Auth\ProfileDialog.razor">
         <DependentUpon>PolicyDialog.razor.cs</DependentUpon>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Components\DashboardContent\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\DashboardContent\Menu\ProfileDialog.razor" />
+      <AdditionalFiles Include="Components\DashboardContent\Menu\TopMenu.razor" />
     </ItemGroup>
 
 </Project>

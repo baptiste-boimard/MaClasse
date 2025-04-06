@@ -32,6 +32,7 @@ public class AuthRepository : IAuthRepository
         var newUser = new UserProfile
         {
             Id = user.Id,
+            IdRole = user.IdRole,
             Email = user.Email,
             Name = user.Name,
             GivenName = user.GivenName,
@@ -52,5 +53,27 @@ public class AuthRepository : IAuthRepository
         await _postgresDbContext.SaveChangesAsync();
         
         return user;
+    }
+
+    public async Task<bool> CheckIdRole(string idRole)
+    {
+        var existingIdRole = 
+            await _postgresDbContext.UserProfiles.FirstOrDefaultAsync(
+                u => u.IdRole == idRole);
+        
+        if(existingIdRole == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public async Task<List<Rattachment>> GetRattachmentByIdRole(string IdRole)
+    {
+        var rattachments = await _postgresDbContext.Rattachments
+            .Where(r => r.IdDirecteur == IdRole || r.IdProfesseur == IdRole)
+            .ToListAsync();
+
+        return rattachments;
     }
 }
