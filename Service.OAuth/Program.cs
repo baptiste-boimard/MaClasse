@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 //* Ajout des interfaces et repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IRattachmentRepository, RattachementRepository>();
 
 //* Ajout des services
 builder.Services.AddScoped<ValidateGoogleTokenService>();

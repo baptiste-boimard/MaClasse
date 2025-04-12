@@ -75,71 +75,82 @@
             
             @if (Role == "Professeur(e)")
             {
-                <p>Vous êtes rattaché aux Directeur/Directrice suivant : </p>
-                <br/>
+                <p>Vous êtes rattaché aux N° de Directeur/Directrice suivant : </p>
                 <div>
-                    @* Je fais un foreach pour chaque directeur rattaché*@
-                    <MudTable Items="@AsDirecteur" Dense="true" Hover="true">
-                        <HeaderContent>
-                            <MudTh>N° d'utilisateur</MudTh>
-                            @* <MudTh>Nom</MudTh> *@
-                            @* <MudTh>Email</MudTh> *@
-
-                        </HeaderContent>
-                        <RowTemplate>
-                            @foreach(var direct in AsDirecteur)
-                            {
-                                <MudTd DataLabel="Nr">@direct</MudTd>
-                            }
-                            @* <MudTd DataLabel="Sign">@context.FamillyName</MudTd> *@
-                            @* <MudTd DataLabel="Name">@context.Email</MudTd> *@
-                        </RowTemplate>
-                    </MudTable>
+                    <div>
+                        @foreach(var direct in AsProfesseur)
+                        {
+                            <MudChip T="string">@direct.IdDirecteur</MudChip>
+                        }
+                    </div>
                 </div>
                 <br/>
                 <p>Se rattaché a un Directeur/Directrice ?</p>
-                <br/>
-                <div>
-                    <MudTextField @bind-Value="AddDirecteurValue" Label="N° d'identifiant du Professeur(e)" Variant="Variant.Text"></MudTextField>
-                    <MudButton
-                        OnClick="@AddRattachment"
-                        Variant="Variant.Filled"
-                        Color="Color.Primary"
-                        Size="Size.Small">
-                            Ajouter
-                    </MudButton>
+                <div style="display: flex;
+                            flex-direction: row;    
+                            justify-content: space-between;
+                            align-items: baseline;">
 
+                    <MudTextField
+                        @bind-Value="AddDirecteurValue"
+                        Label="N° d'identifiant du Directeur/Directrice"
+                        Variant="Variant.Text"
+                        Style="width: 75%" />
+                        
+                    <MudButton
+                    OnClick="@AddRattachment"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    Size="Size.Small">
+                    Ajouter
+                    </MudButton>
                 </div>
                 <br/>
+                <p> Se détacher d'un Directeur/Directrice</p>
+                <div style="display: flex;
+                            flex-direction: row;    
+                            justify-content: space-between;
+                            align-items: baseline;">
+                    
+                    <MudTextField
+                        @bind-Value="DeleteDirecteurValue"
+                        Label="N° d'identifiant du Directeur/Directrice"
+                        Variant="Variant.Text"
+                        Style="width: 75%"/>
+
+                    <MudButton
+                        OnClick="@DeleteRattachment"
+                        Variant="Variant.Filled"
+                        Color="Color.Error"
+                        Size="Size.Small">
+                        Supprimer
+                    </MudButton>
+                </div>
             }
             else
             {
-                <p> Les Professeur(e) suivant vous sont rattachés : </p>
+                <p> Les N° de Professeur(e) suivant vous sont rattachés : </p>
                 <br/>
                 <div>
-                    @* Je fais un foreach pour chaque directeur rattaché*@
-                    <MudTable Items="@AsProfesseur" Dense="true" Hover="true">
-                        <HeaderContent>
-                            <MudTh>N° d'utilisateur</MudTh>
-                            @* <MudTh>Nom</MudTh> *@
-                            @* <MudTh>Email</MudTh> *@
-
-                        </HeaderContent>
-                        <RowTemplate>
-                            @foreach(var prof in AsProfesseur)
-                            {
-                                <MudTd DataLabel="Nr">@prof</MudTd>
-                            }
-                            @* <MudTd DataLabel="Sign">@context.FamillyName</MudTd> *@
-                            @* <MudTd DataLabel="Name">@context.Email</MudTd> *@
-                        </RowTemplate>
-                    </MudTable>
+                    <div>
+                        @foreach(var prof in AsDirecteur)
+                        {
+                            <MudChip T="string">@prof.IdProfesseur</MudChip>
+                        }
+                    </div>
                 </div>
                 <br/>
                 <p>Rattaché un nouveau Professeur(e) ?</p>
-                <br/>
-                <div>
-                    <MudTextField @bind-Value="AddProfesseurValue" Label="N° d'identifiant du Professeur(e)" Variant="Variant.Text"></MudTextField>
+                <div style="display: flex;
+                            flex-direction: row;    
+                            justify-content: space-between;
+                            align-items: baseline;">
+                    <MudTextField
+                        @bind-Value="AddProfesseurValue"
+                        Label="N° d'identifiant du Professeur(e)"
+                        Variant="Variant.Text"
+                        Style="width: 75%" />
+
                     <MudButton
                         OnClick="@AddRattachment"
                         Variant="Variant.Filled"
@@ -149,13 +160,34 @@
                     </MudButton>
                 </div>
                 <br/>
+                <p> Se détacher d'un Professeur(e)</p>
+
+                <div style="display: flex;
+                            flex-direction: row;    
+                            justify-content: space-between;
+                            align-items: baseline;">
+                    <MudTextField
+                        @bind-Value="DeleteProfesseurValue"
+                        Label="N° d'identifiant du Professeur(e)"
+                        Variant="Variant.Text"
+                        Style="width: 75%" />
+                        
+                    <MudButton
+                        OnClick="@DeleteRattachment"
+                        Variant="Variant.Filled"
+                        Color="Color.Error"
+                        Size="Size.Small">
+                        Supprimer
+                    </MudButton>
+                </div>
+
+
             }
-            
-            
         </DialogContent>
-        <DialogActions>
-            @* <MudButton OnClick="" Color="Color.Primary" Variant="Variant.Filled">Fermer</MudButton> *@
-        </DialogActions>
+        @* <br/> *@
+        @* <DialogActions> *@
+        @*     $1$ <MudButton OnClick="" Color="Color.Primary" Variant="Variant.Filled">Fermer</MudButton> #1# *@
+        @* </DialogActions> *@
     </MudDialog>
 </div>
 

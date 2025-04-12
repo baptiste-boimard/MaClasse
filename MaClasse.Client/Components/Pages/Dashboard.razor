@@ -25,18 +25,18 @@
         <p><strong>Picture :</strong> @userInformation.Picture</p>
         <p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
         <p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
-        <p><strong>AsDirecteur :</strong> @userInformation.AsDirecteur</p>
+        <p><strong>AsDirecteur :</strong> Liste des Prof rattachés</p>
         <ul>
             @foreach (var directeur in userInformation.AsDirecteur)
             {
-                <li>@directeur</li>
+                <li>@directeur.IdProfesseur</li>
             }
         </ul>
-        <p><strong>AsProfesseur :</strong> @userInformation.AsProfesseur</p>
+        <p><strong>AsProfesseur :</strong> Liste des Direct rattachés</p>
         <ul>
             @foreach (var prof in userInformation.AsProfesseur)
             {
-                <li>@prof</li>
+                <li>@prof.IdDirecteur</li>
             }
         </ul>
     </div>
@@ -56,6 +56,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        
+        //* Mise a jour automatique lorsque le UserState change
+        _userState.OnChange += HandleUserStateChanged;
+        
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         
@@ -67,5 +71,16 @@
         }
         
         //! Gestion de l'erreur retour à la page de login
+    }
+    
+    private void HandleUserStateChanged()
+    {
+        userInformation = _userState.GetUser();
+        InvokeAsync(StateHasChanged); // Toujours invoquer dans le bon contexte
+    }
+    
+    public void Dispose()
+    {
+        _userState.OnChange -= HandleUserStateChanged;
     }
 }

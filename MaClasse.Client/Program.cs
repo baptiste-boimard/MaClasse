@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ServiceLogout>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<UserState>();
+builder.Services.AddSingleton<UserState>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée

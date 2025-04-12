@@ -21,8 +21,8 @@ public class UserServiceRattachment
         var userWithRattachment = new UserWithRattachment
         {
             UserProfile = user,
-            AsDirecteur = rattachments.Where(r => r.IdDirecteur == "Directeur").ToList(),
-            AsProfesseur = rattachments.Where(r => r.IdProfesseur == "Professeur").ToList()
+            AsDirecteur = rattachments.Where(r => r.IdDirecteur == user.IdRole).ToList(),
+            AsProfesseur = rattachments.Where(r => r.IdProfesseur == user.IdRole).ToList()
         };
 
         var authReturn = new AuthReturn

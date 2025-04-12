@@ -1,5 +1,5 @@
-﻿using MaClasse.Client.States;
-using MaClasse.Shared;
+﻿using System.Net;
+using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -8,6 +8,7 @@ namespace MaClasse.Client.Components.DashboardContent.Menu;
 
 public partial class ProfileDialog : ComponentBase
 {
+    private readonly IDialogService _dialogService;
     private readonly UserState _userState;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
@@ -15,11 +16,13 @@ public partial class ProfileDialog : ComponentBase
     public ProfileDialog(
         UserState userState,
         HttpClient httpClient,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IDialogService dialogService)
     {
         _userState = userState;
         _httpClient = httpClient;
         _configuration = configuration;
+        _dialogService = dialogService;
     }
     
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
@@ -30,7 +33,9 @@ public partial class ProfileDialog : ComponentBase
     public List<Rattachment> AsDirecteur => _userState.AsDirecteur;
     public List<Rattachment> AsProfesseur => _userState.AsProfesseur;
     public string AddDirecteurValue;
+    public string DeleteDirecteurValue;
     public string AddProfesseurValue;
+    public string DeleteProfesseurValue;
 
     public void ClosePolicy()
     {
@@ -82,7 +87,86 @@ public partial class ProfileDialog : ComponentBase
 
         if (response.IsSuccessStatusCode)
         {
+            var result = await response.Content.ReadFromJsonAsync<List<Rattachment>>();
+            
+            _userState.SetAsDirecteur(result
+                .Where(r => r.IdDirecteur == _userState.IdRole)
+                .ToList());
+            
+            _userState.SetAsProfesseur(result
+                .Where(r => r.IdProfesseur == _userState.IdRole)
+                .ToList());
+            
+            //* Ouverture d'une popup avec le message de succes
+            var message = await response.Content.ReadAsStringAsync();
+            
+            var parameters = new DialogParameters
+            {
+                ["Message"] = "Rattachement effectué avec succès",
+                ["Result"] = "Success"
+            };  
+            
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+            
+            //* Affichage de la boîte de dialogue
+            var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
+            await dialog.Result;
+            
+            //! Quand elle se ferme je reset le contenu de l'input
+            
+            ClosePolicy();
+        }
+
+        if (response.StatusCode == HttpStatusCode.Conflict)
+        {
+            //* Ouverture d'une popup avec le message d'erreur
+            var message = await response.Content.ReadAsStringAsync();
+            
+            var parameters = new DialogParameters
+            {
+                ["Message"] = message,
+                ["Result"] = "Error"
+
+            };  
+            
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+            
+            //* Affichage de la boîte de dialogue
+            var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Erreur de Rattachement", parameters, options);
+            await dialog.Result;
+            
+            //! Quand elle se ferme je reset le contenu de l'input
+        }
+    }
+
+    private async void DeleteRattachment()
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/auth/delete-rattachment",
+            new RattachmentRequest
+            {   
+                IdSession = _userState.IdSession,
+                IdDirecteur = DeleteDirecteurValue,
+                IdProfesseur = DeleteProfesseurValue
+            });
+
+        if (response.IsSuccessStatusCode)
+        {
             
         }
+        
+        //! Quand elle se ferme je reset le contenu de l'input
     }
 }

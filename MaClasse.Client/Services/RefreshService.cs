@@ -55,7 +55,7 @@ public class RefreshService
                 Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
                 CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
                 UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
-                AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
+                AsDirecteur = _userState.SetAsDirecteur(returnResponse.UserWithRattachment.AsDirecteur),
                 AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
             };
                 

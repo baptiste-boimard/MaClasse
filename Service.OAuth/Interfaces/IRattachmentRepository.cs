@@ -4,6 +4,8 @@ namespace Service.OAuth.Interfaces;
 
 public interface IRattachmentRepository
 {
-    Task<List<Rattachment>> GetRattachment(string idProfesseur);
+    Task<List<Rattachment>> GetRattachmentProf(string idRoleUser);
+    Task<List<Rattachment>> GetRattachmentDirect(string idRoleUser);
+    Task<List<Rattachment>> GetRattachment(Rattachment rattachment);
     Task<Rattachment> AddRattachment(Rattachment rattachment);
 }

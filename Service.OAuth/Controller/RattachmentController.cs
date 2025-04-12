@@ -39,23 +39,74 @@ public class RattachmentController: ControllerBase
                     //* J'ajoute dans la table Rattachment l'idRole du user et l'idDirecteur
                     var rattachment = new Rattachment
                     {
-                        IdProfesseur = user.Id,
+                        IdProfesseur = user.IdRole,
                         IdDirecteur = request.IdDirecteur
                     };
+                    
+                    //* Recherche si le directeur existe
+                    var existingDirect = await _rattachmentRepository.GetRattachmentDirect(request.IdDirecteur);
+                    
+                    if (existingDirect.Count == 0)
+                    {
+                        return Conflict("Ce Directeur/Directrice n'est pas inscrit sur la plateforme");
+                    }
+                    
+                    //* Recherche un tel rattachement existe deja
+                    var existingRattachment = await _rattachmentRepository.GetRattachment(rattachment);
+
+                    if (existingRattachment != null)
+                    {
+                        //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
+                        return Conflict("Vous êtes déjà rattaché à cette personne");
+                        
+                    }
                     
                     var addRattachment = await _rattachmentRepository.AddRattachment(rattachment); 
                     
                     if (addRattachment != null)
                     {
                         //* On renvoi la liste des directeur mise a jour
-                        var listRattachment = await _rattachmentRepository.GetRattachment(user.Id);
+                        var listRattachment = await _rattachmentRepository.GetRattachmentDirect(user.IdRole);
                         
-                        return Ok(addRattachment);
+                        return Ok(listRattachment);
                     }
                 }
-                
-                
-                
+
+                if (request.IdProfesseur != null)
+                {
+                    var rattachement = new Rattachment
+                    {
+                        IdProfesseur = request.IdProfesseur,
+                        IdDirecteur = user.IdRole
+                    };
+                    
+                    //* Recherche si le directeur existe
+                    var existingDirect = await _rattachmentRepository.GetRattachmentProf(request.IdProfesseur);
+                    
+                    if (existingDirect.Count == 0)
+                    {
+                        return Conflict("Ce Professeur(e) n'est pas inscrit sur la plateforme");
+                    }
+                    
+                    //* Recherche un tel rattachement existe deja
+                    var existingRattachment = await _rattachmentRepository.GetRattachment(rattachement);
+
+                    if (existingRattachment != null)
+                    {
+                        //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
+                        return Conflict("Vous êtes déjà rattaché à cette personne");
+                        
+                    }
+                    
+                    var addRattachment = await _rattachmentRepository.AddRattachment(rattachement);
+
+                    if (addRattachment != null)
+                    {
+                        var listRattachment = await _rattachmentRepository.GetRattachmentProf(user.IdRole);
+
+                        return Ok(listRattachment);
+                    }
+                }
                 
                 return Unauthorized();
             }

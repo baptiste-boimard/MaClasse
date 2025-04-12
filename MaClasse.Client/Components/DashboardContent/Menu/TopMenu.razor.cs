@@ -38,6 +38,8 @@ public partial class TopMenu : ComponentBase
         //* Affichage de la boîte de dialogue
         var dialog = await _dialogService.ShowAsync<ProfileDialog>("", options);
         await dialog.Result;
+        
+        StateHasChanged();
     }
 
     public async Task Logout()
