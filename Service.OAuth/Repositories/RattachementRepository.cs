@@ -53,4 +53,20 @@ public class RattachementRepository : IRattachmentRepository
         return rattachment;
     }
     
+    public async Task<Rattachment> DeleteRattachment(Rattachment rattachment)
+    {
+        // var existingRattachment = await _postgresDbContext.Rattachments
+        //     .FirstOrDefaultAsync(r => r.IdProfesseur == rattachment.IdProfesseur && r.IdDirecteur == rattachment.IdDirecteur);
+
+        // if (existingRattachment != null)
+        // {
+            _postgresDbContext.Rattachments.Remove(rattachment);
+            await _postgresDbContext.SaveChangesAsync();
+
+            return rattachment;
+        // }
+
+        return null;
+    }
+    
 }

@@ -97,9 +97,7 @@ public partial class ProfileDialog : ComponentBase
                 .Where(r => r.IdProfesseur == _userState.IdRole)
                 .ToList());
             
-            //* Ouverture d'une popup avec le message de succes
-            var message = await response.Content.ReadAsStringAsync();
-            
+            //* Ouverture d'une popup avec le message de success
             var parameters = new DialogParameters
             {
                 ["Message"] = "Rattachement effectué avec succès",
@@ -147,6 +145,8 @@ public partial class ProfileDialog : ComponentBase
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Erreur de Rattachement", parameters, options);
             await dialog.Result;
             
+            ClosePolicy();
+            
             //! Quand elle se ferme je reset le contenu de l'input
         }
     }
@@ -164,9 +164,67 @@ public partial class ProfileDialog : ComponentBase
 
         if (response.IsSuccessStatusCode)
         {
+            var result = await response.Content.ReadFromJsonAsync<List<Rattachment>>();
             
+            _userState.SetAsDirecteur(result
+                .Where(r => r.IdDirecteur == _userState.IdRole)
+                .ToList());
+            
+            _userState.SetAsProfesseur(result
+                .Where(r => r.IdProfesseur == _userState.IdRole)
+                .ToList());
+            
+            //* Ouverture d'une popup avec le message de success
+            var parameters = new DialogParameters
+            {
+                ["Message"] = "Rattachement supprimé avec succès",
+                ["Result"] = "Success"
+            };
+            
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+            
+            //* Affichage de la boîte de dialogue
+            var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
+            await dialog.Result;
+            
+            //! Quand elle se ferme je reset le contenu de l'input
+            
+            ClosePolicy();
         }
-        
-        //! Quand elle se ferme je reset le contenu de l'input
+
+        if (response.StatusCode == HttpStatusCode.Conflict)
+        {
+            //* Ouverture d'une popup avec le message d'erreur
+            var message = await response.Content.ReadAsStringAsync();
+
+            var parameters = new DialogParameters
+            {
+                ["Message"] = message,
+                ["Result"] = "Error"
+            };
+
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+
+            //* Affichage de la boîte de dialogue
+            var dialog =
+                await _dialogService.ShowAsync<ErrorRattachmentDialog>("Erreur de Rattachement", parameters, options);
+            await dialog.Result;
+
+            //! Quand elle se ferme je reset le contenu de l'input
+            
+            ClosePolicy();
+        }
     }
 }

@@ -120,4 +120,77 @@ public class RattachmentController: ControllerBase
             return Unauthorized();   
         }
     }
+    
+    [HttpPost]
+    [Route("delete-rattachment")]
+    public async Task<IActionResult> DeleteRattachment([FromBody] RattachmentRequest request)
+    {
+        var existingSession = await _sessionRepository.GetUserIdByCookies(request.IdSession);
+
+        if (existingSession != null)
+        {
+            var user = await _authRepository.GetOneUserByGoogleId(existingSession.UserId);
+
+            if (user != null)
+            {
+                if (request.IdDirecteur != null)
+                {
+                    var rattachment = new Rattachment
+                    {
+                        IdProfesseur = user.IdRole,
+                        IdDirecteur = request.IdDirecteur
+                    };
+                    
+                    //* Vérification que ce rattachement existe
+                    var existingRattachment = await _rattachmentRepository.GetRattachment(rattachment);
+                    
+                    if (existingRattachment.Count == 0)
+                    {
+                        return Conflict("Ce rattachement n'existe pas");
+                    }
+                    
+                    var deleteRattachment = await _rattachmentRepository.DeleteRattachment(rattachment);
+
+                    if (deleteRattachment != null)
+                    {
+                        var listRattachment = await _rattachmentRepository.GetRattachmentProf(user.IdRole);
+                        
+                        return Ok(listRattachment);
+                    }
+                }
+
+                if (request.IdProfesseur != null)
+                {
+                    var rattachement = new Rattachment
+                    {
+                        IdProfesseur = request.IdProfesseur,
+                        IdDirecteur = user.IdRole
+                    };
+                    
+                    //* Vérification que ce rattachement existe
+                    var existingRattachment = await _rattachmentRepository.GetRattachment(rattachement);
+                    
+                    if (existingRattachment.Count == 0)
+                    {
+                        return Conflict("Ce rattachement n'existe pas");
+                    }
+                    
+                    var deleteRattachment = await _rattachmentRepository.DeleteRattachment(existingRattachment.FirstOrDefault());
+
+                    if (deleteRattachment != null)
+                    {
+                        var listRattachment = await _rattachmentRepository.GetRattachmentProf(user.IdRole);
+                        
+                        return Ok(listRattachment);
+                    }
+                }
+                
+                return Unauthorized();
+            }
+            
+            return Unauthorized();
+        }
+        
+        return Unauthorized();
+    }
 }
