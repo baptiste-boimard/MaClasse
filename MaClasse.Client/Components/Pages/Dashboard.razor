@@ -3,84 +3,51 @@
 @using MaClasse.Client.Services
 @using MaClasse.Client.States
 @using Microsoft.AspNetCore.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 
 @attribute [Authorize]
 
+<PageTitle>Dashboard</PageTitle>
+
 <TopMenu />
 
-<h3>Dashboard</h3>
-<div>
+<div style="display: flex;
+            flex-direction: row">
     <div>
-        <p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
-        <p><strong>IdSession :</strong> @userInformation!.IdSession</p>
-        <p><strong>Id :</strong> @userInformation!.Id</p>
-        <p><strong>IdRole :</strong> @userInformation.IdRole</p>
-        <p><strong>Email :</strong> @userInformation.Email</p>
-        <p><strong>Name :</strong> @userInformation.Name</p>
-        <p><strong>Role :</strong> @userInformation.Role</p>
-        <p><strong>Zone : </strong> @userInformation.Zone</p>
-        <p><strong>GivenName :</strong> @userInformation.GivenName</p>
-        <p><strong>FamilyName :</strong> @userInformation.FamilyName</p>
-        <p><strong>Picture :</strong> @userInformation.Picture</p>
-        <p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
-        <p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
-        <p><strong>AsDirecteur :</strong> Liste des Prof rattachés</p>
-        <ul>
-            @foreach (var directeur in userInformation.AsDirecteur)
-            {
-                <li>@directeur.IdProfesseur</li>
-            }
-        </ul>
-        <p><strong>AsProfesseur :</strong> Liste des Direct rattachés</p>
-        <ul>
-            @foreach (var prof in userInformation.AsProfesseur)
-            {
-                <li>@prof.IdDirecteur</li>
-            }
-        </ul>
+        <h3>Dashboard</h3>
+        <div>
+            <div>
+                <p>✅ Vous êtes connecté et avez accès à cette page sécurisée.</p>
+                <p><strong>IdSession :</strong> @userInformation!.IdSession</p>
+                <p><strong>Id :</strong> @userInformation!.Id</p>
+                <p><strong>IdRole :</strong> @userInformation.IdRole</p>
+                <p><strong>Email :</strong> @userInformation.Email</p>
+                <p><strong>Name :</strong> @userInformation.Name</p>
+                <p><strong>Role :</strong> @userInformation.Role</p>
+                <p><strong>Zone : </strong> @userInformation.Zone</p>
+                <p><strong>GivenName :</strong> @userInformation.GivenName</p>
+                <p><strong>FamilyName :</strong> @userInformation.FamilyName</p>
+                <p><strong>Picture :</strong> @userInformation.Picture</p>
+                <p><strong>CreatedAt :</strong> @userInformation.CreatedAt</p>
+                <p><strong>UpdatedAt :</strong> @userInformation.UpdatedAt</p>
+                <p><strong>AsDirecteur :</strong> Liste des Prof rattachés</p>
+                <ul>
+                    @foreach (var directeur in userInformation.AsDirecteur)
+                    {
+                        <li>@directeur.IdProfesseur</li>
+                    }
+                </ul>
+                <p><strong>AsProfesseur :</strong> Liste des Direct rattachés</p>
+                <ul>
+                    @foreach (var prof in userInformation.AsProfesseur)
+                    {
+                        <li>@prof.IdDirecteur</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        Coucou ici c'est le Dashboard
     </div>
 </div>
-
-
-@code {
-    private readonly UserState _userState;
-
-    public Dashboard(
-        UserState userState)
-    {
-        _userState = userState;
-    }
-
-    private UserState? userInformation;
-
-    protected override async Task OnInitializedAsync()
-    {
-        
-        //* Mise a jour automatique lorsque le UserState change
-        _userState.OnChange += HandleUserStateChanged;
-        
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        
-
-        if (user.Identity is { IsAuthenticated: true })
-        {
-            //* Récupére les infos dans le UserState
-            userInformation = _userState.GetUser();
-        }
-        
-        //! Gestion de l'erreur retour à la page de login
-    }
-    
-    private void HandleUserStateChanged()
-    {
-        userInformation = _userState.GetUser();
-        InvokeAsync(StateHasChanged); // Toujours invoquer dans le bon contexte
-    }
-    
-    public void Dispose()
-    {
-        _userState.OnChange -= HandleUserStateChanged;
-    }
-}
