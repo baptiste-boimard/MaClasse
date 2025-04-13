@@ -12,7 +12,10 @@
                             margin-bottom: 0;">
                     <p style="margin-bottom: 0"> @Message</p>
                 </div>
-                <MudButton @onclick="@CloseErrorRattachment" Variant="Variant.Filled" Color="Color.Error">
+                <MudButton 
+                    @onclick="@CloseErrorRattachment" 
+                    Variant="Variant.Filled" 
+                    Color="@(Message == "Error" ? Color.Error : Color.Primary)">
                     Fermer
                 </MudButton>
             </div>

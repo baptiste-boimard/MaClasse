@@ -44,9 +44,10 @@ public class RattachmentController: ControllerBase
                     };
                     
                     //* Recherche si le directeur existe
-                    var existingDirect = await _rattachmentRepository.GetRattachmentDirect(request.IdDirecteur);
+                    // var existingDirect = await _rattachmentRepository.GetRattachmentDirect(request.IdDirecteur);
+                    var isexistingDirect = await _authRepository.CheckIdRole(request.IdDirecteur);
                     
-                    if (existingDirect.Count == 0)
+                    if (!isexistingDirect)
                     {
                         return Conflict("Ce Directeur/Directrice n'est pas inscrit sur la plateforme");
                     }
@@ -54,7 +55,7 @@ public class RattachmentController: ControllerBase
                     //* Recherche un tel rattachement existe deja
                     var existingRattachment = await _rattachmentRepository.GetRattachment(rattachment);
 
-                    if (existingRattachment != null)
+                    if (existingRattachment.Count > 0)
                     {
                         //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
                         return Conflict("Vous êtes déjà rattaché à cette personne");
@@ -81,9 +82,10 @@ public class RattachmentController: ControllerBase
                     };
                     
                     //* Recherche si le directeur existe
-                    var existingDirect = await _rattachmentRepository.GetRattachmentProf(request.IdProfesseur);
+                    // var existingDirect = await _rattachmentRepository.GetRattachmentProf(request.IdProfesseur);
+                    var isexistingProf = await _authRepository.CheckIdRole(request.IdProfesseur);
                     
-                    if (existingDirect.Count == 0)
+                    if (!isexistingProf)
                     {
                         return Conflict("Ce Professeur(e) n'est pas inscrit sur la plateforme");
                     }
@@ -91,7 +93,7 @@ public class RattachmentController: ControllerBase
                     //* Recherche un tel rattachement existe deja
                     var existingRattachment = await _rattachmentRepository.GetRattachment(rattachement);
 
-                    if (existingRattachment != null)
+                    if (existingRattachment.Count > 0)
                     {
                         //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
                         return Conflict("Vous êtes déjà rattaché à cette personne");
