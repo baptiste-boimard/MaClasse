@@ -1,0 +1,38 @@
+﻿<div style="border-radius: 0.8rem; 
+            margin: 0.5rem;
+            margin-top: 2rem;
+            border: 1px solid #FF4B5C">
+    <MudDialog>
+        <DialogContent>
+            <div style="display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    align-items: center;">
+                <div style="display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        margin-bottom: 0;">
+                    <p style="margin-bottom: 0"> @Message</p>
+                </div>
+                <MudButton
+                    @onclick="@Confirm"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    Style="margin-right: 1rem">
+                    Valider
+                </MudButton>
+                <MudButton
+                    @onclick="@Cancel"
+                    Variant="Variant.Filled"
+                    Color="Color.Error">
+                    Annuler
+                </MudButton>
+            </div>
+        </DialogContent>
+    </MudDialog>
+</div>
+
+
+
+

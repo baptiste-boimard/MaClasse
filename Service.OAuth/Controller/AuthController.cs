@@ -236,7 +236,40 @@ public class AuthController: ControllerBase
         }
     }
     
-    
+    [HttpPost]
+    [Route("delete-user")]
+    public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
+    {
+        var existingSession = await _sessionRepository.GetUserIdByCookies(request.IdSession);
+        
+        if (existingSession != null)
+        {
+            var user = await _authRepository.GetOneUserByGoogleId(existingSession.UserId);
+            
+            //* je supprime la session
+            var deleteSession = await _sessionRepository.DeleteSessionData(existingSession);
+            
+            if (deleteSession == null) return Unauthorized();
+            
+            if (user != null)
+            {
+                var deletedUser = await _authRepository.DeleteUser(user);
+                
+                if (deletedUser != null)
+                {
+                    return Ok(deletedUser);
+                }
+                
+                return NotFound();
+            }
+            
+            return Unauthorized();
+        }
+        else
+        {
+            return Unauthorized();   
+        }
+    }
 }
 
 

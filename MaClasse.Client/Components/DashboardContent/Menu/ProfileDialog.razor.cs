@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Components;
@@ -9,6 +10,8 @@ namespace MaClasse.Client.Components.DashboardContent.Menu;
 public partial class ProfileDialog : ComponentBase
 {
     private readonly IDialogService _dialogService;
+    private readonly ServiceLogout _serviceLogout;
+    private readonly NavigationManager _navigationManager;
     private readonly UserState _userState;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
@@ -17,12 +20,16 @@ public partial class ProfileDialog : ComponentBase
         UserState userState,
         HttpClient httpClient,
         IConfiguration configuration,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        ServiceLogout serviceLogout,
+        NavigationManager navigationManager)
     {
         _userState = userState;
         _httpClient = httpClient;
         _configuration = configuration;
         _dialogService = dialogService;
+        _serviceLogout = serviceLogout;
+        _navigationManager = navigationManager;
     }
     
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
@@ -115,10 +122,6 @@ public partial class ProfileDialog : ComponentBase
             //* Affichage de la boîte de dialogue
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
             await dialog.Result;
-            
-            //! Quand elle se ferme je reset le contenu de l'input
-            
-            ClosePolicy();
         }
 
         if (response.StatusCode == HttpStatusCode.Conflict)
@@ -130,7 +133,6 @@ public partial class ProfileDialog : ComponentBase
             {
                 ["Message"] = message,
                 ["Result"] = "Error"
-
             };  
             
             var options = new DialogOptions
@@ -144,11 +146,9 @@ public partial class ProfileDialog : ComponentBase
             //* Affichage de la boîte de dialogue
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Erreur de Rattachement", parameters, options);
             await dialog.Result;
-            
-            ClosePolicy();
-            
-            //! Quand elle se ferme je reset le contenu de l'input
         }
+        
+            ResetInput();
     }
 
     private async void DeleteRattachment()
@@ -192,10 +192,6 @@ public partial class ProfileDialog : ComponentBase
             //* Affichage de la boîte de dialogue
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
             await dialog.Result;
-            
-            //! Quand elle se ferme je reset le contenu de l'input
-            
-            ClosePolicy();
         }
 
         if (response.StatusCode == HttpStatusCode.Conflict)
@@ -221,10 +217,79 @@ public partial class ProfileDialog : ComponentBase
             var dialog =
                 await _dialogService.ShowAsync<ErrorRattachmentDialog>("Erreur de Rattachement", parameters, options);
             await dialog.Result;
-
-            //! Quand elle se ferme je reset le contenu de l'input
-            
-            ClosePolicy();
         }
+
+            ResetInput();
+    }
+
+    private void ResetInput()
+    {
+        AddDirecteurValue = String.Empty;
+        DeleteDirecteurValue = String.Empty;
+        AddProfesseurValue = String.Empty;
+        DeleteProfesseurValue = String.Empty;
+        
+        StateHasChanged();
+
+    }
+
+    private async Task DeleteUser()
+    {
+        //* ouverture d'une popup de confirmation
+        var parameters = new DialogParameters
+        {
+            ["Message"] = "Êtes-vous sûr de vouloir supprimer votre compte ?",
+        };
+        
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true
+        };
+        
+        var dialog = await _dialogService.ShowAsync<ConfirmDeleteDialog>("Confirmation de suppression", parameters, options);
+        
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            var response = await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/auth/delete-user",
+                new DeleteUserRequest
+                {   
+                    IdSession = _userState.IdSession,
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                //* Avec reset des données user
+                _serviceLogout.Logout(_userState.IdSession);
+            
+                //* ouverture d'une popup de succès et redirection vers la page de login
+                var  dialogParameters= new DialogParameters
+                {
+                    ["Message"] = "Votre compte a été supprimé avec succès",
+                    ["Result"] = "Success"
+
+                };
+                
+                var dialogOptions = new DialogOptions
+                {
+                    CloseOnEscapeKey = true,
+                    CloseButton = true,
+                    MaxWidth = MaxWidth.Small,
+                    FullWidth = true
+                };
+                
+                var dialogSuccess = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès de la suppression", dialogParameters, dialogOptions);
+                await dialogSuccess.Result;
+                
+                _navigationManager.NavigateTo("/");
+            }
+        }
+        
+        
     }
 }

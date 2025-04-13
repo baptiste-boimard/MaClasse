@@ -76,4 +76,12 @@ public class AuthRepository : IAuthRepository
 
         return rattachments;
     }
+
+    public async Task<UserProfile> DeleteUser(UserProfile user)
+    {
+        _postgresDbContext.UserProfiles.Remove(user);
+        await _postgresDbContext.SaveChangesAsync();
+
+        return user;
+    } 
 }

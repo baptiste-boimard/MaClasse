@@ -21,7 +21,7 @@ public class RattachmentController: ControllerBase
         _authRepository = authRepository;
         _rattachmentRepository = rattachmentRepository;
     }
-    
+
     [HttpPost]
     [Route("add-rattachment")]
     public async Task<IActionResult> AddRattachment([FromBody] RattachmentRequest request)
@@ -34,7 +34,7 @@ public class RattachmentController: ControllerBase
 
             if (user != null)
             {
-                if (request.IdDirecteur != null)
+                if (!string.IsNullOrWhiteSpace(request.IdDirecteur))
                 {
                     //* J'ajoute dans la table Rattachment l'idRole du user et l'idDirecteur
                     var rattachment = new Rattachment
@@ -42,16 +42,15 @@ public class RattachmentController: ControllerBase
                         IdProfesseur = user.IdRole,
                         IdDirecteur = request.IdDirecteur
                     };
-                    
+
                     //* Recherche si le directeur existe
-                    // var existingDirect = await _rattachmentRepository.GetRattachmentDirect(request.IdDirecteur);
                     var isexistingDirect = await _authRepository.CheckIdRole(request.IdDirecteur);
-                    
+
                     if (!isexistingDirect)
                     {
                         return Conflict("Ce Directeur/Directrice n'est pas inscrit sur la plateforme");
                     }
-                    
+
                     //* Recherche un tel rattachement existe deja
                     var existingRattachment = await _rattachmentRepository.GetRattachment(rattachment);
 
@@ -59,68 +58,72 @@ public class RattachmentController: ControllerBase
                     {
                         //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
                         return Conflict("Vous êtes déjà rattaché à cette personne");
-                        
+
                     }
-                    
-                    var addRattachment = await _rattachmentRepository.AddRattachment(rattachment); 
-                    
+
+                    var addRattachment = await _rattachmentRepository.AddRattachment(rattachment);
+
                     if (addRattachment != null)
                     {
                         //* On renvoi la liste des directeur mise a jour
                         var listRattachment = await _rattachmentRepository.GetRattachmentDirect(user.IdRole);
-                        
+
                         return Ok(listRattachment);
                     }
                 }
 
-                if (request.IdProfesseur != null)
+                if (!string.IsNullOrWhiteSpace(request.IdProfesseur))
                 {
-                    var rattachement = new Rattachment
-                    {
-                        IdProfesseur = request.IdProfesseur,
-                        IdDirecteur = user.IdRole
-                    };
-                    
-                    //* Recherche si le directeur existe
-                    // var existingDirect = await _rattachmentRepository.GetRattachmentProf(request.IdProfesseur);
-                    var isexistingProf = await _authRepository.CheckIdRole(request.IdProfesseur);
-                    
-                    if (!isexistingProf)
-                    {
-                        return Conflict("Ce Professeur(e) n'est pas inscrit sur la plateforme");
-                    }
-                    
-                    //* Recherche un tel rattachement existe deja
-                    var existingRattachment = await _rattachmentRepository.GetRattachment(rattachement);
 
-                    if (existingRattachment.Count > 0)
+                    //* J'ajoute dans la table Rattachment l'idRole du user et l'idProfesseur
                     {
-                        //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
-                        return Conflict("Vous êtes déjà rattaché à cette personne");
-                        
-                    }
-                    
-                    var addRattachment = await _rattachmentRepository.AddRattachment(rattachement);
+                        var rattachement = new Rattachment
+                        {
+                            IdProfesseur = request.IdProfesseur,
+                            IdDirecteur = user.IdRole
+                        };
 
-                    if (addRattachment != null)
-                    {
-                        var listRattachment = await _rattachmentRepository.GetRattachmentProf(user.IdRole);
+                        //* Recherche si le professeur existe
+                        var isexistingProf = await _authRepository.CheckIdRole(request.IdProfesseur);
 
-                        return Ok(listRattachment);
+                        if (!isexistingProf)
+                        {
+                            return Conflict("Ce Professeur(e) n'est pas inscrit sur la plateforme");
+                        }
+
+                        //* Recherche un tel rattachement existe deja
+                        var existingRattachment = await _rattachmentRepository.GetRattachment(rattachement);
+
+                        if (existingRattachment.Count > 0)
+                        {
+                            //* Envoi d'un message d'erreur pour dire que ce rattachement existe déjà
+                            return Conflict("Vous êtes déjà rattaché à cette personne");
+
+                        }
+
+                        var addRattachment = await _rattachmentRepository.AddRattachment(rattachement);
+
+                        if (addRattachment != null)
+                        {
+                            var listRattachment = await _rattachmentRepository.GetRattachmentProf(user.IdRole);
+
+                            return Ok(listRattachment);
+                        }
                     }
+
+                    return Unauthorized();
                 }
-                
+
                 return Unauthorized();
             }
-            
-            return Unauthorized();
+            else
+            {
+                return Unauthorized();
+            }
         }
-        else
-        {
-            return Unauthorized();   
-        }
+        return Unauthorized();
     }
-    
+
     [HttpPost]
     [Route("delete-rattachment")]
     public async Task<IActionResult> DeleteRattachment([FromBody] RattachmentRequest request)
