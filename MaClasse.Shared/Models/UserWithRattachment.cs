@@ -5,4 +5,5 @@ public class UserWithRattachment
     public UserProfile UserProfile { get; set; }
     public List<Rattachment> AsDirecteur { get; set; }
     public List<Rattachment> AsProfesseur { get; set; }
+    public string? AccessToken { get; set; }
 }

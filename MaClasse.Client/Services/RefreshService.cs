@@ -43,6 +43,7 @@ public class RefreshService
             
             var newUserState = new UserState
             {
+                AccessToken = returnResponse.UserWithRattachment.AccessToken,
                 IdSession = returnResponse.IdSession,
                 Id = returnResponse.UserWithRattachment.UserProfile.Id,
                 IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,

@@ -4,4 +4,5 @@ public class SignupDialogResult
 {
     public string Role { get; set; }
     public string Zone { get; set; }
+    public string AccessToken { get; set; }
 }

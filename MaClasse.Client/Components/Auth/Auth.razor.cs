@@ -96,6 +96,7 @@ public partial class Auth : ComponentBase
             //* Enregistrement dans le UserState
             var newUserState = new UserState
             {
+                AccessToken = returnResponse.UserWithRattachment.AccessToken,
                 IdSession = returnResponse.IdSession,
                 Id = returnResponse.UserWithRattachment.UserProfile.Id,
                 IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
@@ -152,7 +153,8 @@ public partial class Auth : ComponentBase
             var payload = new SignupDialogResult
                 { 
                     Role = dialogResult.Role,
-                    Zone = dialogResult.Zone
+                    Zone = dialogResult.Zone,
+                    AccessToken = _userState.AccessToken,
                     
                 };
             
@@ -167,6 +169,7 @@ public partial class Auth : ComponentBase
 
                 var newUserState = new UserState
                 {
+                    AccessToken = returnResponse.UserWithRattachment.AccessToken,
                     IdSession = returnResponse.IdSession,
                     Id = returnResponse.UserWithRattachment.UserProfile.Id,
                     IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
@@ -238,7 +241,7 @@ public partial class Auth : ComponentBase
             MaxWidth = MaxWidth.Small,
         };
             //* Affichage de la boîte de dialogue
-            var dialog = await _dialogService.ShowAsync<DashboardContent.Menu.ProfileDialog>("", options);
+            var dialog = await _dialogService.ShowAsync<ProfileDialog>("", options);
             await dialog.Result;
             _dialogOpen = false;
     }

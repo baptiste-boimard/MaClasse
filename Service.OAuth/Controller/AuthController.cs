@@ -37,7 +37,7 @@ public class AuthController: ControllerBase
     [HttpPost]
     [Route("google-login")]
     public async Task<IActionResult> GoogleLogin(GoogleTokenRequest request)
-    { 
+    {
         var payload = await _validateGoogleTokenService.ValidateGoogleToken(request.Token);
         if (payload == null)
         {
@@ -45,7 +45,7 @@ public class AuthController: ControllerBase
         }
         
         var user = new UserProfile
-        {
+        {   
             Id = payload.Subject,
             Email = payload.Email,
             Name = payload.Name,
@@ -88,7 +88,7 @@ public class AuthController: ControllerBase
             {
                 //* On rechercher les rattachements de l'utilisateur
                 _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                    existingUser, false, sessionSaveLogin.Token );
+                    existingUser, false, sessionSaveLogin.Token, request.Token );
                
                 return Ok(_returnResponse);
             }
@@ -131,7 +131,7 @@ public class AuthController: ControllerBase
             });
 
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                newUser, true, sessionSaveSignup.Token);
+                newUser, true, sessionSaveSignup.Token, request.Token);
             
             return Ok(_returnResponse);
         }
@@ -169,7 +169,7 @@ public class AuthController: ControllerBase
         if (updatedUser != null)
         {
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                updatedUser, false, userSession.Token);
+                updatedUser, false, userSession.Token, result.AccessToken);
             
             return Ok(_returnResponse);
         }
@@ -198,7 +198,7 @@ public class AuthController: ControllerBase
         if (user == null) return Unauthorized();
 
         _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-            user, false, userSession.Token);
+            user, false, userSession.Token, request.Token);
         
         return Ok(_returnResponse);
     }

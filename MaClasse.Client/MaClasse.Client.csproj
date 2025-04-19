@@ -12,6 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+        <PackageReference Include="Google.Apis.Calendar.v3" Version="1.69.0.3746" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.2" />
@@ -173,10 +175,6 @@
       <Content Update="Components\Auth\ProfileDialog.razor">
         <DependentUpon>PolicyDialog.razor.cs</DependentUpon>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Components\DashboardContent\" />
     </ItemGroup>
 
     <ItemGroup>

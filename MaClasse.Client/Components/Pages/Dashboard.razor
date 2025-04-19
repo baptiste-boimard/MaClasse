@@ -1,8 +1,7 @@
 ﻿@page "/dashboard"
 @using MaClasse.Client.Components.DashboardContent.Menu
-@using MaClasse.Client.Services
-@using MaClasse.Client.States
 @using Microsoft.AspNetCore.Authorization
+@using MaClasse.Client.Components.DashboardContent.Calendar
 @* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 
 @attribute [Authorize]
@@ -12,7 +11,8 @@
 <TopMenu />
 
 <div style="display: flex;
-            flex-direction: row">
+            flex-direction: row;
+            justify-content: space-between">
     <div>
         <h3>Dashboard</h3>
         <div>
@@ -47,7 +47,10 @@
             </div>
         </div>
     </div>
-    <div>
-        Coucou ici c'est le Dashboard
+    <div style="display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-content: flex-end">
+        <Calendar />
     </div>
 </div>

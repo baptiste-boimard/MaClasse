@@ -11,6 +11,7 @@ public class UserState
 
     public event Action OnChange;
 
+    public string AccessToken { get; set; }
     public string IdSession { get; set; }
     public string Id { get; set; }
     public string IdRole { get; set; }
@@ -29,6 +30,7 @@ public class UserState
 
     public void SetUser(UserState userState)
     {
+        AccessToken = userState.AccessToken;
         IdSession = userState.IdSession;
         Id = userState.Id;
         IdRole = userState.IdRole;
@@ -52,6 +54,7 @@ public class UserState
 
     public void ResetUserState()
     {
+        AccessToken = "";
         IdSession = "";
         Id = "";
         IdRole = "";

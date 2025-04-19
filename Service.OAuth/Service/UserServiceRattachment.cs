@@ -14,7 +14,11 @@ public class UserServiceRattachment
         _authRepository = authRepository;
     }
 
-    public async Task<AuthReturn?> GetUserWithRattachment(UserProfile user, bool isNewUser, string idSession)
+    public async Task<AuthReturn?> GetUserWithRattachment(
+        UserProfile user,
+        bool isNewUser,
+        string idSession,
+        string? AccesToken)
     {
         var rattachments = await _authRepository.GetRattachmentByIdRole(user.IdRole);
         
@@ -22,9 +26,10 @@ public class UserServiceRattachment
         {
             UserProfile = user,
             AsDirecteur = rattachments.Where(r => r.IdDirecteur == user.IdRole).ToList(),
-            AsProfesseur = rattachments.Where(r => r.IdProfesseur == user.IdRole).ToList()
+            AsProfesseur = rattachments.Where(r => r.IdProfesseur == user.IdRole).ToList(),
+            AccessToken = AccesToken
         };
-
+        
         var authReturn = new AuthReturn
         {
             IsNewUser = isNewUser,

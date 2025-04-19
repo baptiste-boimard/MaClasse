@@ -7,6 +7,8 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<GoogleCalendarService>();
 builder.Services.AddScoped<ServiceLogout>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<UserService>();
