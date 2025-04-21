@@ -4,11 +4,11 @@ using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor.Services;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<GoogleCalendarService>();
 builder.Services.AddScoped<ServiceLogout>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<UserService>();
@@ -20,6 +20,9 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 // {
 //     options.DetailedErrors = true;
 // });
+
+//* Ajout des services de Radzen Blazor
+builder.Services.AddRadzenComponents();
 
 //* Ajout des services MudBlazor
 builder.Services.AddMudServices();

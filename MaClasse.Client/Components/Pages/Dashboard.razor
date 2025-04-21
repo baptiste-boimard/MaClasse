@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @using MaClasse.Client.Components.DashboardContent.Menu
+@using MaClasse.Client.Components.DashboardContent.Calendar
 @using Microsoft.AspNetCore.Authorization
 @using MaClasse.Client.Components.DashboardContent.Calendar
 @* @inject AuthenticationStateProvider AuthenticationStateProvider *@
@@ -51,6 +52,7 @@
                 flex-direction: column;
                 justify-content: flex-start;
                 align-content: flex-end">
-        <Calendar />
+        @* <Calendar /> *@
+        <Scheduler />
     </div>
 </div>

@@ -21,7 +21,6 @@ public partial class AddEventDialog : ComponentBase
         {
             NewEvent.Start = SelectedDate.Value.Date + StartTime.Value;
             NewEvent.End = SelectedDate.Value.Date + EndTime.Value;
-
             MudDialog.Close(DialogResult.Ok(NewEvent));
         }
     }

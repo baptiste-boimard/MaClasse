@@ -1,65 +1,63 @@
 ﻿@using System.Globalization
 
-<div style="max-height: calc(100vh - 250px); overflow-y: auto;">
-    <table class="mud-table w-full">
-        <thead style="position: sticky; top: 0; z-index: 2; background-color: white;">
-        <tr style="height: 5rem;">
-            <th style="min-width: 5rem;"></th>
-            @foreach (var day in WeekDays)
-            {
-                <th class="px-4 text-center align-middle"
-                    style="
-                           padding: 0 !important;
-                           width: 7rem;">
-                    <div style="display: flex; 
-                                flex-direction: column; 
-                                align-items: center;">
-                        <div>@day.ToString("dddd", new CultureInfo("fr-FR"))</div>
-                        <div>@day.ToString("dd", new CultureInfo("fr-FR"))</div>
-                        <div>@day.ToString("MMMM", new CultureInfo("fr-FR"))</div>
-                    </div>
-                </th>
-            }
-        </tr>
-        </thead>
+<div class="calendar-grid"
+     style="display: grid;
+            grid-template-columns: 5rem repeat(7, 6rem);
+            grid-template-rows: 3rem repeat(12, 5rem);
+            position: relative;
+            width: 100%;">
 
-        <tbody>
-            <tr>
-                <td colspan="@((WeekDays.Count() + 1))" style="height: 0.75rem;"></td>
-            </tr>
+    @foreach (var (day, index) in WeekDays.Select((d, i) => (d, i)))
+    {
+        <div style="grid-column: @(index + 2); grid-row: 1; text-align: center;">
+            <div>@day.ToString("dddd", new CultureInfo("fr-FR"))</div>
+            <div>@day.ToString("dd MMMM", new CultureInfo("fr-FR"))</div>
+        </div>
+    }
 
-            @foreach (var hour in Hours)
-            {
-                <tr style="height: 5rem;">
-                    <td style="
-                            min-width: 5rem;
-                            vertical-align: top;">
-                        <p style="margin-top: -0.6rem">@hour:00</p>
-                    </td>
+    @foreach (var (hour, i) in Hours.Select((h, i) => (h, i)))
+    {
+        <div style="grid-column: 1; grid-row: @(i + 2); padding-top: 1rem;">
+            @hour:00
+        </div>
+    }
 
-                    @foreach (var day in WeekDays)
-                    {
-                        <td class="px-2"
-                            style="
-                                vertical-align: top; 
-                                border-top: 1px solid #e0e0e0;">
-                            <div style="margin-top: 0.25rem;">
-                                @foreach (var ev in Events.Where(e =>
-                                              e.Start?.Date == day.Date &&
-                                              e.Start?.Hour == hour))
-                                {
-                                    <MudPaper Class="p-2 mb-1 bg-primary text-white rounded"
-                                              Style="min-width: 10rem; min-height: 3rem;">
-                                        <b>@ev.Title</b><br/>
-                                        @ev.Start?.ToString("HH:mm") - @ev.End?.ToString("HH:mm")<br/>
-                                        <small>@ev.Location</small>
-                                    </MudPaper>
-                                }
-                            </div>
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
+    @foreach (var ev in Events)
+    {
+        var start = ev.Start ?? DateTime.Now;
+        var end = ev.End ?? start.AddHours(1);
+
+        // ✅ Correction ici : comparaison sur .Date pour éviter les erreurs liées à l'heure
+        var dayIndex = WeekDays.ToList().FindIndex(d => d.Date == start.Date);
+        var startHourIndex = Hours.ToList().FindIndex(h => h == start.Hour);
+
+        if (dayIndex == -1 || startHourIndex == -1) continue;
+
+        var topOffset = GetTopOffset(start);
+        var heightRem = GetHeight(start, end);
+
+        var top = topOffset.ToString("F2", CultureInfo.InvariantCulture);
+        var height = heightRem.ToString("F2", CultureInfo.InvariantCulture);
+        var left = $"calc(6rem * {dayIndex})";
+
+        var style = $"grid-column: {dayIndex + 2}; " +
+                    $"grid-row: {startHourIndex + 2}; " +
+                    $"position: absolute; " +
+                    $"margin-top: {top}rem; " +
+                    $"height: {height}rem; " +
+                    $"left: {left}; " +
+                    $"width: 5.5rem; " +
+                    $"padding: 0.25rem; " +
+                    $"box-sizing: border-box; " +
+                    $"z-index: 5;";
+
+        <div style="@style">
+            <MudPaper Class="p-2 bg-primary text-white rounded" Style="height: 100%;">
+                <b>@ev.Title</b><br />
+                @ev.Start?.ToString("HH:mm") - @ev.End?.ToString("HH:mm")<br />
+                <small>@ev.Location</small>
+            </MudPaper>
+        </div>
+    }
+
 </div>

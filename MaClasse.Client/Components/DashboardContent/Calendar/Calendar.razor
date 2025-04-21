@@ -1,7 +1,7 @@
 ﻿<MudPaper Class="p-4">
     
     <div style="display: flex; flex-direction: row">
-        <MudButton OnClick="() => SelectedDate = DateTime.Today" Variant="Variant.Text" Color="Color.Primary">
+        <MudButton OnClick="() => SelectedDate = DateTime.Today" Variant="MudBlazor.Variant.Text" Color="Color.Primary">
             Aujourd’hui
         </MudButton>
 
@@ -39,7 +39,7 @@
                 T="string"
                 OnClick="@(() => IsWeekView = false)"
                 Color="Color.Primary"
-                Variant="@(!IsWeekView ? Variant.Filled : Variant.Outlined)"
+                Variant="@(!IsWeekView ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
                 Class="rounded-pill"
                 DisableRipple="true">
                 Journée
@@ -49,7 +49,7 @@
                 T="string"
                 OnClick="@(() => IsWeekView = true)"
                 Color="Color.Primary"
-                Variant="@(IsWeekView ? Variant.Filled : Variant.Outlined)"
+                Variant="@(IsWeekView ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
                 Class="rounded-pill"
                 DisableRipple="true">
                 Semaine
