@@ -1,23 +1,59 @@
-﻿@using MaClasse.Shared.Models
-<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
-    <RadzenStack Gap="1rem">
-        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap">
-            <RadzenLabel Text="Title" Style="width: 4rem;" />
-            <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" />
-            <RadzenRequiredValidator Component="Text" Text="Title is required" />
-        </RadzenStack>
-        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap">
-            <RadzenLabel Text="Start" Style="width: 4rem;" />
-            <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" />
-            <RadzenRequiredValidator Component="Start" Text="Start is required" />
-        </RadzenStack>
-        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap">
-            <RadzenLabel Text="End" Style="width: 4rem;" />
-            <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" />
-            <RadzenRequiredValidator Component="End" Text="End is required" />
-        </RadzenStack>
-        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.End" >
-            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Save" />
-        </RadzenStack>
-    </RadzenStack>
-</RadzenTemplateForm>
+﻿@* @using MaClasse.Shared.Models *@
+@* <RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit> *@
+@*     <RadzenStack Gap="1rem"> *@
+@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
+@*             <RadzenLabel Text="Title" Style="width: 4rem;" /> *@
+@*             <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" /> *@
+@*             <RadzenRequiredValidator Component="Text" Text="Title is required" /> *@
+@*         </RadzenStack> *@
+@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
+@*             <RadzenLabel Text="Start" Style="width: 4rem;" /> *@
+@*             <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" /> *@
+@*             <RadzenRequiredValidator Component="Start" Text="Start is required" /> *@
+@*         </RadzenStack> *@
+@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
+@*             <RadzenLabel Text="End" Style="width: 4rem;" /> *@
+@*             <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" /> *@
+@*             <RadzenRequiredValidator Component="End" Text="End is required" /> *@
+@*         </RadzenStack> *@
+@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.End" > *@
+@*             <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Save" /> *@
+@*         </RadzenStack> *@
+@*     </RadzenStack> *@
+@* </RadzenTemplateForm> *@
+
+@using MaClasse.Shared.Models
+@inherits ComponentBase
+
+<MudText Typo="Typo.h6">Ajouter un rendez-vous</MudText>
+
+<MudTextField Label="Titre" @bind-Value="model.Text" />
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Début (Date)" @bind-Date="tempStartDate" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker 
+            Label="Début (Heure)" 
+            @bind-Time="tempStartTime"
+            MinuteSelectionStep="5" />
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Fin (Date)" @bind-Date="tempEndDate" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker 
+            Label="Fin (Heure)" 
+            @bind-Time="tempEndTime"
+            MinuteSelectionStep="5" />
+    </MudItem>
+</MudGrid>
+
+<MudStack Row Spacing="2" Class="mt-4">
+    <MudButton Color="Color.Primary" OnClick="Submit">Enregistrer</MudButton>
+    <MudButton Variant="MudBlazor.Variant.Outlined" OnClick="Cancel">Annuler</MudButton>
+</MudStack>

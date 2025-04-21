@@ -1,12 +1,15 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components.Authorization;
 using MaClasse.Client.Components;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ServiceLogout>();
@@ -66,6 +69,13 @@ builder.Services.AddRazorComponents()
 var app = builder.Build();
 
 app.UseCors("AllowAll"); // Applique la politique CORS dans l'app
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("fr-FR"),
+    SupportedCultures = new [] { new CultureInfo("fr-FR") },
+    SupportedUICultures =  new [] { new CultureInfo("fr-FR") },
+});
 
 app.UseDeveloperExceptionPage();
 

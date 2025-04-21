@@ -1,44 +1,124 @@
-﻿@using MaClasse.Shared.Models
+﻿@using System.Globalization
+@using MaClasse.Shared.Models
+@using Variant = MudBlazor.Variant
 
-<MudPaper Class="d-flex align-center justify-between px-4 py-2" Style="border-bottom: 1px solid #ccc;">
-    <!-- Navigation -->
-    <MudStack Direction="Row" AlignItems="center" Spacing="1">
-        <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="@GoToPrevious" />
-        <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="@GoToNext" />
-    </MudStack>
+<div style="
+        display: flex;
+        flex-direction: column; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 16px; 
+        border-bottom: 1px solid #ccc;
+        width: @schedulerWidth;">
+    <div>
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Secondary"
+                   OnClick="@GoToToday">
+            Aujourd'hui
+        </MudButton>
 
-    <!-- Date affichée -->
-    <MudText Typo="Typo.h6">@currentDate.ToString("dd/MM/yyyy")</MudText>
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Secondary"
+                   OnClick="@(() => SetSchedulerView(0))">
+            Jour
+        </MudButton>
 
-    <!-- Vue sélectionnée -->
-    <MudToggleIconButtonGroup @bind-SelectedIndex="selectedViewIndex" Exclusive="true" Color="Primary">
-        <MudToggleIconButton Icon="@Icons.Material.Filled.ViewDay" />
-        <MudToggleIconButton Icon="@Icons.Material.Filled.ViewWeek" />
-    </MudToggleIconButtonGroup>
-</MudPaper>
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Secondary"
+                   OnClick="@(() => SetSchedulerView(1))">
+            Semaine
+        </MudButton>
+    </div>
 
-<RadzenScheduler @ref=@scheduler
-                 SlotRender=@OnSlotRender 
-                 style="height: 768px; width: 700px"
-                 TItem="Appointment" 
-                 Data=@appointments 
-                 StartProperty="Start" 
-                 EndProperty="End" 
-                 ShowHeader=@showHeader
-                 TextProperty="Text" 
-                 SelectedIndex="0"
-                 SlotSelect=@OnSlotSelect 
-                 AppointmentSelect=@OnAppointmentSelect 
-                 AppointmentRender=@OnAppointmentRender 
-                 DaySelect="@OnDaySelect"
-                 AppointmentMove=@OnAppointmentMove >
-    <RadzenDayView />
-    <RadzenWeekView />
-</RadzenScheduler>
+    <div style="display: flex; flex-direction: row; align-items: center;">
+        <MudIconButton Icon="@Icons.Material.Filled.CalendarToday"
+                       Color="Color.Primary"
+                       OnClick="@(() => datePickerOpen = true)" />
+        
+        <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="@GoToPrevious"/>
+        
+        <MudText Typo="Typo.h6">@DisplayedDateLabel</MudText>
+        
+        <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="@GoToNext"/>
 
-@* /* Permet de masquer les boutons de navigation du calendrier */ *@
+        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                       Color="Color.Primary"
+                       OnClick="() => OpenNewAppointment()"
+                       Style="margin-left: 0.5rem;" />
+    </div>
+</div>
+
+@if (datePickerOpen)
+{
+    <div style="
+            width: 20rem;  
+            position: absolute;
+            top: 6.25rem;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1rem;">
+        <MudPaper>
+            <MudDatePicker
+                PickerMonth="_currentMonth"
+                Label="Sélectionner une date"
+                Date="@currentDate"
+                PickerVariant="PickerVariant.Static"
+                DateChanged="OnDatePicked" />
+            <MudButton Variant="Variant.Text" OnClick="@(() => datePickerOpen = false)">Fermer</MudButton>
+        </MudPaper>
+    </div>
+}
+
+@if (showAppointmentPanel)
+{
+    <div style="
+        width: 20rem;
+        position: absolute;
+        top: 6.25rem;
+        z-index: 1000;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 1rem;">
+        <AddAppointmentPage Start="@selectedStart" End="@selectedEnd" OnSave="OnAppointmentSaved" OnCancel="ClosePanel" />
+    </div>
+}
+
+
+<div style="@($"width: {schedulerWidth};")">
+    <RadzenScheduler @ref="@scheduler"
+                     @bind-Date="currentDate"
+                     SelectedIndex="@selectedViewIndex"
+                     SlotRender=@OnSlotRender
+                     style="@($"height: 768px; width: {schedulerWidth};")"
+                     TItem="Appointment"
+                     Data=@appointments
+                     StartProperty="Start"
+                     EndProperty="End"
+                     ShowHeader="false"
+                     TextProperty="Text"
+                     SlotSelect=@OnSlotSelect
+                     AppointmentSelect=@OnAppointmentSelect
+                     AppointmentRender=@OnAppointmentRender
+                     DaySelect="@OnDaySelect"
+                     AppointmentMove=@OnAppointmentMove>
+        <RadzenDayView StartTime="@startTime" EndTime="@endTime" TimeFormat="HH:mm" />
+        <RadzenWeekView StartTime="@startTime" EndTime="@endTime" TimeFormat="HH:mm"/>
+    </RadzenScheduler>
+</div>
+
 <style>
-    .rz-scheduler .rz-today {
-        display: none !important;
+    .rz-slot {
+        height: 2rem !important;
     }
+    
+    .rz-slot-hours .rz-slot-header {
+        height: 2rem !important;
+    }
+    /*.rz-event[style*="height: 2em"] {*/
+    /*    height: 4em !important;*/
+    /*}
+*/
 </style>
