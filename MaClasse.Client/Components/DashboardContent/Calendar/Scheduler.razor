@@ -9,7 +9,8 @@
         align-items: center; 
         padding: 16px; 
         border-bottom: 1px solid #ccc;
-        width: @schedulerWidth;">
+        width: @schedulerWidth;
+        height: 7rem">
     <div>
         <MudButton Variant="Variant.Text"
                    Color="Color.Secondary"
@@ -92,7 +93,7 @@
                      @bind-Date="currentDate"
                      SelectedIndex="@selectedViewIndex"
                      SlotRender=@OnSlotRender
-                     style="@($"height: 768px; width: {schedulerWidth};")"
+                     style="@($"height: 49rem; width: {schedulerWidth};")"
                      TItem="Appointment"
                      Data=@appointments
                      StartProperty="Start"
@@ -110,13 +111,14 @@
 </div>
 
 <style>
-    .rz-slot {
-        height: 2rem !important;
+    .rz-event {
+        /*inset-inline-start: 5% !important;*/
+        width: 100% !important;
     }
     
-    .rz-slot-hours .rz-slot-header {
-        height: 2rem !important;
-    }
+    /*.rz-slot-hours .rz-slot-header {*/
+    /*    height: 2rem !important;*/
+    /*}*/
     /*.rz-event[style*="height: 2em"] {*/
     /*    height: 4em !important;*/
     /*}

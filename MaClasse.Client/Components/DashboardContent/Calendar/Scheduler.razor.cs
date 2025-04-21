@@ -20,8 +20,8 @@ public partial class Scheduler : ComponentBase
 
     private RadzenScheduler<Appointment> scheduler;
     private string schedulerWidth => selectedViewIndex == 0 ? "20rem" : "44rem";
-    private TimeSpan startTime = new TimeSpan(7, 0, 0);
-    private TimeSpan endTime = new TimeSpan(18, 1, 0);
+    private TimeSpan startTime = new TimeSpan(6, 0, 0);
+    private TimeSpan endTime = new TimeSpan(21, 30, 0);
     
     private bool datePickerOpen = false;
     private bool showAppointmentPanel = false;
@@ -123,13 +123,11 @@ public partial class Scheduler : ComponentBase
 
         await scheduler.Reload();
     }
-
+    
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
     {
-        var duration = (args.End - args.Start).TotalMinutes;
-        var height = (duration / 30) * 2; // 2rem par 30min
+        // args.Attributes["style"] = $"inset-inline-start: 5%; width: 90%;";
 
-        args.Attributes["style"] = $"height: {height}rem;";
     }
 
     async Task OnAppointmentMove(SchedulerAppointmentMoveEventArgs args)
