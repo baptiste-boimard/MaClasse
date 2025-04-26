@@ -14,6 +14,21 @@
       "DangerousAcceptAnyServerCertificateValidator": true,
       "AddHeadersToUpstream": {"Set-Cookie": ""},
       "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7012
+        }
+      ],
+      "UpstreamPathTemplate": "/api/database/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToUpstream": {"Set-Cookie": ""},
+      "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
     }
   ],
   "GlobalConfiguration": {

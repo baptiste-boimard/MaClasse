@@ -21,6 +21,7 @@ public partial class Auth : ComponentBase
     private readonly UserState _userState;
     private readonly ProtectedLocalStorage _protectedLocalStorage;
     private readonly RefreshService _refreshService;
+    private readonly SchedulerState _schedulerState;
 
 
     public Auth (
@@ -34,7 +35,8 @@ public partial class Auth : ComponentBase
         UserService userService,
         UserState userState,
         ProtectedLocalStorage protectedLocalStorage,
-        RefreshService refreshService)
+        RefreshService refreshService,
+        SchedulerState schedulerState)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -47,6 +49,7 @@ public partial class Auth : ComponentBase
         _userState = userState;
         _protectedLocalStorage = protectedLocalStorage;
         _refreshService = refreshService;
+        _schedulerState = schedulerState;
     }
     
     [Parameter] public EventCallback<string> OnTokenReceived { get; set; }
@@ -113,8 +116,19 @@ public partial class Auth : ComponentBase
                 AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
                 
             };
+
+            var newSchedulerState = new SchedulerState
+            {
+                IdScheduler = returnResponse.Scheduler.IdScheduler,
+                IdUser = returnResponse.Scheduler.IdUser,
+                Appointments = returnResponse.Scheduler.Appointments,
+                CreatedAt = returnResponse.Scheduler.CreatedAt,
+                UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+            };
                 
             _userState.SetUser(newUserState);
+            _schedulerState.SetScheduler(newSchedulerState);
+            
 
             //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
             if (returnResponse.IsNewUser)
@@ -186,7 +200,17 @@ public partial class Auth : ComponentBase
                     AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
                 };
                 
+                var newSchedulerState = new SchedulerState
+                {
+                    IdScheduler = returnResponse.Scheduler.IdScheduler,
+                    IdUser = returnResponse.Scheduler.IdUser,
+                    Appointments = returnResponse.Scheduler.Appointments,
+                    CreatedAt = returnResponse.Scheduler.CreatedAt,
+                    UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+                };
+                
                 _userState.SetUser(newUserState);
+                _schedulerState.SetScheduler(newSchedulerState);
                 
                 _navigationManager.NavigateTo("/dashboard");
             }

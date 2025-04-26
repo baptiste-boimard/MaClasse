@@ -13,6 +13,7 @@ public class RefreshService
     private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IConfiguration _configuration;
     private readonly UserService _userService;
+    private readonly SchedulerState _schedulerState;
 
     public RefreshService(
         HttpClient httpClient,
@@ -20,7 +21,8 @@ public class RefreshService
         NavigationManager navigationManager,
         ServiceAuthentication serviceAuthentication,
         IConfiguration configuration,
-        UserService userService)
+        UserService userService,
+        SchedulerState schedulerState)
     {
         _httpClient = httpClient;
         _userState = userState;
@@ -28,6 +30,7 @@ public class RefreshService
         _serviceAuthentication = serviceAuthentication;
         _configuration = configuration;
         _userService = userService;
+        _schedulerState = schedulerState;
     }
 
     public async Task RefreshLogin(string? resultValue)
@@ -59,8 +62,18 @@ public class RefreshService
                 AsDirecteur = _userState.SetAsDirecteur(returnResponse.UserWithRattachment.AsDirecteur),
                 AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
             };
+
+            var newSchedulerState = new SchedulerState
+            {
+                IdScheduler = returnResponse.Scheduler.IdScheduler,
+                IdUser = returnResponse.Scheduler.IdUser,
+                Appointments = returnResponse.Scheduler.Appointments,
+                CreatedAt = returnResponse.Scheduler.CreatedAt,
+                UpdatedAt = returnResponse.Scheduler.UpdatedAt
+            };
                 
             _userState.SetUser(newUserState);
+            _schedulerState.SetScheduler(newSchedulerState);
             
             _navigationManager.NavigateTo("/dashboard");
         }

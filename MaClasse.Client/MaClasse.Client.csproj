@@ -2,12 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-MaClasse.Client-5df6edc1-98b7-47e2-a0f6-d4639cbb3308</UserSecretsId>
     </PropertyGroup>
 
-    <ItemGroup>
+
+  <ItemGroup>
         <None Update="Data\app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
     </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Database;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;
 
@@ -18,7 +19,8 @@ public class UserServiceRattachment
         UserProfile user,
         bool isNewUser,
         string idSession,
-        string? AccesToken)
+        string? AccesToken, 
+        Scheduler scheduler)
     {
         var rattachments = await _authRepository.GetRattachmentByIdRole(user.IdRole);
         
@@ -34,7 +36,8 @@ public class UserServiceRattachment
         {
             IsNewUser = isNewUser,
             UserWithRattachment = userWithRattachment,
-            IdSession = idSession
+            IdSession = idSession,
+            Scheduler = scheduler,
         };
         
         return authReturn;

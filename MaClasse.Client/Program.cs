@@ -16,6 +16,7 @@ builder.Services.AddScoped<ServiceLogout>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<UserState>();
+builder.Services.AddScoped<SchedulerState>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée

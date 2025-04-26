@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using MaClasse.Client.States;
 using Radzen;
 using MaClasse.Shared.Models;
 using Microsoft.AspNetCore.Components;
@@ -11,11 +12,15 @@ public partial class Scheduler : ComponentBase
 {
 
     private readonly DialogService _dialogService;
-    
+    private readonly SchedulerState _schedulerState;
 
-    public Scheduler(DialogService dialogService)
+
+    public Scheduler(
+        DialogService dialogService,
+        SchedulerState schedulerState)
     {
         _dialogService = dialogService;
+        _schedulerState = schedulerState;
     }
 
     private RadzenScheduler<Appointment> scheduler;
@@ -34,13 +39,9 @@ public partial class Scheduler : ComponentBase
     DateTime selectedEnd;
     
     private bool isEditMode = false;
-
     
-
-        
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
-
-
+    
     IList<Appointment> appointments = new List<Appointment>
     {
         // new Appointment { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
@@ -51,9 +52,24 @@ public partial class Scheduler : ComponentBase
         // new Appointment { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
         // new Appointment { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
     };
-
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _schedulerState.OnChange += RefreshAppointments;
+    
+        appointments = _schedulerState.Appointments;
+    
+    }
+    
+    private void RefreshAppointments()
+    {
+        appointments = _schedulerState.Appointments;
+        InvokeAsync(StateHasChanged); 
+    }
+    
     void OnDaySelect(SchedulerDaySelectEventArgs args)
     {
+        
     }
     
     void OnSlotRender(SchedulerSlotRenderEventArgs args)
@@ -66,25 +82,13 @@ public partial class Scheduler : ComponentBase
     
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
     {
-
-        // if (args.View.Text != "Year")
-        // {
-        //     Appointment data = await _dialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
-        //         new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
-        //
-        //     if (data != null)
-        //     {
-        //         appointments.Add(data);
-        //         await scheduler.Reload();
-        //     }
-        // }
+        
         if (args.View.Text != "Year")
         {
             selectedStart = args.Start;
             selectedEnd = args.End;
             showAppointmentPanel = true;
             isEditMode = false; // <--- ici important
-
         }
     }
     
@@ -97,54 +101,39 @@ public partial class Scheduler : ComponentBase
     
     void OnAppointmentSaved(Appointment appointment)
     {
+        if (appointment.Id == null)
+        {
+            appointment.Id = Guid.NewGuid().ToString();
+        }
+        
         appointments.Add(appointment);
         showAppointmentPanel = false;
+        isEditMode = false;
         scheduler.Reload();
+        
+        //! Enregistrement de l'appointement vers la base de données
     }
 
     void ClosePanel()
     {
         showAppointmentPanel = false;
+        isEditMode = false;
     }
 
     private Appointment selectedAppointment;
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
     {
-
-        // var copy = new Appointment
-        // {
-        //     Start = args.Data.Start,
-        //     End = args.Data.End,
-        //     Text = args.Data.Text
-        // };
-        //
-        // var data = await _dialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", copy } });
-        //
-        // if (data != null)
-        // {
-        //     args.Data.Start = data.Start;
-        //     args.Data.End = data.End;
-        //     args.Data.Text = data.Text;
-        // }
-        //
-        // await scheduler.Reload();
-        // On sélectionne les dates de l'événement existant
+        
         selectedStart = args.Data.Start;
         selectedEnd = args.Data.End;
-
-        // On met à jour le modèle si besoin (ex: texte de l'événement)
         selectedAppointment = args.Data;
         isEditMode = true;
-
-        // On ouvre le panneau latéral (ou modal) pour édition
         showAppointmentPanel = true;
-        
     }
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
     {
-        // args.Attributes["style"] = $"inset-inline-start: 5%; width: 90%;";
 
     }
 
@@ -220,5 +209,19 @@ public partial class Scheduler : ComponentBase
         }
 
         datePickerOpen = false;
+    }
+    
+    void OnAppointmentDeleted(Appointment appointment)
+    {
+        var existing = appointments.FirstOrDefault(a => a.Id == appointment.Id);
+        
+        if (existing != null)
+        {
+            appointments.Remove(existing);
+        }
+        
+        showAppointmentPanel = false;
+        isEditMode = false;
+        scheduler.Reload();
     }
 }

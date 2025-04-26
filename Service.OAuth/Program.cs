@@ -13,6 +13,7 @@ builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IRattachmentRepository, RattachementRepository>();
 
 //* Ajout des services
+builder.Services.AddScoped<CreateDataService>();
 builder.Services.AddScoped<ValidateGoogleTokenService>();
 builder.Services.AddScoped<GenerateIdRole>();
 builder.Services.AddScoped<UserServiceRattachment>();

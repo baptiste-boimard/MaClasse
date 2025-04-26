@@ -37,4 +37,10 @@
 <MudStack Row Spacing="2" Class="mt-4">
     <MudButton Color="Color.Primary" OnClick="Submit">Enregistrer</MudButton>
     <MudButton Variant="MudBlazor.Variant.Outlined" OnClick="Cancel">Annuler</MudButton>
+    @if (IsEditMode)
+    {
+        <MudButton Color="Color.Error" Variant="MudBlazor.Variant.Outlined" OnClick="Delete">
+            Supprimer
+        </MudButton>
+    }
 </MudStack>

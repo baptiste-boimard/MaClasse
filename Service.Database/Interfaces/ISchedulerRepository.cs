@@ -1,0 +1,13 @@
+﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Database;
+using Service.Database.Database;
+
+namespace Service.Database.Interfaces;
+
+public interface ISchedulerRepository
+{
+    Task<Scheduler> GetScheduler(string userId);
+    Task<Appointment> GetOneAppointment(string userId, Appointment appointment);
+    Task<List<Appointment>> AddAppointment(string userId, Appointment appointment);
+    Task<Scheduler> AddScheduler(string userId);
+}

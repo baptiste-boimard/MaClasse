@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
 
@@ -28,5 +29,16 @@ public class SessionController : ControllerBase
         }
         
         return NotFound();
+    }
+
+    [HttpPost]
+    [Route("get-user")]
+    public async Task<IActionResult> GetUser([FromBody] UserBySessionRequest request)
+    {
+        var existingUser = await _sessionRepository.GetUserIdByCookies(request.IdSession);
+
+        if (existingUser != null) return Ok(existingUser);
+
+        return Unauthorized();
     }
 }

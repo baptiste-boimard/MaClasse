@@ -1,4 +1,6 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Auth;
+using MaClasse.Shared.Models.Database;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Service;
@@ -15,6 +17,7 @@ public class AuthController: ControllerBase
     private readonly ISessionRepository _sessionRepository;
     private readonly UserServiceRattachment _userServiceRattachment;
     private readonly GenerateIdRole _generateIdRole;
+    private readonly CreateDataService _createDataService;
 
     public AuthController(
         IConfiguration configuration,
@@ -22,7 +25,8 @@ public class AuthController: ControllerBase
         IAuthRepository authRepository,
         ISessionRepository sessionRepository,
         UserServiceRattachment userServiceRattachment,
-        GenerateIdRole generateIdRole)
+        GenerateIdRole generateIdRole,
+        CreateDataService createDataService)
     {
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
@@ -30,9 +34,11 @@ public class AuthController: ControllerBase
         _sessionRepository = sessionRepository;
         _userServiceRattachment = userServiceRattachment;
         _generateIdRole = generateIdRole;
+        _createDataService = createDataService;
     }
 
     private AuthReturn _returnResponse = new();
+    private Scheduler newScheduler = new();
     
     [HttpPost]
     [Route("google-login")]
@@ -84,11 +90,15 @@ public class AuthController: ControllerBase
             //* On le stock dans la table Session
             var sessionSaveLogin = await _sessionRepository.SaveNewSession(newSessionTokenLogin);
             
+            //* Je récupére les données adjacentes
+            
+            newScheduler = await _createDataService.GetDataScheduler(existingUser.Id);
+            
             if (sessionSaveLogin != null)
             {
                 //* On rechercher les rattachements de l'utilisateur
                 _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                    existingUser, false, sessionSaveLogin.Token, request.Token );
+                    existingUser, false, sessionSaveLogin.Token, request.Token, newScheduler );
                
                 return Ok(_returnResponse);
             }
@@ -104,6 +114,11 @@ public class AuthController: ControllerBase
         user.IdRole = idRole;
         
         var newUser = await _authRepository.AddUser(user);
+        
+        //* On crée également les éléments adjacent au user
+        //* avec le CreateDataService
+        //* le scheduler
+        newScheduler = await _createDataService.CreateDataScheduler(newUser.Id);
         
         //* Création du token de session
         var sessionTokenSignup = Guid.NewGuid().ToString();
@@ -131,7 +146,7 @@ public class AuthController: ControllerBase
             });
 
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                newUser, true, sessionSaveSignup.Token, request.Token);
+                newUser, true, sessionSaveSignup.Token, request.Token, newScheduler);
             
             return Ok(_returnResponse);
         }
@@ -165,11 +180,14 @@ public class AuthController: ControllerBase
 
         //* Si j'ai bien un user j'update son role
         var updatedUser = await _authRepository.UpdateUser(updateUser);
+        
+        //* Je récupére les données adjacentes
+        newScheduler = await _createDataService.GetDataScheduler(updatedUser.Id);
 
         if (updatedUser != null)
         {
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-                updatedUser, false, userSession.Token, result.AccessToken);
+                updatedUser, false, userSession.Token, result.AccessToken, newScheduler);
             
             return Ok(_returnResponse);
         }
@@ -195,10 +213,12 @@ public class AuthController: ControllerBase
         //* Je récupére le user concerné
         var user = await _authRepository.GetOneUserByGoogleId(userSession.UserId);
 
+        newScheduler = await _createDataService.GetDataScheduler(user.Id);
+        
         if (user == null) return Unauthorized();
 
         _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
-            user, false, userSession.Token, request.Token);
+            user, false, userSession.Token, request.Token, newScheduler);
         
         return Ok(_returnResponse);
     }
