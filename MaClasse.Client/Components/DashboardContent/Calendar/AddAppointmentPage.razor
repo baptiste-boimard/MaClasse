@@ -1,31 +1,8 @@
-﻿@* @using MaClasse.Shared.Models *@
-@* <RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit> *@
-@*     <RadzenStack Gap="1rem"> *@
-@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
-@*             <RadzenLabel Text="Title" Style="width: 4rem;" /> *@
-@*             <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" /> *@
-@*             <RadzenRequiredValidator Component="Text" Text="Title is required" /> *@
-@*         </RadzenStack> *@
-@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
-@*             <RadzenLabel Text="Start" Style="width: 4rem;" /> *@
-@*             <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" /> *@
-@*             <RadzenRequiredValidator Component="Start" Text="Start is required" /> *@
-@*         </RadzenStack> *@
-@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Wrap="FlexWrap.Wrap"> *@
-@*             <RadzenLabel Text="End" Style="width: 4rem;" /> *@
-@*             <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" /> *@
-@*             <RadzenRequiredValidator Component="End" Text="End is required" /> *@
-@*         </RadzenStack> *@
-@*         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.End" > *@
-@*             <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Save" /> *@
-@*         </RadzenStack> *@
-@*     </RadzenStack> *@
-@* </RadzenTemplateForm> *@
+﻿@inherits ComponentBase
 
-@using MaClasse.Shared.Models
-@inherits ComponentBase
-
-<MudText Typo="Typo.h6">Ajouter un rendez-vous</MudText>
+<MudText Typo="Typo.h6">
+    @(IsEditMode ? "Modifier un événement" : "Ajouter un événement")
+</MudText>
 
 <MudTextField Label="Titre" @bind-Value="model.Text" />
 
@@ -37,7 +14,9 @@
         <MudTimePicker 
             Label="Début (Heure)" 
             @bind-Time="tempStartTime"
-            MinuteSelectionStep="5" />
+            MinuteSelectionStep="5"
+            AnchorOrigin="Origin.BottomRight"
+            Margin= "Margin.Normal" />
     </MudItem>
 </MudGrid>
 
@@ -49,7 +28,9 @@
         <MudTimePicker 
             Label="Fin (Heure)" 
             @bind-Time="tempEndTime"
-            MinuteSelectionStep="5" />
+            MinuteSelectionStep="5"
+            AnchorOrigin="Origin.BottomRight"
+            Margin= "Margin.Normal" />
     </MudItem>
 </MudGrid>
 

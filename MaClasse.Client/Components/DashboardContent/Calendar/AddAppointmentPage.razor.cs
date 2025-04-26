@@ -33,6 +33,7 @@ public partial class AddAppointmentPage : ComponentBase
     
     [Parameter] public DateTime Start { get; set; }
     [Parameter] public DateTime End { get; set; }
+    [Parameter] public bool IsEditMode { get; set; }
 
     [Parameter] public EventCallback<Appointment> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
@@ -42,6 +43,8 @@ public partial class AddAppointmentPage : ComponentBase
 
     private DateTime? tempEndDate;
     private TimeSpan? tempEndTime;
+    
+
 
     Appointment model = new Appointment();
 

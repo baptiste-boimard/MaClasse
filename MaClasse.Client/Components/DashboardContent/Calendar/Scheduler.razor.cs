@@ -33,6 +33,9 @@ public partial class Scheduler : ComponentBase
     DateTime selectedStart;
     DateTime selectedEnd;
     
+    private bool isEditMode = false;
+
+    
 
         
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
@@ -80,6 +83,8 @@ public partial class Scheduler : ComponentBase
             selectedStart = args.Start;
             selectedEnd = args.End;
             showAppointmentPanel = true;
+            isEditMode = false; // <--- ici important
+
         }
     }
     
@@ -102,26 +107,39 @@ public partial class Scheduler : ComponentBase
         showAppointmentPanel = false;
     }
 
+    private Appointment selectedAppointment;
+    
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
     {
 
-        var copy = new Appointment
-        {
-            Start = args.Data.Start,
-            End = args.Data.End,
-            Text = args.Data.Text
-        };
+        // var copy = new Appointment
+        // {
+        //     Start = args.Data.Start,
+        //     End = args.Data.End,
+        //     Text = args.Data.Text
+        // };
+        //
+        // var data = await _dialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", copy } });
+        //
+        // if (data != null)
+        // {
+        //     args.Data.Start = data.Start;
+        //     args.Data.End = data.End;
+        //     args.Data.Text = data.Text;
+        // }
+        //
+        // await scheduler.Reload();
+        // On sélectionne les dates de l'événement existant
+        selectedStart = args.Data.Start;
+        selectedEnd = args.Data.End;
 
-        var data = await _dialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", copy } });
+        // On met à jour le modèle si besoin (ex: texte de l'événement)
+        selectedAppointment = args.Data;
+        isEditMode = true;
 
-        if (data != null)
-        {
-            args.Data.Start = data.Start;
-            args.Data.End = data.End;
-            args.Data.Text = data.Text;
-        }
-
-        await scheduler.Reload();
+        // On ouvre le panneau latéral (ou modal) pour édition
+        showAppointmentPanel = true;
+        
     }
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)

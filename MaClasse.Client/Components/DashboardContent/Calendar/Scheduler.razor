@@ -83,7 +83,12 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         border-radius: 8px;
         padding: 1rem;">
-        <AddAppointmentPage Start="@selectedStart" End="@selectedEnd" OnSave="OnAppointmentSaved" OnCancel="ClosePanel" />
+        <AddAppointmentPage 
+            Start="@selectedStart" 
+            End="@selectedEnd" 
+            OnSave="OnAppointmentSaved" 
+            OnCancel="ClosePanel"
+            IsEditMode="@isEditMode"/>
     </div>
 }
 
@@ -115,12 +120,4 @@
         /*inset-inline-start: 5% !important;*/
         width: 100% !important;
     }
-    
-    /*.rz-slot-hours .rz-slot-header {*/
-    /*    height: 2rem !important;*/
-    /*}*/
-    /*.rz-event[style*="height: 2em"] {*/
-    /*    height: 4em !important;*/
-    /*}
-*/
 </style>
