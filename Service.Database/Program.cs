@@ -11,9 +11,21 @@ using Service.Database.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<HolidaysService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+    {
+        PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+        ConnectTimeout = TimeSpan.FromSeconds(30),
+        UseProxy = false,
+        SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+        {
+            EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
+        }
+    });
 
 //* Ajout des Services
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<HolidaysService>();
 
 //* Ajout de MongoDB
 builder.Services.AddSingleton<MongoDbContext>();

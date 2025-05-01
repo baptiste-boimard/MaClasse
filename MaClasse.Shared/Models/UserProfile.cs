@@ -14,6 +14,6 @@ public class UserProfile
     [MaxLength(255)] public string GivenName { get; set; } = "";
     [MaxLength(255)] public string FamilyName { get; set; } = "";
     [MaxLength(255)] public string Picture { get; set; } = "";
-    [MaxLength(255)] public DateTime? CreatedAt { get; set; }
-    [MaxLength(255)] public DateTime? UpdatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

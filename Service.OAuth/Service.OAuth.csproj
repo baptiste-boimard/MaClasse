@@ -30,6 +30,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MaClasse.ApiGateway\MaClasse.ApiGateway.csproj" />
       <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
+      <ProjectReference Include="..\Service.Database\Service.Database.csproj" />
     </ItemGroup>
 
     <ItemGroup>

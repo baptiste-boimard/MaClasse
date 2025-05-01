@@ -2,6 +2,7 @@
 using MaClasse.Shared.Models.Auth;
 using MaClasse.Shared.Models.Database;
 using Microsoft.AspNetCore.Mvc;
+using Service.Database.Services;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Service;
 
@@ -181,8 +182,15 @@ public class AuthController: ControllerBase
         //* Si j'ai bien un user j'update son role
         var updatedUser = await _authRepository.UpdateUser(updateUser);
         
+        
+        //* J'ajoute les vacances scolaire en fonction de la zone et je récupére le scheduler
+        newScheduler = await _createDataService.AddHolidayToScheduler(updatedUser);
+        
+        
+        
+        
         //* Je récupére les données adjacentes
-        newScheduler = await _createDataService.GetDataScheduler(updatedUser.Id);
+        // newScheduler = await _createDataService.GetDataScheduler(updatedUser.Id);
 
         if (updatedUser != null)
         {

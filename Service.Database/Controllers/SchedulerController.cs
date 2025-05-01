@@ -12,12 +12,16 @@ public class SchedulerController :  ControllerBase
 {
     private readonly UserService _userService;
     private readonly ISchedulerRepository _schedulerRepository;
+    private readonly HolidaysService _holidaysService;
 
     public SchedulerController(
-        UserService userService, ISchedulerRepository schedulerRepository)
+        UserService userService,
+        ISchedulerRepository schedulerRepository,
+        HolidaysService holidaysService)
     {
         _userService = userService;
         _schedulerRepository = schedulerRepository;
+        _holidaysService = holidaysService;
     }
     
     [HttpPost]
@@ -34,6 +38,15 @@ public class SchedulerController :  ControllerBase
         return Ok(scheduler);
     }
 
+    [HttpPost]
+    [Route("add-scheduler")]
+    public async Task<IActionResult> AddScheduler([FromBody] CreateSchedulerRequest request)
+    {
+        var newScheduler = await _schedulerRepository.AddScheduler(request.UserId);
+        
+        return Ok(newScheduler);
+    }
+    
     [HttpPost]
     [Route("add-appointment")]
     public async Task<IActionResult> AddAppointment([FromBody] SchedulerRequest request)
@@ -70,6 +83,17 @@ public class SchedulerController :  ControllerBase
         // return Ok(appointment);
     }
 
+
+    [HttpPost]
+    [Route("add-holiday-appointment")]
+    public async Task<IActionResult> AddHolidayToScheduler([FromBody] UserProfile user)
+    {
+        //* Utilisation de HolidaysService pour aller récupérer les données de vacances auprès de l'api
+        var holidaysAppointment = await _holidaysService.GetZoneBVacationsAsync();
+        
+        return Ok(holidaysAppointment);
+    }
+    
     [HttpPost]
     [Route("update-appointment")]
     public async Task<IActionResult> UpdateAppointment([FromBody] SchedulerRequest request)
@@ -117,13 +141,6 @@ public class SchedulerController :  ControllerBase
 
     }
     
-    [HttpPost]
-    [Route("add-scheduler")]
-    public async Task<IActionResult> AddScheduler([FromBody] CreateSchedulerRequest request)
-    {
-        var newScheduler = await _schedulerRepository.AddScheduler(request.UserId);
-        
-        return Ok(newScheduler);
-    }
+
     
 }
