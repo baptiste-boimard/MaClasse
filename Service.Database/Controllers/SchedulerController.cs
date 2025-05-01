@@ -59,6 +59,7 @@ public class SchedulerController :  ControllerBase
             Start = request.Appointment.Start,
             End = request.Appointment.End,
             Text = request.Appointment.Text,
+            Color = request.Appointment.Color
         };
         
         var addedAppointment = await _schedulerRepository.AddAppointment(userSession.UserId.ToString(), newAppointment);

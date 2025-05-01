@@ -2,6 +2,7 @@
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Database;
 using Microsoft.AspNetCore.Components;
+using MudBlazor.Utilities;
 using Radzen;
 
 namespace MaClasse.Client.Components.DashboardContent.Calendar;
@@ -38,9 +39,10 @@ public partial class AddAppointmentPage : ComponentBase
     private TimeSpan? tempStartTime;
     private DateTime? tempEndDate;
     private TimeSpan? tempEndTime;
-    
     private Appointment model = new Appointment();
 
+    private string _colorValue;
+    
     protected override void OnParametersSet()
     {
         tempStartDate = Start;
@@ -56,8 +58,15 @@ public partial class AddAppointmentPage : ComponentBase
                 Id = Model.Id,
                 Start = Model.Start,
                 End = Model.End,
-                Text = Model.Text
+                Text = Model.Text,
+                Color = Model.Color
             };
+            
+            _colorValue = Model.Color;
+        }
+        else
+        {
+            _colorValue = "#8E7DFD"; 
         }
     }
 
@@ -78,7 +87,6 @@ public partial class AddAppointmentPage : ComponentBase
 
                 await OnSave.InvokeAsync(model);
                 
-                //* Envoi requete Save vers le back
                 var newSchedulerRequest = new SchedulerRequest
                 {
                     IdSession = _userState.IdSession,
@@ -87,7 +95,8 @@ public partial class AddAppointmentPage : ComponentBase
                         Id = model.Id,
                         Start = model.Start,
                         End = model.End,
-                        Text = model.Text
+                        Text = model.Text,
+                        Color = _colorValue
                     }
                 };
                 
@@ -95,7 +104,8 @@ public partial class AddAppointmentPage : ComponentBase
                 if (!IsEditMode)
                 {
                     var response = await _httpClient.PostAsJsonAsync(
-                        $"{_configuration["Url:ApiGateway"]}/api/database/add-appointment", newSchedulerRequest);
+                        $"{_configuration["Url:ApiGateway"]}/api/database/add-appointment",
+                        newSchedulerRequest);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -109,7 +119,8 @@ public partial class AddAppointmentPage : ComponentBase
                 if (IsEditMode)
                 {
                     var response = await _httpClient.PostAsJsonAsync(
-                        $"{_configuration["Url:ApiGateway"]}/api/database/update-appointment", newSchedulerRequest);
+                        $"{_configuration["Url:ApiGateway"]}/api/database/update-appointment",
+                        newSchedulerRequest);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -144,7 +155,8 @@ public partial class AddAppointmentPage : ComponentBase
                     Id = model.Id,
                     Start = model.Start,
                     End = model.End,
-                    Text = model.Text
+                    Text = model.Text,
+                    Color = _colorValue
                 }
             };
             

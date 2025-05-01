@@ -106,7 +106,8 @@ public class SchedulerRepository : ISchedulerRepository
                     .Set("Appointments.$.Id", appointment.Id)
                     .Set("Appointments.$.Start", appointment.Start)
                     .Set("Appointments.$.End", appointment.End)
-                    .Set("Appointments.$.Text", appointment.Text),
+                    .Set("Appointments.$.Text", appointment.Text)
+                    .Set("Appointments.$.Color", appointment.Color),
                 new FindOneAndUpdateOptions<Scheduler>
                 {
                     ReturnDocument = ReturnDocument.After

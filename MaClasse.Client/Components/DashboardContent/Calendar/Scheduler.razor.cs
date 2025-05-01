@@ -52,14 +52,29 @@ public partial class Scheduler : ComponentBase
                 Start = a.Start.ToLocalTime(),
                 End = a.End.ToLocalTime(),
                 Text = a.Text,
+                Color = a.Color
 
             }).ToList();
     }
     
     private void RefreshAppointments()
     {
-        appointments = _schedulerState.Appointments;
-        InvokeAsync(StateHasChanged); 
+        appointments = _schedulerState.Appointments
+            .Select(a => new Appointment
+            {
+                Id = a.Id,
+                Start = a.Start.ToLocalTime(),
+                End = a.End.ToLocalTime(),
+                Text = a.Text,
+                Color = a.Color
+
+            }).ToList();
+        InvokeAsync(() =>
+        {
+            // scheduler.Reload();
+            StateHasChanged();
+
+        });
     }
     
     void OnDaySelect(SchedulerDaySelectEventArgs args)
@@ -121,7 +136,11 @@ public partial class Scheduler : ComponentBase
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
     {
-
+        if (!string.IsNullOrEmpty(args.Data.Color))
+        {
+            // Applique la couleur de fond depuis l'objet
+            args.Attributes["style"] = $"background-color: {args.Data.Color}; color: black;";
+        }
     }
 
     async Task OnAppointmentMove(SchedulerAppointmentMoveEventArgs args)
