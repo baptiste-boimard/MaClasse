@@ -22,43 +22,18 @@ public partial class AddAppointmentPage : ComponentBase
         _schedulerState = schedulerState;
     }
     
-    // private readonly DialogService _dialogService;
-    //
-    // public AddAppointmentPage(DialogService dialogService)
-    // {
-    //     _dialogService = dialogService;
-    // }
-    // [Parameter]
-    // public DateTime Start { get; set; }
-    //
-    // [Parameter]
-    // public DateTime End { get; set; }
-    //
-    // Appointment model = new Appointment();
-    //
-    // protected override void OnParametersSet()
-    // {
-    //     model.Start = Start;
-    //     model.End = End;
-    // }
-    //
-    // void OnSubmit(Appointment model)
-    // {
-    //     _dialogService.Close(model);
-    // }
     
     [Parameter] public DateTime Start { get; set; }
     [Parameter] public DateTime End { get; set; }
     [Parameter] public bool IsEditMode { get; set; }
-
     [Parameter] public EventCallback<Appointment> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback<Appointment> OnDelete { get; set; }
+    [Parameter] public Appointment Model { get; set; }
 
     
     private DateTime? tempStartDate;
     private TimeSpan? tempStartTime;
-
     private DateTime? tempEndDate;
     private TimeSpan? tempEndTime;
     
@@ -68,11 +43,23 @@ public partial class AddAppointmentPage : ComponentBase
 
     protected override void OnParametersSet()
     {
-        tempStartDate = Start;
-        tempStartTime = Start.TimeOfDay;
+        if (IsEditMode && Model != null)
+        {
+            model = new Appointment
+            {
+                Id = Model.Id,
+                Start = Model.Start,
+                End = Model.End,
+                Text = Model.Text
+            };
 
-        tempEndDate = End;
-        tempEndTime = End.TimeOfDay;
+            tempStartDate = Start;
+            tempStartTime = Start.TimeOfDay;
+
+            tempEndDate = End;
+            tempEndTime = End.TimeOfDay;
+            
+        }
     }
 
     async Task Submit()
@@ -128,7 +115,33 @@ public partial class AddAppointmentPage : ComponentBase
     async Task Delete()
     {
         if (OnDelete.HasDelegate)
+        {
+            
             await OnDelete.InvokeAsync(model);
+            
+            //* Envoi requete Delete vers le back
+            var newSchedulerRequest = new SchedulerRequest
+            {
+                IdSession = _userState.IdSession,
+                Appointment = new Appointment
+                {
+                    Id = model.Id,
+                    Start = model.Start,
+                    End = model.End,
+                    Text = model.Text
+                }
+            };
+            
+            var response = await _httpClient.PostAsJsonAsync(
+                "https://localhost:7261/api/database/delete-appointment", newSchedulerRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
+                    
+                _schedulerState.SetAppointments(appointmentList);
+            }
+        }
     }
 }
 

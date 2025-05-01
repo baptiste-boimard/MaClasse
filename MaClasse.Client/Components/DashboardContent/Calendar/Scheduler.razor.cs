@@ -27,38 +27,32 @@ public partial class Scheduler : ComponentBase
     private string schedulerWidth => selectedViewIndex == 0 ? "20rem" : "44rem";
     private TimeSpan startTime = new TimeSpan(6, 0, 0);
     private TimeSpan endTime = new TimeSpan(21, 30, 0);
-    
     private bool datePickerOpen = false;
     private bool showAppointmentPanel = false;
     private DateTime _currentMonth = DateTime.Today;
-    
     private DateTime currentDate = DateTime.Today;
     private int selectedViewIndex = 0;
-    
     DateTime selectedStart;
     DateTime selectedEnd;
-    
     private bool isEditMode = false;
-    
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
-    
-    IList<Appointment> appointments = new List<Appointment>
-    {
-        // new Appointment { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
-        // new Appointment { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
-        // new Appointment { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
-        // new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
-        // new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
-        // new Appointment { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
-        // new Appointment { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
-    };
+    private IList<Appointment> appointments = new List<Appointment>();
+
     
     protected override async Task OnInitializedAsync()
     {
         _schedulerState.OnChange += RefreshAppointments;
     
-        appointments = _schedulerState.Appointments;
-    
+        //* Récupération des appointments avec l'heure local
+        appointments = _schedulerState.Appointments
+            .Select(a => new Appointment
+            {
+                Id = a.Id,
+                Start = a.Start.ToLocalTime(),
+                End = a.End.ToLocalTime(),
+                Text = a.Text,
+
+            }).ToList();
     }
     
     private void RefreshAppointments()
@@ -88,7 +82,7 @@ public partial class Scheduler : ComponentBase
             selectedStart = args.Start;
             selectedEnd = args.End;
             showAppointmentPanel = true;
-            isEditMode = false; // <--- ici important
+            isEditMode = false;
         }
     }
     
@@ -139,7 +133,8 @@ public partial class Scheduler : ComponentBase
 
     async Task OnAppointmentMove(SchedulerAppointmentMoveEventArgs args)
     {
-        var draggedAppointment = appointments.FirstOrDefault(x => x == args.Appointment.Data);
+        var draggedAppointment = appointments.FirstOrDefault(
+            x => x == args.Appointment.Data);
 
         if (draggedAppointment != null)
         {

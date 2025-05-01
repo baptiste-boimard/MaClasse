@@ -68,13 +68,30 @@ public class SchedulerController :  ControllerBase
         return Ok(addedAppointment);
         // return Ok(appointment);
     }
-    
-    [HttpDelete]
+
+    [HttpPost]
     [Route("delete-appointment")]
-    public async Task<IActionResult> DeleteAppointment()
+    public async Task<IActionResult> DeleteAppointment([FromBody] SchedulerRequest request)
     {
-        return null;
+        //* Je cherche un user que je recupére avec mon userServices
+        var userSession = await _userService.GetUserByIdSession(request.IdSession);
+        
+        //* verifie si l'appointment existe pour mon userId
+        var existingAppointment = await _schedulerRepository.GetOneAppointmentById(
+            userSession.UserId, request.Appointment);
+
+        if (existingAppointment == null) return BadRequest();
+
+        //* Si il existe on le suprrime
+        var deletedAppointment = await _schedulerRepository.DeleteAppointment(
+            userSession.UserId, request.Appointment);
+        
+        if (deletedAppointment == null) return BadRequest();
+
+        return Ok(deletedAppointment);
+
     }
+
 
     [HttpPost]
     [Route("add-scheduler")]
