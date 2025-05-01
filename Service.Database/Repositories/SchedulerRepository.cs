@@ -93,6 +93,33 @@ public class SchedulerRepository : ISchedulerRepository
         return null;
     }
 
+    public async Task<List<Appointment>> UpdateAppointment(string userId, Appointment appointment)
+    {
+        var updatedScheduler = await _mongoDbContext.Schedulers
+            .FindOneAndUpdateAsync(
+                Builders<Scheduler>.Filter.And(
+             Builders<Scheduler>.Filter.Eq(
+                        s => s.IdUser, userId),
+                        Builders<Scheduler>.Filter.ElemMatch(
+                        s => s.Appointments, a => a.Id == appointment.Id)),
+                Builders<Scheduler>.Update
+                    .Set("Appointments.$.Id", appointment.Id)
+                    .Set("Appointments.$.Start", appointment.Start)
+                    .Set("Appointments.$.End", appointment.End)
+                    .Set("Appointments.$.Text", appointment.Text),
+                new FindOneAndUpdateOptions<Scheduler>
+                {
+                    ReturnDocument = ReturnDocument.After
+                }
+            );
+
+
+        if (updatedScheduler == null) return null;
+
+        return updatedScheduler.Appointments;
+
+    }
+    
     public async Task<List<Appointment>> DeleteAppointment (string userId, Appointment appointment)
     {
         var deletedScheduler = await _mongoDbContext.Schedulers

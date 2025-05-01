@@ -11,15 +11,18 @@ public partial class AddAppointmentPage : ComponentBase
     private readonly HttpClient _httpClient;
     private readonly UserState _userState;
     private readonly SchedulerState _schedulerState;
+    private readonly IConfiguration _configuration;
 
     public AddAppointmentPage(
         HttpClient httpClient,
         UserState userState,
-        SchedulerState schedulerState)
+        SchedulerState schedulerState,
+        IConfiguration configuration)
     {
         _httpClient = httpClient;
         _userState = userState;
         _schedulerState = schedulerState;
+        _configuration = configuration;
     }
     
     
@@ -30,19 +33,22 @@ public partial class AddAppointmentPage : ComponentBase
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback<Appointment> OnDelete { get; set; }
     [Parameter] public Appointment Model { get; set; }
-
     
     private DateTime? tempStartDate;
     private TimeSpan? tempStartTime;
     private DateTime? tempEndDate;
     private TimeSpan? tempEndTime;
     
-
-
-    Appointment model = new Appointment();
+    private Appointment model = new Appointment();
 
     protected override void OnParametersSet()
     {
+        tempStartDate = Start;
+        tempStartTime = Start.TimeOfDay;
+
+        tempEndDate = End;
+        tempEndTime = End.TimeOfDay;
+        
         if (IsEditMode && Model != null)
         {
             model = new Appointment
@@ -52,13 +58,6 @@ public partial class AddAppointmentPage : ComponentBase
                 End = Model.End,
                 Text = Model.Text
             };
-
-            tempStartDate = Start;
-            tempStartTime = Start.TimeOfDay;
-
-            tempEndDate = End;
-            tempEndTime = End.TimeOfDay;
-            
         }
     }
 
@@ -85,23 +84,40 @@ public partial class AddAppointmentPage : ComponentBase
                     IdSession = _userState.IdSession,
                     Appointment = new Appointment
                     {
+                        Id = model.Id,
                         Start = model.Start,
                         End = model.End,
                         Text = model.Text
                     }
                 };
                 
-                //* Requete
-                var response = await _httpClient.PostAsJsonAsync(
-                    "https://localhost:7261/api/database/add-appointment", newSchedulerRequest);
-
-                if (response.IsSuccessStatusCode)
+                //* Requete si IsEditMode = false
+                if (!IsEditMode)
                 {
-                    var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
+                    var response = await _httpClient.PostAsJsonAsync(
+                        $"{_configuration["Url:ApiGateway"]}/api/database/add-appointment", newSchedulerRequest);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
                     
-                    _schedulerState.SetAppointments(appointmentList);
+                        _schedulerState.SetAppointments(appointmentList);
+                    }
                 }
                 
+                //* Requete si IsEditMode = true
+                if (IsEditMode)
+                {
+                    var response = await _httpClient.PostAsJsonAsync(
+                        $"{_configuration["Url:ApiGateway"]}/api/database/update-appointment", newSchedulerRequest);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
+                    
+                        _schedulerState.SetAppointments(appointmentList);
+                    }
+                }
             }
         }
     }
@@ -133,7 +149,7 @@ public partial class AddAppointmentPage : ComponentBase
             };
             
             var response = await _httpClient.PostAsJsonAsync(
-                "https://localhost:7261/api/database/delete-appointment", newSchedulerRequest);
+                $"{_configuration["Url:ApiGateway"]}/api/database/delete-appointment", newSchedulerRequest);
 
             if (response.IsSuccessStatusCode)
             {

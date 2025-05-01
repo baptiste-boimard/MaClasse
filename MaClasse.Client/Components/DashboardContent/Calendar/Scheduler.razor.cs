@@ -37,6 +37,7 @@ public partial class Scheduler : ComponentBase
     private bool isEditMode = false;
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
     private IList<Appointment> appointments = new List<Appointment>();
+    private Appointment selectedAppointment;
 
     
     protected override async Task OnInitializedAsync()
@@ -107,14 +108,6 @@ public partial class Scheduler : ComponentBase
         
         //! Enregistrement de l'appointement vers la base de données
     }
-
-    void ClosePanel()
-    {
-        showAppointmentPanel = false;
-        isEditMode = false;
-    }
-
-    private Appointment selectedAppointment;
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
     {
@@ -153,6 +146,36 @@ public partial class Scheduler : ComponentBase
 
             await scheduler.Reload();
         }
+    }
+    
+    private void OnDatePicked(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            currentDate = date.Value;
+        }
+
+        datePickerOpen = false;
+    }
+    
+    void OnAppointmentDeleted(Appointment appointment)
+    {
+        var existing = appointments.FirstOrDefault(a => a.Id == appointment.Id);
+        
+        if (existing != null)
+        {
+            appointments.Remove(existing);
+        }
+        
+        showAppointmentPanel = false;
+        isEditMode = false;
+        scheduler.Reload();
+    }
+    
+    void ClosePanel()
+    {
+        showAppointmentPanel = false;
+        isEditMode = false;
     }
     
     private void SetSchedulerView(int index)
@@ -194,29 +217,5 @@ public partial class Scheduler : ComponentBase
                 return $"{firstDayOfWeek:dd/MM/yyyy} au {lastDayOfWeek:dd/MM/yyyy}";
             }
         }
-    }
-    
-    private void OnDatePicked(DateTime? date)
-    {
-        if (date.HasValue)
-        {
-            currentDate = date.Value;
-        }
-
-        datePickerOpen = false;
-    }
-    
-    void OnAppointmentDeleted(Appointment appointment)
-    {
-        var existing = appointments.FirstOrDefault(a => a.Id == appointment.Id);
-        
-        if (existing != null)
-        {
-            appointments.Remove(existing);
-        }
-        
-        showAppointmentPanel = false;
-        isEditMode = false;
-        scheduler.Reload();
     }
 }
