@@ -57,7 +57,8 @@ public class SchedulerController :  ControllerBase
         
         
         //* verifie si l'appointment existe pour mon userId
-        var existingAppointment = await _schedulerRepository.GetOneAppointment(userSession.UserId, request.Appointment);
+        var existingAppointment = await _schedulerRepository.GetOneAppointment(
+            userSession.UserId, request.Appointment);
         
         if (existingAppointment != null)
         {
@@ -72,15 +73,30 @@ public class SchedulerController :  ControllerBase
             Start = request.Appointment.Start,
             End = request.Appointment.End,
             Text = request.Appointment.Text,
-            Color = request.Appointment.Color
+            Color = request.Appointment.Color,
+            Recurring = request.Appointment.Recurring,
+            IdRecurring = request.Appointment.Recurring 
+                ? Guid.NewGuid().ToString() 
+                : String.Empty
         };
-        
-        var addedAppointment = await _schedulerRepository.AddAppointment(userSession.UserId.ToString(), newAppointment);
-        
-        
-        //* On va retourner la liste des Appointements et la stocker dans le useState
-        return Ok(addedAppointment);
-        // return Ok(appointment);
+
+        if (!newAppointment.Recurring)
+        {
+            var addedAppointment = await _schedulerRepository.AddAppointment(
+                userSession.UserId.ToString(), newAppointment);
+            
+            
+            //* On va retourner la liste des Appointements et la stocker dans le useState
+            return Ok(addedAppointment);
+        }
+        else
+        {
+            //* Il faut préparer la liste pour qu'elle s'arrete à l'année scolaire en cours
+            //* et ne pas apparaitre durant les vacances
+            var newAppointments = await _schedulerRepository.GetBlockVacation(userSession.UserId, newAppointment);
+            
+            return Ok(newAppointments);
+        }
     }
 
 

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using MaClasse.Client.States;
 using Radzen;
 using MaClasse.Shared.Models;
@@ -138,7 +139,7 @@ public partial class Scheduler : ComponentBase
     {
         if (!string.IsNullOrEmpty(args.Data.Color))
         {
-            // Applique la couleur de fond depuis l'objet
+            //* Applique la couleur de fond depuis l'objet
             args.Attributes["style"] = $"background-color: {args.Data.Color}; color: black;";
         }
     }

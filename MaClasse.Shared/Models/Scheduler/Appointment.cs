@@ -7,4 +7,6 @@ public class Appointment
     public DateTime End { get; set; }
     public string? Text { get; set; }
     public string Color { get; set; }
+    public bool Recurring { get; set; }
+    public string? IdRecurring { get; set; }
 }

@@ -42,6 +42,7 @@ public partial class AddAppointmentPage : ComponentBase
     private Appointment model = new Appointment();
 
     private string _colorValue;
+    private bool _recurring;
     
     protected override void OnParametersSet()
     {
@@ -59,13 +60,16 @@ public partial class AddAppointmentPage : ComponentBase
                 Start = Model.Start,
                 End = Model.End,
                 Text = Model.Text,
-                Color = Model.Color
+                Color = Model.Color,
+                Recurring = Model.Recurring
             };
             
             _colorValue = Model.Color;
+            _recurring = Model.Recurring;
         }
         else
         {
+            _recurring = false;
             _colorValue = "#8E7DFD"; 
         }
     }
@@ -96,7 +100,8 @@ public partial class AddAppointmentPage : ComponentBase
                         Start = model.Start,
                         End = model.End,
                         Text = model.Text,
-                        Color = _colorValue
+                        Color = _colorValue,
+                        Recurring = _recurring
                     }
                 };
                 
@@ -156,7 +161,8 @@ public partial class AddAppointmentPage : ComponentBase
                     Start = model.Start,
                     End = model.End,
                     Text = model.Text,
-                    Color = _colorValue
+                    Color = _colorValue,
+                    Recurring = _recurring
                 }
             };
             

@@ -4,17 +4,21 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Service.Database.Database;
 using Service.Database.Interfaces;
+using Service.Database.Services;
 
 namespace Service.Database.Repositories;
 
 public class SchedulerRepository : ISchedulerRepository
 {
     private readonly MongoDbContext _mongoDbContext;
+    private readonly BlockVacationService _blockVacationService;
 
     public SchedulerRepository(
-        MongoDbContext mongoDbContext)
+        MongoDbContext mongoDbContext,
+        BlockVacationService blockVacationService)
     {
         _mongoDbContext = mongoDbContext;
+        _blockVacationService = blockVacationService;
     }
     
     public async Task<Scheduler> GetScheduler(string userId)
@@ -95,6 +99,8 @@ public class SchedulerRepository : ISchedulerRepository
 
     public async Task<Scheduler> AddListAppointment(string userId, List<Appointment> appointments)
     {
+        
+        
         var updatedScheduler = await _mongoDbContext.Schedulers
             .FindOneAndUpdateAsync(
                 Builders<Scheduler>.Filter.Eq(s => s.IdUser, userId),
@@ -151,5 +157,18 @@ public class SchedulerRepository : ISchedulerRepository
         if (deletedScheduler != null) return deletedScheduler.Appointments;
         
         return null;
+    }
+
+    public async Task<List<Appointment>> GetBlockVacation(string userId, Appointment appointment)
+    {
+        var appointmentList = await _blockVacationService.GetAppointmentWithoutVacation(userId, appointment);
+
+        //* Une fois la liste des Appointmensts récupérés je l'ajoute à la BDD
+        var newScheduler = await AddListAppointment(userId, appointmentList);
+
+        if (newScheduler == null) return null;
+        
+        return newScheduler.Appointments;
+        
     }
 }

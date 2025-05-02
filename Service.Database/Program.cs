@@ -26,6 +26,7 @@ builder.Services.AddHttpClient<HolidaysService>()
 //* Ajout des Services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<HolidaysService>();
+builder.Services.AddScoped<BlockVacationService>();
 
 //* Ajout de MongoDB
 builder.Services.AddSingleton<MongoDbContext>();

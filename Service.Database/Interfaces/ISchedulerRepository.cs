@@ -14,4 +14,5 @@ public interface ISchedulerRepository
     Task<Scheduler> AddListAppointment(string userId, List<Appointment> appointments);
     Task<List<Appointment>> UpdateAppointment(string userId, Appointment appointment);
     Task<List<Appointment>> DeleteAppointment(string userId, Appointment appointment);
+    Task<List<Appointment>> GetBlockVacation(string userId, Appointment appointment);
 }

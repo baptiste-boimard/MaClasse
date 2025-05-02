@@ -58,7 +58,9 @@ public class HolidaysService
                     Start = appointment.StartDate,
                     End = DateTime.Parse(dateReprise2026),
                     Text = "Vacances d'Été",
-                    Color = "#7cd9fd"
+                    Color = "#7cd9fd",
+                    Recurring = false,
+                    IdRecurring = String.Empty
                 };
             }
             else
@@ -69,7 +71,9 @@ public class HolidaysService
                     Start = appointment.StartDate,
                     End = appointment.EndDate,
                     Text = appointment.Description,
-                    Color = "#7cd9fd"
+                    Color = "#7cd9fd",
+                    Recurring = false,
+                    IdRecurring = String.Empty
                 };
                 
             }
