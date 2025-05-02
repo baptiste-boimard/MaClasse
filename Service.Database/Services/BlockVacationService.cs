@@ -24,19 +24,20 @@ public class BlockVacationService
         int terminatedYear = appointment.Start.Month >= 9 ? appointment.Start.Year + 1 : appointment.Start.Year;
         
         //* Recherche de la date des vacances d'été de cette année
-        var appointmentList = await _mongoDbContext.Schedulers
+        var scheduler = await _mongoDbContext.Schedulers
             .Find(Builders<Scheduler>.Filter.Eq(s => s.IdUser, userId))
-            .Project(Builders<Scheduler>.Projection.Expression(s => s.Appointments))
-            .ToListAsync(ct);
+            .FirstOrDefaultAsync(ct);
+
+        var appointmentList = scheduler.Appointments;
         
         var vacationSummer = appointmentList
-            .SelectMany(list =>list)
+            .Select(list =>list)
             .FirstOrDefault(a => 
                 a.Text.Contains("Vacances d'Été", StringComparison.OrdinalIgnoreCase) &&
                 a.Start.Year == terminatedYear);
 
         var blockingList = appointmentList
-            .SelectMany(list => list)
+            .Select(list => list)
             .Where(a => (a.Text.Contains("Vacance", StringComparison.OrdinalIgnoreCase)
                          || a.Text.Contains("Pont", StringComparison.OrdinalIgnoreCase)) &&
                         a.Start < vacationSummer.Start)
