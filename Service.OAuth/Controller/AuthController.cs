@@ -187,12 +187,10 @@ public class AuthController: ControllerBase
         newScheduler = await _createDataService.AddHolidayToScheduler(updatedUser);
         
         
-        
-        
         //* Je récupére les données adjacentes
         // newScheduler = await _createDataService.GetDataScheduler(updatedUser.Id);
 
-        if (updatedUser != null)
+        if (updatedUser != null && newScheduler != null)
         {
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
                 updatedUser, false, userSession.Token, result.AccessToken, newScheduler);

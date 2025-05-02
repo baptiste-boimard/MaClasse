@@ -1,62 +1,80 @@
 ﻿using System.Text.Json;
+using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Api;
+using Microsoft.Extensions.Azure;
 
 public class HolidaysService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<HolidaysService> _logger;
 
-    public HolidaysService(HttpClient httpClient, ILogger<HolidaysService> logger)
+    public HolidaysService(
+        HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _logger = logger;
-
-        _httpClient.Timeout = TimeSpan.FromSeconds(200);
-        _httpClient.DefaultRequestVersion = new Version(1, 1);
-        _httpClient.DefaultVersionPolicy  = HttpVersionPolicy.RequestVersionExact;
     }
     
-    private const string ApiUrl =
-        "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records" +
-        "?select=description%2C%20start_date%2C%20end_date%2C%20zones%2C%20annee_scolaire" +
-        "&where=zones%3D%22Zone%20B%22" +
-        "&refine=annee_scolaire%3A%222025-2026%22" +
-        "&order_by=start_date" +
-        "&limit=100";
 
-    public async Task<ApiResultResponse> GetZoneBVacationsAsync(CancellationToken ct = default)
+    public async Task<List<Appointment>> GetZoneBVacationsAsync(UserProfile user)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, ApiUrl);
+        
+        //* Prise des infos pour 2025-2026
+        string zone = user.Zone[user.Zone.Length - 1].ToString();
 
-        try
+        var options = new JsonSerializerOptions
         {
-            using var response = await _httpClient
-                .SendAsync(request, HttpCompletionOption.ResponseContentRead, ct);
+            PropertyNameCaseInsensitive = true
+        };
 
-            response.EnsureSuccessStatusCode();
+        var apiUrl =
+            $"https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records?select=description%2C%20start_date%2C%20end_date%2C%20zones%2C%20annee_scolaire&where=zones%3A%22Zone%20{zone}%22&group_by=description%2C%20start_date%2C%20end_date%2C%20zones%2C%20annee_scolaire&order_by=start_date&limit=20&refine=annee_scolaire%3A%222025-2026%22&refine=annee_scolaire%3A%222024-2025%22";
+        
+        using var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+        
+        var response = await _httpClient.GetAsync(apiUrl);
+        response.EnsureSuccessStatusCode();
+        
+        var result = await response.Content.ReadFromJsonAsync<ApiResultResponse>(options);
+        
+        //* Il faut éliminer un doublon spécifique de la liste
+        var distinctVacations = result.Results
+            .Where(r => r.EndDate.Date != new DateTime(2025, 8, 29))
+            .ToList();     
+        
+        //* Une fois la liste des vacances obtenue il faut la mapper sur nos appointments
+        var appointments = new List<Appointment>();
 
-            await using var stream = await response.Content.ReadAsStreamAsync(ct);
-            return await JsonSerializer.DeserializeAsync<ApiResultResponse>(
-                stream,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-                ct
-            ) ?? throw new InvalidOperationException("Réponse vide de l’API");
-        }
-        catch (TaskCanceledException ex)
+        foreach (var appointment in distinctVacations )
         {
-            // Remplacement de Console.WriteLine
-            _logger.LogError(ex, "Appel vers l'API des vacances Zone B a dépassé le délai ({Timeout}s).", _httpClient.Timeout.TotalSeconds);
-            throw;
+            var appt = new Appointment();
+            
+            if (appointment.Description.Contains("Début des Vacances d'Été"))
+            {
+                //* Ajout de la date de fin non indiquée dans l'api
+                string dateReprise2026 = "2026-08-31T22:00:00+00:00";
+
+                appt = new Appointment
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Start = appointment.StartDate,
+                    End = DateTime.Parse(dateReprise2026),
+                    Text = "Vacances d'Été",
+                    Color = "#7cd9fd"
+                };
+            }
+            else
+            {
+                appt = new Appointment
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Start = appointment.StartDate,
+                    End = appointment.EndDate,
+                    Text = appointment.Description,
+                    Color = "#7cd9fd"
+                };
+                
+            }
+            appointments.Add(appt);
         }
-        catch (HttpRequestException e)
-        {
-            _logger.LogError(e, "Erreur HTTP lors de l'appel à l'API des vacances Zone B.");
-            throw;
-        }
-        catch (JsonException e)
-        {
-            _logger.LogError(e, "Erreur de désérialisation JSON de la réponse de l'API des vacances Zone B.");
-            throw;
-        }
+        return appointments;
     }
 }

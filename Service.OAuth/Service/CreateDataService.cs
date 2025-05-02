@@ -68,10 +68,10 @@ public class CreateDataService
         if (response.IsSuccessStatusCode)
         {
 
-            return null;
+            var scheduler = await response.Content.ReadFromJsonAsync<Scheduler>();
+            return scheduler;
         }
-
-        return null;
+        return new Scheduler();
     }
 }
     

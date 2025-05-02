@@ -93,6 +93,20 @@ public class SchedulerRepository : ISchedulerRepository
         return null;
     }
 
+    public async Task<Scheduler> AddListAppointment(string userId, List<Appointment> appointments)
+    {
+        var updatedScheduler = await _mongoDbContext.Schedulers
+            .FindOneAndUpdateAsync(
+                Builders<Scheduler>.Filter.Eq(s => s.IdUser, userId),
+                Builders<Scheduler>.Update.PushEach(s => s.Appointments, appointments),
+                new FindOneAndUpdateOptions<Scheduler>
+                {
+                    ReturnDocument = ReturnDocument.After
+                });
+
+        return updatedScheduler;
+    }
+
     public async Task<List<Appointment>> UpdateAppointment(string userId, Appointment appointment)
     {
         var updatedScheduler = await _mongoDbContext.Schedulers

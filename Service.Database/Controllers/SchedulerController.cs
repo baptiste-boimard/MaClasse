@@ -89,9 +89,14 @@ public class SchedulerController :  ControllerBase
     public async Task<IActionResult> AddHolidayToScheduler([FromBody] UserProfile user)
     {
         //* Utilisation de HolidaysService pour aller récupérer les données de vacances auprès de l'api
-        var holidaysAppointment = await _holidaysService.GetZoneBVacationsAsync();
+        var holidaysAppointment = await _holidaysService.GetZoneBVacationsAsync(user);
         
-        return Ok(holidaysAppointment);
+        //* Save dans la BDD
+        var newScheduler = await _schedulerRepository.AddListAppointment(user.Id, holidaysAppointment);
+
+        if (newScheduler == null) return BadRequest();
+        
+        return Ok(newScheduler);
     }
     
     [HttpPost]
