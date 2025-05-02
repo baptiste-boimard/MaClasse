@@ -61,7 +61,8 @@ public partial class AddAppointmentPage : ComponentBase
                 End = Model.End,
                 Text = Model.Text,
                 Color = Model.Color,
-                Recurring = Model.Recurring
+                Recurring = Model.Recurring,
+                IdRecurring = Model.IdRecurring
             };
             
             _colorValue = Model.Color;
@@ -101,7 +102,8 @@ public partial class AddAppointmentPage : ComponentBase
                         End = model.End,
                         Text = model.Text,
                         Color = _colorValue,
-                        Recurring = _recurring
+                        Recurring = _recurring,
+                        IdRecurring = model.IdRecurring
                     }
                 };
                 
@@ -162,7 +164,8 @@ public partial class AddAppointmentPage : ComponentBase
                     End = model.End,
                     Text = model.Text,
                     Color = _colorValue,
-                    Recurring = _recurring
+                    Recurring = _recurring,
+                    IdRecurring = model.IdRecurring
                 }
             };
             

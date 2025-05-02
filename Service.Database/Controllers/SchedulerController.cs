@@ -13,15 +13,18 @@ public class SchedulerController :  ControllerBase
     private readonly UserService _userService;
     private readonly ISchedulerRepository _schedulerRepository;
     private readonly HolidaysService _holidaysService;
+    private readonly BlockVacationService _blockVacationService;
 
     public SchedulerController(
         UserService userService,
         ISchedulerRepository schedulerRepository,
-        HolidaysService holidaysService)
+        HolidaysService holidaysService,
+        BlockVacationService blockVacationService)
     {
         _userService = userService;
         _schedulerRepository = schedulerRepository;
         _holidaysService = holidaysService;
+        _blockVacationService = blockVacationService;
     }
     
     [HttpPost]
@@ -128,15 +131,67 @@ public class SchedulerController :  ControllerBase
         
         if (existingAppointment == null) return BadRequest();
         
-        //* Si il existe on l'update
+        
+        //* Vérifie si c'est un nouveau récurrent
+        if (request.Appointment.Recurring && string.IsNullOrEmpty(request.Appointment.IdRecurring))
+        {
+            //* on met a jour l'appointement
+            request.Appointment.IdRecurring = Guid.NewGuid().ToString();
+            
+            //* il faut créer les autres appointement récurrent
+            var newRecurringAppointment =
+                await _blockVacationService.GetAppointmentWithoutVacation(userSession.UserId, request.Appointment);
+
+            if (newRecurringAppointment == null) return null;
+            
+            //* On ajoute ces cas dans la BDD
+            var recurringAppointmentAdded =
+                await _schedulerRepository.AddListAppointment(userSession.UserId, newRecurringAppointment);
+
+            if (recurringAppointmentAdded == null) return null;
+        }
+        
+        //* Si c'est un recurring et qu'on update en garder le recurring
+        if (request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
+        {
+            var idRecurring = request.Appointment.IdRecurring;
+            var startDate = request.Appointment.Start;
+
+            var appointmenetsDeleted =
+                await _schedulerRepository.DeleteListAppointment(userSession.UserId, idRecurring, startDate);
+
+            if (appointmenetsDeleted == null) return BadRequest();
+
+            var newAppointments =
+                await _schedulerRepository.GetBlockVacation(userSession.UserId, request.Appointment);
+            
+            if (newAppointments == null) return BadRequest();
+        }
+        
+        //* On supprime la récurrence
+        if (!request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
+        {
+            var idRecurring = request.Appointment.IdRecurring;
+            var startDate = request.Appointment.Start;
+            
+            //* Update l'appointement en request pour enlever la récurence
+            request.Appointment.Recurring = false;
+            request.Appointment.IdRecurring = String.Empty;
+            
+            var appointmenetsDeleted =
+                await _schedulerRepository.DeleteListAppointment(userSession.UserId, idRecurring, startDate);
+
+            if (appointmenetsDeleted == null) return BadRequest();
+        }
+        
+        //* Dans tous les cas on update l'appointement et on renvoie la liste des appointments
         
         var updatedAppointment = await _schedulerRepository.UpdateAppointment(
             userSession.UserId, request.Appointment);
         
         if (updatedAppointment == null) return BadRequest();
-
+        
         return Ok(updatedAppointment);
-
     }
     
     [HttpPost]
@@ -152,16 +207,41 @@ public class SchedulerController :  ControllerBase
 
         if (existingAppointment == null) return BadRequest();
 
-        //* Si il existe on le suprrime
-        var deletedAppointment = await _schedulerRepository.DeleteAppointment(
-            userSession.UserId, request.Appointment);
+        //* Si il existe et pas de récurrence on le suprrime
+        if (!request.Appointment.Recurring)
+        {
+            var deletedAppointment = await _schedulerRepository.DeleteAppointment(
+                userSession.UserId, request.Appointment);
         
-        if (deletedAppointment == null) return BadRequest();
+            if (deletedAppointment == null) return BadRequest();
 
-        return Ok(deletedAppointment);
+            return Ok(deletedAppointment);
+        }
+        else
+        {
+            //* On supprime aussi celuide base
+            var deletedAppointment =
+                await _schedulerRepository.DeleteAppointment(userSession.UserId, request.Appointment);
 
+            if (deletedAppointment == null) return BadRequest();
+            
+            //* Si récurrence on supprime toutes les récurrences a partir de la date
+            var idRecurring = request.Appointment.IdRecurring;
+            var startDate = request.Appointment.Start;
+
+            var deletedAppointments =
+                await _schedulerRepository.DeleteListAppointment(userSession.UserId, idRecurring, startDate);
+
+            if (deletedAppointments.Count == 0) return BadRequest();
+            
+            
+            
+            //* je récupére la liste des appointmenst restant
+            var scheduler = await _schedulerRepository.GetScheduler(userSession.UserId);
+
+            if (scheduler == null) return BadRequest();
+
+            return Ok(scheduler.Appointments);
+        }
     }
-    
-
-    
 }

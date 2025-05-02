@@ -159,6 +159,26 @@ public class SchedulerRepository : ISchedulerRepository
         return null;
     }
 
+    public async Task<List<Appointment>> DeleteListAppointment(string idUser, string idRecurring, DateTime startDate)
+    {
+        //* Récupération des elements a delete
+        var filterScheduler = Builders<Scheduler>.Filter.Eq(s => s.IdUser, idUser);
+
+        var scheduler = await _mongoDbContext.Schedulers.Find(filterScheduler).FirstOrDefaultAsync();
+
+        
+        var deletedAppointments = scheduler.Appointments
+            .Where(a => a.IdRecurring == idRecurring && a.Start > startDate)
+            .ToList();
+
+        await _mongoDbContext.Schedulers.UpdateOneAsync(
+            filterScheduler,
+            Builders<Scheduler>.Update.PullFilter(s => s.Appointments,
+                a => a.IdRecurring == idRecurring && a.Start > startDate));
+
+        return deletedAppointments;
+    }
+
     public async Task<List<Appointment>> GetBlockVacation(string userId, Appointment appointment)
     {
         var appointmentList = await _blockVacationService.GetAppointmentWithoutVacation(userId, appointment);

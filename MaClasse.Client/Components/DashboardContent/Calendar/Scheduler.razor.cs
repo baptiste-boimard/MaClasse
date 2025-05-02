@@ -53,7 +53,9 @@ public partial class Scheduler : ComponentBase
                 Start = a.Start.ToLocalTime(),
                 End = a.End.ToLocalTime(),
                 Text = a.Text,
-                Color = a.Color
+                Color = a.Color,
+                Recurring = a.Recurring,
+                IdRecurring = a.IdRecurring
 
             }).ToList();
     }
@@ -67,7 +69,9 @@ public partial class Scheduler : ComponentBase
                 Start = a.Start.ToLocalTime(),
                 End = a.End.ToLocalTime(),
                 Text = a.Text,
-                Color = a.Color
+                Color = a.Color,
+                Recurring = a.Recurring,
+                IdRecurring = a.IdRecurring
 
             }).ToList();
         InvokeAsync(() =>
@@ -121,8 +125,6 @@ public partial class Scheduler : ComponentBase
         showAppointmentPanel = false;
         isEditMode = false;
         scheduler.Reload();
-        
-        //! Enregistrement de l'appointement vers la base de données
     }
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
