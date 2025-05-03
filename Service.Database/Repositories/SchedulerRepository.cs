@@ -127,7 +127,10 @@ public class SchedulerRepository : ISchedulerRepository
                     .Set("Appointments.$.Start", appointment.Start)
                     .Set("Appointments.$.End", appointment.End)
                     .Set("Appointments.$.Text", appointment.Text)
-                    .Set("Appointments.$.Color", appointment.Color),
+                    .Set("Appointments.$.Color", appointment.Color)
+                    .Set("Appointments.$.Recurring", appointment.Recurring)
+                    .Set("Appointments.$.IdRecurring", appointment.IdRecurring),
+                    
                 new FindOneAndUpdateOptions<Scheduler>
                 {
                     ReturnDocument = ReturnDocument.After

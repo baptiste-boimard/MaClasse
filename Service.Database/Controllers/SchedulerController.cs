@@ -1,5 +1,6 @@
 ﻿using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Database;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Interfaces;
 using Service.Database.Services;
@@ -132,24 +133,7 @@ public class SchedulerController :  ControllerBase
         if (existingAppointment == null) return BadRequest();
         
         
-        //* Vérifie si c'est un nouveau récurrent
-        if (request.Appointment.Recurring && string.IsNullOrEmpty(request.Appointment.IdRecurring))
-        {
-            //* on met a jour l'appointement
-            request.Appointment.IdRecurring = Guid.NewGuid().ToString();
-            
-            //* il faut créer les autres appointement récurrent
-            var newRecurringAppointment =
-                await _blockVacationService.GetAppointmentWithoutVacation(userSession.UserId, request.Appointment);
-
-            if (newRecurringAppointment == null) return null;
-            
-            //* On ajoute ces cas dans la BDD
-            var recurringAppointmentAdded =
-                await _schedulerRepository.AddListAppointment(userSession.UserId, newRecurringAppointment);
-
-            if (recurringAppointmentAdded == null) return null;
-        }
+        
         
         //* Si c'est un recurring et qu'on update en garder le recurring
         if (request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
@@ -166,9 +150,53 @@ public class SchedulerController :  ControllerBase
                 await _schedulerRepository.GetBlockVacation(userSession.UserId, request.Appointment);
             
             if (newAppointments == null) return BadRequest();
+            
+            //! On Supprime le cas qui vient d'etre update cat il est recrée par GetAppointmentWithoutVacation
+            var listAppointmentAfterDelete = 
+                await _schedulerRepository.DeleteAppointment(userSession.UserId, request.Appointment);
+
+            if (listAppointmentAfterDelete == null) return BadRequest();
+
+            //Je renvoi la liste apres le delete
+            return Ok(listAppointmentAfterDelete);
         }
         
-        //* On supprime la récurrence
+        
+        
+        
+        //* Cas ou l'on ajoute la récurrence
+        if (request.Appointment.Recurring && string.IsNullOrEmpty(request.Appointment.IdRecurring))
+        {
+            // on met a jour l'appointement
+            request.Appointment.IdRecurring = Guid.NewGuid().ToString();
+            
+            // il faut créer les autres appointement récurrent
+            var newRecurringAppointment =
+                await _blockVacationService.GetAppointmentWithoutVacation(userSession.UserId, request.Appointment);
+
+            if (newRecurringAppointment == null) return null;
+            
+            // On ajoute ces cas dans la BDD
+            var recurringAppointmentAdded =
+                await _schedulerRepository.AddListAppointment(userSession.UserId, newRecurringAppointment);
+
+            if (recurringAppointmentAdded == null) return null;
+            
+            //! On Supprime le cas qui vient d'etre update cat il est recrée par GetAppointmentWithoutVacation
+            var listAppointmentAfterDelete = 
+                await _schedulerRepository.DeleteAppointment(userSession.UserId, request.Appointment);
+
+            if (listAppointmentAfterDelete == null) return BadRequest();
+
+            //Je renvoi la liste apres le delete
+            return Ok(listAppointmentAfterDelete);
+
+        }
+        
+        
+        
+        
+        //* Cas ou l'on supprime la récurrence
         if (!request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
         {
             var idRecurring = request.Appointment.IdRecurring;
@@ -184,12 +212,12 @@ public class SchedulerController :  ControllerBase
             if (appointmenetsDeleted == null) return BadRequest();
         }
         
-        //* Dans tous les cas on update l'appointement et on renvoie la liste des appointments
         
+        //* Dans tous les cas on update l'appointement et on renvoie la liste des appointments
         var updatedAppointment = await _schedulerRepository.UpdateAppointment(
             userSession.UserId, request.Appointment);
         
-        if (updatedAppointment == null) return BadRequest();
+        // if (updatedAppointment == null) return BadRequest();
         
         return Ok(updatedAppointment);
     }
