@@ -1,4 +1,4 @@
-﻿namespace MaClasse.Shared.Models.Database;
+﻿namespace MaClasse.Shared.Models.Scheduler;
 
 public class SchedulerRequest
 {

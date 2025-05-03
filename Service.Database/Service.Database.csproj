@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-Service.Database-e30c7b73-0603-4c68-9be1-f2d3e64efc5e</UserSecretsId>
     </PropertyGroup>

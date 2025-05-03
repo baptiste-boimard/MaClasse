@@ -1,6 +1,6 @@
 ﻿using MaClasse.Client.States;
 using MaClasse.Shared.Models;
-using MaClasse.Shared.Models.Database;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using MudBlazor.Utilities;
 using Radzen;

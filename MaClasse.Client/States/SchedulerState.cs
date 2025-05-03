@@ -1,5 +1,6 @@
 ﻿using MaClasse.Client.Components;
 using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Scheduler;
 
 namespace MaClasse.Client.States;
 

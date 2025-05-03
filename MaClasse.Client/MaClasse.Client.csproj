@@ -178,9 +178,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <AdditionalFiles Include="Components\DashboardContent\Menu\ProfileDialog.razor" />
-      <AdditionalFiles Include="Components\DashboardContent\Menu\TopMenu.razor" />
-    </ItemGroup>
-
 </Project>

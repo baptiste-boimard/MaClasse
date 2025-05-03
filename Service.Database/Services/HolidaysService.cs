@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Api;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.Extensions.Azure;
 
 public class HolidaysService

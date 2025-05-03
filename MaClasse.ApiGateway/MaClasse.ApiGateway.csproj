@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-MaClasse.ApiGateway-bf5ca011-a10b-4e59-99a0-3431bea78748</UserSecretsId>
     </PropertyGroup>

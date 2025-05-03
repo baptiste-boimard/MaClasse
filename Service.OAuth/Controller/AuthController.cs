@@ -1,6 +1,6 @@
 ﻿using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Auth;
-using MaClasse.Shared.Models.Database;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Services;
 using Service.OAuth.Interfaces;

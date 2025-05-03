@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using MaClasse.Client.States;
 using Radzen;
 using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using MudBlazor.Extensions;
 using Radzen.Blazor;

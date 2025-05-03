@@ -58,8 +58,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Sécurité renforcée
     });
-builder.Services.AddScoped(_ => new HttpClient());
 
+builder.Services.AddHttpClient();
 
 builder.Services.AddAuthorizationCore();
 

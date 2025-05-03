@@ -1,5 +1,5 @@
 ﻿using MaClasse.Shared.Models;
-using MaClasse.Shared.Models.Database;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Service.OAuth.Service;

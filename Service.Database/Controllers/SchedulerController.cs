@@ -1,9 +1,10 @@
 ﻿using MaClasse.Shared.Models;
-using MaClasse.Shared.Models.Database;
+using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Interfaces;
 using Service.Database.Services;
+// ReSharper disable All
 
 namespace Service.Database.Controllers;
 
@@ -134,7 +135,6 @@ public class SchedulerController :  ControllerBase
         
         
         
-        
         //* Si c'est un recurring et qu'on update en garder le recurring
         if (request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
         {
@@ -151,7 +151,7 @@ public class SchedulerController :  ControllerBase
             
             if (newAppointments == null) return BadRequest();
             
-            //! On Supprime le cas qui vient d'etre update cat il est recrée par GetAppointmentWithoutVacation
+            //! On Supprime le cas qui serait à update car il est recrée par GetAppointmentWithoutVacation
             var listAppointmentAfterDelete = 
                 await _schedulerRepository.DeleteAppointment(userSession.UserId, request.Appointment);
 

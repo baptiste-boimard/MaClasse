@@ -1,4 +1,4 @@
-﻿namespace MaClasse.Shared.Models;
+﻿namespace MaClasse.Shared.Models.Scheduler;
 
 public class Appointment
 {

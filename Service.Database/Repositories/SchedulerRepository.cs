@@ -1,5 +1,5 @@
 ﻿using MaClasse.Shared.Models;
-using MaClasse.Shared.Models.Database;
+using MaClasse.Shared.Models.Scheduler;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Service.Database.Database;
