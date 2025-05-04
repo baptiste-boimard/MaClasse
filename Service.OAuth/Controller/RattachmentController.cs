@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.ViewDashboard;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
 
@@ -196,4 +197,22 @@ public class RattachmentController: ControllerBase
         
         return Unauthorized();
     }
+
+    [HttpPost]
+    [Route("get-rattachments-infos")]
+    public async Task<IActionResult> GetRattachments([FromBody] ViewDashboardRequest request)
+    {
+        //* Controle de l'existence de la session
+        var existingSession = 
+            await _sessionRepository.GetUserIdByCookies(request.IdSession);
+
+        if (existingSession == null) return Unauthorized();
+
+        // je recupere les infos des utilisateur grace à leur IdRole
+        var rattachmentsInfos = await _authRepository.GetUsersByIdRoles(request.AsDirecteur);
+
+        if (rattachmentsInfos == null) return BadRequest();
+        
+        return Ok(rattachmentsInfos);
+    } 
 }

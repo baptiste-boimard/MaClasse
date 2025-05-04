@@ -44,6 +44,18 @@ public class SchedulerController :  ControllerBase
     }
 
     [HttpPost]
+    [Route("get-schedulers")]
+    public async Task<IActionResult> GetManyScheduler(List<string> idsProfesseur)
+    {
+        var schedulers = await _schedulerRepository.GetManyScheduler(idsProfesseur);
+
+        if (schedulers == null) return BadRequest();
+
+        return Ok(schedulers);
+    }
+    
+    
+    [HttpPost]
     [Route("add-scheduler")]
     public async Task<IActionResult> AddScheduler([FromBody] CreateSchedulerRequest request)
     {

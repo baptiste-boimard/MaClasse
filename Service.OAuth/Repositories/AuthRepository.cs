@@ -83,5 +83,20 @@ public class AuthRepository : IAuthRepository
         await _postgresDbContext.SaveChangesAsync();
 
         return user;
-    } 
+    }
+
+    public async Task<List<UserProfile>> GetUsersByIdRoles(List<Rattachment> listRattachments)
+    {
+        // Extraction des idProfs des rattachements
+        var ids = listRattachments
+            .Select(r => r.IdProfesseur)
+            .Distinct()
+            .ToList();
+
+        var userProfiles = await _postgresDbContext.UserProfiles
+            .Where(u => ids.Contains(u.IdRole))
+            .ToListAsync();
+
+        return userProfiles;
+    }
 }

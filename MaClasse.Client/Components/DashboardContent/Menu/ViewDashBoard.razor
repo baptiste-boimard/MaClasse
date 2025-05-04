@@ -1,0 +1,17 @@
+﻿<MudButtonGroup Color="Color.Primary" Variant="MudBlazor.Variant.Outlined">
+    <MudButton IconColor="Color.Warning">Votre vue</MudButton>
+
+    <MudButton>@_buttonText</MudButton>
+    <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+        
+        <MudMenuItem OnClick="() => SetButtonText(_buttonTextOwner, _userState.Id)">Votre Dashboard</MudMenuItem>
+        
+        @foreach (var dashboard in Dashboards)
+        {
+            <MudMenuItem OnClick="() => SetButtonText(dashboard.UserName, dashboard.UserId)">
+                @dashboard.UserEmail
+            </MudMenuItem>
+        }
+        
+    </MudMenu>
+</MudButtonGroup>

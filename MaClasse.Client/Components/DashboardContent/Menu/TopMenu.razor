@@ -68,6 +68,14 @@
         </MudButton>
     </div>
     
+    <div>
+        @if (_userState.AsDirecteur.Count > 0)
+        {
+            <ViewDashBoard/>
+        }
+    </div>
+    
+    
     <div style="padding-right: 1rem;
                 display: flex;
                 align-items: center">

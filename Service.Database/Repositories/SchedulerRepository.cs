@@ -32,6 +32,18 @@ public class SchedulerRepository : ISchedulerRepository
 
         return null;
     }
+
+    public async Task<List<Scheduler>> GetManyScheduler(List<string> idsProfesseur)
+    {
+        var schedulers = await _mongoDbContext.Schedulers
+            .Find(
+                Builders<Scheduler>.Filter.In(s => s.IdUser, idsProfesseur))
+            .ToListAsync();
+
+        if (schedulers.Count == 0) return null;
+
+        return schedulers;
+    }
     
     public async Task<Scheduler> AddScheduler(string userId)
     {

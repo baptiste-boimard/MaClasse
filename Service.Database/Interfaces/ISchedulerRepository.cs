@@ -7,6 +7,7 @@ namespace Service.Database.Interfaces;
 public interface ISchedulerRepository
 {
     Task<Scheduler> GetScheduler(string userId);
+    Task<List<Scheduler>> GetManyScheduler(List<string> idsProfesseur);
     Task<Scheduler> AddScheduler(string userId);
     Task<Appointment> GetOneAppointment(string userId, Appointment appointment);
     Task<Appointment> GetOneAppointmentById(string userId, Appointment appointment);

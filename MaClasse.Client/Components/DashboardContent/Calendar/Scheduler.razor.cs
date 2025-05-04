@@ -15,14 +15,20 @@ public partial class Scheduler : ComponentBase
 
     private readonly DialogService _dialogService;
     private readonly SchedulerState _schedulerState;
+    private readonly UserState _userState;
+    private readonly ViewDashboardState _viewDashboardState;
 
 
     public Scheduler(
         DialogService dialogService,
-        SchedulerState schedulerState)
+        SchedulerState schedulerState,
+        UserState userState,
+        ViewDashboardState viewDashboardState)
     {
         _dialogService = dialogService;
         _schedulerState = schedulerState;
+        _userState = userState;
+        _viewDashboardState = viewDashboardState;
     }
 
     private RadzenScheduler<Appointment> scheduler;
@@ -45,7 +51,7 @@ public partial class Scheduler : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         _schedulerState.OnChange += RefreshAppointments;
-    
+        
         //* Récupération des appointments avec l'heure local
         appointments = _schedulerState.Appointments
             .Select(a => new Appointment
@@ -57,30 +63,51 @@ public partial class Scheduler : ComponentBase
                 Color = a.Color,
                 Recurring = a.Recurring,
                 IdRecurring = a.IdRecurring
-
+        
             }).ToList();
     }
     
     private void RefreshAppointments()
     {
-        appointments = _schedulerState.Appointments
-            .Select(a => new Appointment
-            {
-                Id = a.Id,
-                Start = a.Start.ToLocalTime(),
-                End = a.End.ToLocalTime(),
-                Text = a.Text,
-                Color = a.Color,
-                Recurring = a.Recurring,
-                IdRecurring = a.IdRecurring
+        //* Récupération des appointments avec l'heure local en fonction de qui je regarde
 
-            }).ToList();
-        InvokeAsync(() =>
+        if (_schedulerState.SchedulerDisplayed == _userState.Id)
         {
-            // scheduler.Reload();
-            StateHasChanged();
+            appointments = _schedulerState.Appointments
+                .Select(a => new Appointment
+                {
+                    Id = a.Id,
+                    Start = a.Start.ToLocalTime(),
+                    End = a.End.ToLocalTime(),
+                    Text = a.Text,
+                    Color = a.Color,
+                    Recurring = a.Recurring,
+                    IdRecurring = a.IdRecurring
 
-        });
+                }).ToList();
+        
+            InvokeAsync(() => { StateHasChanged(); });
+        }
+        else
+        {
+            appointments = _viewDashboardState.DashBoards
+                .FirstOrDefault(d => d.UserId == _schedulerState.SchedulerDisplayed)
+                .UserScheduler
+                .Appointments
+                .Select(a => new Appointment
+                {
+                    Id = a.Id,
+                    Start = a.Start.ToLocalTime(),
+                    End = a.End.ToLocalTime(),
+                    Text = a.Text,
+                    Color = a.Color,
+                    Recurring = a.Recurring,
+                    IdRecurring = a.IdRecurring
+
+                }).ToList();
+            
+            InvokeAsync(() => { StateHasChanged(); });
+        }
     }
     
     void OnDaySelect(SchedulerDaySelectEventArgs args)

@@ -10,4 +10,5 @@ public interface IAuthRepository
     Task<bool> CheckIdRole(string idRole);
     Task<List<Rattachment>> GetRattachmentByIdRole(string idRole);
     Task<UserProfile> DeleteUser(UserProfile user);
+    Task<List<UserProfile>> GetUsersByIdRoles(List<Rattachment> listRattachments);
 }

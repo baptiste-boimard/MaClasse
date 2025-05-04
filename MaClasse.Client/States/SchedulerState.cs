@@ -13,6 +13,7 @@ public class SchedulerState
     public List<Appointment> Appointments { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public string SchedulerDisplayed { get; set; }
     
     
     public void SetScheduler(SchedulerState schedulerState)
@@ -49,6 +50,12 @@ public class SchedulerState
         Appointments = appointments;
         NotifyStateChanged();
         return appointments;
+    }
+
+    public void SetViewDashboard(string userId)
+    {
+        SchedulerDisplayed = userId;
+        NotifyStateChanged();
     }
     
     private void NotifyStateChanged()
