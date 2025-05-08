@@ -13,11 +13,13 @@ public partial class ProfileDialog : ComponentBase
     private readonly ServiceLogout _serviceLogout;
     private readonly NavigationManager _navigationManager;
     private readonly UserState _userState;
+    private readonly ViewDashboardState _viewDashboardState;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
 
     public ProfileDialog(
         UserState userState,
+        ViewDashboardState viewDashboardState,
         HttpClient httpClient,
         IConfiguration configuration,
         IDialogService dialogService,
@@ -25,6 +27,7 @@ public partial class ProfileDialog : ComponentBase
         NavigationManager navigationManager)
     {
         _userState = userState;
+        _viewDashboardState = viewDashboardState;
         _httpClient = httpClient;
         _configuration = configuration;
         _dialogService = dialogService;
@@ -122,6 +125,9 @@ public partial class ProfileDialog : ComponentBase
             //* Affichage de la boîte de dialogue
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
             await dialog.Result;
+            
+            //* Mise a jour du bouton de choix des dahsboards
+            _viewDashboardState.GetViewDashboardFromDatabase();
         }
 
         if (response.StatusCode == HttpStatusCode.Conflict)
@@ -192,6 +198,9 @@ public partial class ProfileDialog : ComponentBase
             //* Affichage de la boîte de dialogue
             var dialog = await _dialogService.ShowAsync<ErrorRattachmentDialog>("Succès du Rattachement", parameters, options);
             await dialog.Result;
+            
+            //* Mise a jour du bouton de choix des dahsboards
+            _viewDashboardState.GetViewDashboardFromDatabase();
         }
 
         if (response.StatusCode == HttpStatusCode.Conflict)

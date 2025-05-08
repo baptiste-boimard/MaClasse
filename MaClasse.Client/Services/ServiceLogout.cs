@@ -9,6 +9,8 @@ public class ServiceLogout
 {
     private readonly IConfiguration _configuration;
     private readonly UserState _userState;
+    private readonly SchedulerState _schedulerState;
+    private readonly ViewDashboardState _viewDashboardState;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly NavigationManager _navigationManager;
     private readonly ProtectedLocalStorage _protectedLocalStorage;
@@ -18,12 +20,16 @@ public class ServiceLogout
         HttpClient httpClient,
         IConfiguration configuration,
         UserState userState,
+        SchedulerState schedulerState,
+        ViewDashboardState viewDashboardState,
         AuthenticationStateProvider authenticationStateProvider,
         NavigationManager navigationManager,
         ProtectedLocalStorage protectedLocalStorage)
     {
         _configuration = configuration;
         _userState = userState;
+        _schedulerState = schedulerState;
+        _viewDashboardState = viewDashboardState;
         _authenticationStateProvider = authenticationStateProvider;
         _navigationManager = navigationManager;
         _protectedLocalStorage = protectedLocalStorage;
@@ -38,8 +44,10 @@ public class ServiceLogout
 
         var response = await _httpClient.PostAsync($"{_configuration["Url:ApiGateway"]}/api/auth/logout-session", payload);
         
-        //* J'efface le UserState
+        //* J'efface les States
         _userState.ResetUserState();
+        _viewDashboardState.ResetViewDashboardState();
+        _schedulerState.ResetSchedulerState();
         
         //* J'efface le user des identity
         //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
