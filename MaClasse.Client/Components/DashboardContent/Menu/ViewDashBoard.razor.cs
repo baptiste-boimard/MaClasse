@@ -58,70 +58,10 @@ public partial class ViewDashBoard : ComponentBase
     {
         if (firstRender)
         {
-             //* Au chargement de notre composant on va charger les infos concernant
-        //* les rattachements
-        
+
         //* Récupération des dashboard rattachés
         _viewDashboardState.GetViewDashboardFromDatabase();
 
-        // var viewDashboardRequest = new ViewDashboardRequest
-        // {
-        //     IdSession = _userState.IdSession,
-        //     AsDirecteur = _userState.AsDirecteur
-        // };
-        
-        // a partir des rattachment on va chercher les infos des personnes
-        // pour les mettre dans ViewDashboardState.
-        // var response = await _httpClient.PostAsJsonAsync(
-        //     $"{_configuration["Url:ApiGateway"]}/api/auth/get-rattachments-infos",
-        //     viewDashboardRequest);
-
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     usersProfile = await response.Content.ReadFromJsonAsync<List<UserProfile>>();
-        // }
-        //
-        // // j'ai les id des prof et leur infos je vais recupere le scheduler
-        // // extaction des idProf pour demander les scheduler
-        //
-        // var IdsProfesseur = usersProfile
-        //     .Select(u => u.Id)
-        //     .Distinct()
-        //     .ToList();
-        //
-        // var responseScheduler = await _httpClient.PostAsJsonAsync(
-        //     $"{_configuration["Url:ApiGateway"]}/api/database/get-schedulers",
-        // IdsProfesseur);
-        //
-        //
-        // if (responseScheduler.IsSuccessStatusCode)
-        // {
-        //     Schedulers = await responseScheduler.Content.ReadFromJsonAsync<List<Scheduler>>();
-        // }
-        //
-        // // j'ai les schedulers et les infos
-        // // je remplis mon state
-        //
-        // var viewDashboardState = new ViewDashboardState
-        // {
-        //     DashBoards = usersProfile
-        //         .Select(user =>
-        //         {
-        //             var scheduler = Schedulers.FirstOrDefault(
-        //                 s => s.IdUser == user.Id);
-        //
-        //             return new UserDashboard
-        //             {
-        //                 UserId = user.Id,
-        //                 UserEmail = user.Email,
-        //                 UserName = user.Name,
-        //                 UserScheduler = scheduler
-        //             };
-        //         }).ToList()
-        // };
-        //
-        // _viewDashboardState.SetViewDashboard(viewDashboardState);
-        //
         }
     }
 

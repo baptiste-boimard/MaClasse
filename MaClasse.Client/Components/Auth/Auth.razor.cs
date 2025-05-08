@@ -124,6 +124,7 @@ public partial class Auth : ComponentBase
                 Appointments = returnResponse.Scheduler.Appointments,
                 CreatedAt = returnResponse.Scheduler.CreatedAt,
                 UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+                SchedulerDisplayed = returnResponse.Scheduler.IdUser
             };
                 
             _userState.SetUser(newUserState);
@@ -207,6 +208,8 @@ public partial class Auth : ComponentBase
                     Appointments = returnResponse.Scheduler.Appointments,
                     CreatedAt = returnResponse.Scheduler.CreatedAt,
                     UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+                    SchedulerDisplayed = returnResponse.Scheduler.IdUser
+
                 };
                 
                 _userState.SetUser(newUserState);

@@ -92,8 +92,8 @@ public partial class Scheduler : ComponentBase
         {
             appointments = _viewDashboardState.DashBoards
                 .FirstOrDefault(d => d.UserId == _schedulerState.SchedulerDisplayed)
-                .UserScheduler
-                .Appointments
+                ?.UserScheduler
+                ?.Appointments
                 .Select(a => new Appointment
                 {
                     Id = a.Id,

@@ -14,6 +14,7 @@ public class SchedulerState
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public string SchedulerDisplayed { get; set; }
+    public bool isReadOnly { get; set; } = false;
     
     
     public void SetScheduler(SchedulerState schedulerState)
@@ -23,6 +24,7 @@ public class SchedulerState
         Appointments = schedulerState.Appointments;
         CreatedAt = schedulerState.CreatedAt;
         UpdatedAt = schedulerState.UpdatedAt;
+        SchedulerDisplayed = schedulerState.SchedulerDisplayed;
         
         NotifyStateChanged();
 
@@ -45,16 +47,17 @@ public class SchedulerState
 
     }
     
-    public List<Appointment> SetAppointments(List<Appointment> appointments)
+    public void SetAppointments(List<Appointment> appointments)
     {
         Appointments = appointments;
         NotifyStateChanged();
-        return appointments;
+        // return appointments;
     }
 
     public void SetViewDashboard(string userId)
     {
         SchedulerDisplayed = userId;
+        isReadOnly = userId != IdUser ? true : false;
         NotifyStateChanged();
     }
     
