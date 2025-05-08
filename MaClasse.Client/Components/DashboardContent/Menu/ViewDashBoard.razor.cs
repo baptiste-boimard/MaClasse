@@ -27,9 +27,7 @@ public partial class ViewDashBoard : ComponentBase
         _httpClient = httpClient;
         _configuration = configuration;
     }
-
-    // private List<UserProfile> usersProfile;
-    // private List<Scheduler> Schedulers;
+    
     private List<UserDashboard> Dashboards;
     private static string _buttonTextOwner = "Votre Dashboard";
     private string _buttonText = _buttonTextOwner;
@@ -68,8 +66,6 @@ public partial class ViewDashBoard : ComponentBase
     private void SetButtonText(string userName, string userId)
     {
         _buttonText = userName;
-        // action qui lance l'affichahe du dashboard
-        // if (userName == "Votre Dashboard") userId = _userState.Id;
         _schedulerState.SetViewDashboard(userId);
     }
 }

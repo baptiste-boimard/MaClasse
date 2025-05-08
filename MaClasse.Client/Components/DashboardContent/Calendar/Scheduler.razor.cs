@@ -5,8 +5,12 @@ using Radzen;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using MudBlazor;
 using MudBlazor.Extensions;
 using Radzen.Blazor;
+using DialogService = Radzen.DialogService;
 
 namespace MaClasse.Client.Components.DashboardContent.Calendar;
 
@@ -17,18 +21,21 @@ public partial class Scheduler : ComponentBase
     private readonly SchedulerState _schedulerState;
     private readonly UserState _userState;
     private readonly ViewDashboardState _viewDashboardState;
+    private readonly IJSRuntime _jsRuntime;
 
 
     public Scheduler(
         DialogService dialogService,
         SchedulerState schedulerState,
         UserState userState,
-        ViewDashboardState viewDashboardState)
+        ViewDashboardState viewDashboardState,
+        IJSRuntime jsRuntime)
     {
         _dialogService = dialogService;
         _schedulerState = schedulerState;
         _userState = userState;
         _viewDashboardState = viewDashboardState;
+        _jsRuntime = jsRuntime;
     }
 
     private RadzenScheduler<Appointment> scheduler;
@@ -43,13 +50,28 @@ public partial class Scheduler : ComponentBase
     DateTime selectedStart;
     DateTime selectedEnd;
     private bool isEditMode = false;
+    private bool isEditionMode = false;
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
-    private IList<Appointment> appointments = new List<Appointment>();
+    private List<Appointment> appointments = new List<Appointment>();
     private Appointment selectedAppointment;
+    
+    //* Ouverture du MudMenu
+    private DotNetObjectReference<Scheduler> _dotNetRef;
+    private bool showContextMenu = false;
+    private int menuX = 0;
+    private int menuY = 0;
+    private bool isClosingContextMenu = false;
+
+
 
     
     protected override async Task OnInitializedAsync()
     {
+        //* Initialisation des scripts js
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await _jsRuntime.InvokeVoidAsync("appointments.setInstance", _dotNetRef);
+        await _jsRuntime.InvokeVoidAsync("appointments.registerOutsideClick");
+        
         _schedulerState.OnChange += RefreshAppointments;
         
         //* Récupération des appointments avec l'heure local
@@ -125,8 +147,9 @@ public partial class Scheduler : ComponentBase
     
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
     {
-        
-        if (args.View.Text != "Year")
+        if (isClosingContextMenu) return;
+
+        if (!_schedulerState.isReadOnly)
         {
             selectedStart = args.Start;
             selectedEnd = args.End;
@@ -152,17 +175,31 @@ public partial class Scheduler : ComponentBase
         appointments.Add(appointment);
         showAppointmentPanel = false;
         isEditMode = false;
+        _schedulerState.SetAppointments(appointments);
         scheduler.Reload();
     }
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
     {
-        
-        selectedStart = args.Data.Start;
-        selectedEnd = args.Data.End;
-        selectedAppointment = args.Data;
-        isEditMode = true;
-        showAppointmentPanel = true;
+        if (isEditionMode)
+        {
+            selectedStart = args.Data.Start;
+            selectedEnd = args.Data.End;
+            selectedAppointment = args.Data;
+            isEditMode = true;
+            showAppointmentPanel = true;
+        }
+    }
+    
+    private void OpenEditPanelForSelectedAppointment()
+    {
+        if (selectedAppointment != null)
+        {
+            selectedStart = selectedAppointment.Start;
+            selectedEnd = selectedAppointment.End;
+            isEditMode = true;
+            showAppointmentPanel = true;
+        }
     }
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
@@ -170,6 +207,7 @@ public partial class Scheduler : ComponentBase
         if (!string.IsNullOrEmpty(args.Data.Color))
         {
             //* Applique la couleur de fond depuis l'objet
+            args.Attributes["onmousedown"] = $"appointments.handleAppointmentClick(event, '{args.Data.Id}')";
             args.Attributes["style"] = $"background-color: {args.Data.Color}; color: black;";
         }
     }
@@ -267,5 +305,68 @@ public partial class Scheduler : ComponentBase
                 return $"{firstDayOfWeek:dd/MM/yyyy} au {lastDayOfWeek:dd/MM/yyyy}";
             }
         }
+    }
+
+    private void ToogleEditMode()
+    {
+        isEditionMode = !isEditionMode;
+    }
+    
+    //* Ouuverture du menu quand clic sur un appointment
+    // [JSInvokable]
+    // public async Task HandleAppointmentClick(string id)
+    // {
+    //     try
+    //     {
+    //         selectedAppointment = _schedulerState.Appointments.FirstOrDefault(a => a.Id == id);
+    //
+    //         var position = await _jsRuntime.InvokeAsync<MousePosition>("appointments.getLastClickPosition");
+    //
+    //         _mouseXpx = $"{position.x}px";
+    //         _mouseYpx = $"{position.y}px";
+    //
+    //         await InvokeAsync(StateHasChanged);     // ⚙️ repositionne l'ancre invisible
+    //         await Task.Delay(50);                   // ✅ attend que le DOM soit bien re-rendu
+    //
+    //         await _contextMenu.OpenMenuAsync(new MouseEventArgs());
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         throw;
+    //     }
+    // }
+    
+    [JSInvokable("ShowCustomMenu")]
+    public async Task ShowCustomMenu(string id, int x, int y)
+    {
+        selectedAppointment = _schedulerState.Appointments.FirstOrDefault(a => a.Id == id);
+        menuX = x;
+        menuY = y;
+        showContextMenu = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    [JSInvokable]
+    public async void CloseCustomMenu()
+    {
+        isClosingContextMenu = true;
+
+        await Task.Delay(150); // Donne le temps au clic de se propager
+        showContextMenu = false;
+        isClosingContextMenu = false;
+
+        await InvokeAsync(StateHasChanged);
+    }
+    // private string GetAnchorStyle()
+    // {
+    //     return $"position: fixed; top: {_mouseYpx}; left: {_mouseXpx}; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: 9999; !important";
+    // }
+    //
+    public class MousePosition
+    {
+        public int x { get; set; }
+        public int y { get; set; }
     }
 }

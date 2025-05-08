@@ -69,7 +69,8 @@ public class RefreshService
                 IdUser = returnResponse.Scheduler.IdUser,
                 Appointments = returnResponse.Scheduler.Appointments,
                 CreatedAt = returnResponse.Scheduler.CreatedAt,
-                UpdatedAt = returnResponse.Scheduler.UpdatedAt
+                UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+                SchedulerDisplayed = returnResponse.Scheduler.IdUser
             };
                 
             _userState.SetUser(newUserState);

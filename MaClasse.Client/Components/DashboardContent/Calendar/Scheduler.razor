@@ -1,4 +1,5 @@
 ﻿@using MaClasse.Shared.Models.Scheduler
+@using Colors = MudBlazor.Colors
 @using Variant = MudBlazor.Variant
 
 
@@ -6,6 +7,22 @@
             margin-right: 0.3rem;
             border: #1E88E5 solid 1px;
             border-radius: 0.8rem;">
+    
+    @* <MudMenu @ref="_contextMenu" *@
+    @*          AnchorEl="_menuAnchor" *@
+    @*          AnchorOrigin="Origin.TopLeft" *@
+    @*          TransformOrigin="Origin.TopLeft" *@
+    @*          OpenOnClick="false" *@
+    @*          DisableAutoClose="true" *@
+    @*          Class="mud-elevation-8"> *@
+    @* *@
+    @*     <MudMenuItem OnClick="OpenEditPanelForSelectedAppointment">Modifier</MudMenuItem> *@
+    @*     <MudMenuItem OnClick="GoToToday">Supprimer</MudMenuItem> *@
+    @* </MudMenu> *@
+    @* *@
+    @* <div @ref="_menuAnchorRef" style="@GetAnchorStyle()"></div> *@
+
+
     <div style="
         display: flex;
         flex-direction: column;
@@ -15,16 +32,15 @@
         border-radius: 0.8rem;
         width: @schedulerWidth;
         height: 7rem">
-        
+
         <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-evenly">
             <MudButton
                 StartIcon="@Icons.Material.Filled.Autorenew"
                 Variant="Variant.Filled"
                 Color="Color.Secondary"
-                OnClick="@GoToToday"
-            >Aujourd'hui
+                OnClick="@GoToToday">Aujourd'hui
             </MudButton>
-            
+
             <div style="margin-left: 2rem">
                 <MudButtonGroup Color="Color.Secondary" Variant="Variant.Outlined">
 
@@ -40,19 +56,7 @@
 
                 </MudButtonGroup>
             </div>
-            
-            
-            @* <MudButton Variant="Variant.Text" *@
-            @*            Color="Color.Secondary" *@
-            @*            OnClick="@(() => SetSchedulerView(0))"> *@
-            @*     Jour *@
-            @* </MudButton> *@
-            @* *@
-            @* <MudButton Variant="Variant.Text" *@
-            @*            Color="Color.Secondary" *@
-            @*            OnClick="@(() => SetSchedulerView(1))"> *@
-            @*     Semaine *@
-            @* </MudButton> *@
+
         </div>
 
         <div style="display: flex; flex-direction: row; align-items: center;">
@@ -66,12 +70,39 @@
 
             <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="@GoToNext"/>
 
-            <MudIconButton Icon="@Icons.Material.Filled.Add"
-                           Color="Color.Primary"
-                           OnClick="() => OpenNewAppointment()"
-                           Style="margin-left: 0.5rem;"/>
+
+            <div style="display: flex; flex-direction: row">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               Disabled="_schedulerState.isReadOnly"
+                               Color="Color.Primary"
+                               OnClick="() => OpenNewAppointment()"/>
+
+                <MudIconButton Icon="@Icons.Material.Filled.EditCalendar"
+                               Disabled="_schedulerState.isReadOnly"
+                               OnClick="() => ToogleEditMode()"
+                               Style="@($"color: {(isEditionMode ? Colors.Green.Default : Colors.Red.Default)} !important;")"
+                               Title="Modifier vos événements"/>
+            </div>
         </div>
     </div>
+
+    @if (showContextMenu)
+    {
+        <MudPaper id="custom-context-menu"
+                  Class="mud-elevation-8"
+                  Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
+                  @onmousedown:stopPropagation>
+            <MudList T="object">
+                <MudListItem T="object" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
+                    <MudText>Modifier</MudText>
+                </MudListItem>
+                <MudListItem T="object" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
+                    <MudText>Supprimer</MudText>
+                </MudListItem>
+
+            </MudList>
+        </MudPaper>
+    }
 
     @if (datePickerOpen)
     {
@@ -90,7 +121,7 @@
                     Label="Sélectionner une date"
                     Date="@currentDate"
                     PickerVariant="PickerVariant.Static"
-                    DateChanged="OnDatePicked" />
+                    DateChanged="OnDatePicked"/>
                 <MudButton Variant="Variant.Text" OnClick="@(() => datePickerOpen = false)">Fermer</MudButton>
             </MudPaper>
         </div>
@@ -118,7 +149,6 @@
         </div>
     }
 
-
     <div style="@($"width: {schedulerWidth};")">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
@@ -136,8 +166,8 @@
                          AppointmentRender=@OnAppointmentRender
                          DaySelect="@OnDaySelect"
                          AppointmentMove=@OnAppointmentMove>
-            <RadzenDayView StartTime="@startTime" EndTime="@endTime" TimeFormat="HH:mm" />
+            <RadzenDayView StartTime="@startTime" EndTime="@endTime" TimeFormat="HH:mm"/>
             <RadzenWeekView StartTime="@startTime" EndTime="@endTime" TimeFormat="HH:mm"/>
         </RadzenScheduler>
-    </div> 
+    </div>
 </div>
