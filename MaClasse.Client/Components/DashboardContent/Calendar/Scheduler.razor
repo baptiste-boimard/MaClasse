@@ -71,18 +71,10 @@
             <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="@GoToNext"/>
 
 
-            <div style="display: flex; flex-direction: row">
-                <MudIconButton Icon="@Icons.Material.Filled.Add"
-                               Disabled="_schedulerState.isReadOnly"
-                               Color="Color.Primary"
-                               OnClick="() => OpenNewAppointment()"/>
-
-                <MudIconButton Icon="@Icons.Material.Filled.EditCalendar"
-                               Disabled="_schedulerState.isReadOnly"
-                               OnClick="() => ToogleEditMode()"
-                               Style="@($"color: {(isEditionMode ? Colors.Green.Default : Colors.Red.Default)} !important;")"
-                               Title="Modifier vos événements"/>
-            </div>
+            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                           Disabled="_schedulerState.isReadOnly"
+                           Color="Color.Primary"
+                           OnClick="() => OpenNewAppointment()"/>
         </div>
     </div>
 

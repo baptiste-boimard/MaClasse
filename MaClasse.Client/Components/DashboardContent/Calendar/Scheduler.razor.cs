@@ -50,7 +50,6 @@ public partial class Scheduler : ComponentBase
     DateTime selectedStart;
     DateTime selectedEnd;
     private bool isEditMode = false;
-    private bool isEditionMode = false;
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
     private List<Appointment> appointments = new List<Appointment>();
     private Appointment selectedAppointment;
@@ -181,14 +180,11 @@ public partial class Scheduler : ComponentBase
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
     {
-        if (isEditionMode)
-        {
-            selectedStart = args.Data.Start;
-            selectedEnd = args.Data.End;
-            selectedAppointment = args.Data;
-            isEditMode = true;
-            showAppointmentPanel = true;
-        }
+        selectedStart = args.Data.Start;
+        selectedEnd = args.Data.End;
+        selectedAppointment = args.Data;
+        isEditMode = true;
+        showAppointmentPanel = true;
     }
     
     private void OpenEditPanelForSelectedAppointment()
@@ -307,36 +303,12 @@ public partial class Scheduler : ComponentBase
         }
     }
 
-    private void ToogleEditMode()
-    {
-        isEditionMode = !isEditionMode;
-    }
-    
-    //* Ouuverture du menu quand clic sur un appointment
-    // [JSInvokable]
-    // public async Task HandleAppointmentClick(string id)
+    // private void ToogleEditMode()
     // {
-    //     try
-    //     {
-    //         selectedAppointment = _schedulerState.Appointments.FirstOrDefault(a => a.Id == id);
-    //
-    //         var position = await _jsRuntime.InvokeAsync<MousePosition>("appointments.getLastClickPosition");
-    //
-    //         _mouseXpx = $"{position.x}px";
-    //         _mouseYpx = $"{position.y}px";
-    //
-    //         await InvokeAsync(StateHasChanged);     // ⚙️ repositionne l'ancre invisible
-    //         await Task.Delay(50);                   // ✅ attend que le DOM soit bien re-rendu
-    //
-    //         await _contextMenu.OpenMenuAsync(new MouseEventArgs());
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         Console.WriteLine(e);
-    //         throw;
-    //     }
+    //     isEditionMode = !isEditionMode;
     // }
     
+    //* Ouuverture du menu quand clic sur un appointment
     [JSInvokable("ShowCustomMenu")]
     public async Task ShowCustomMenu(string id, int x, int y)
     {
@@ -359,14 +331,10 @@ public partial class Scheduler : ComponentBase
 
         await InvokeAsync(StateHasChanged);
     }
-    // private string GetAnchorStyle()
+
+    // public class MousePosition
     // {
-    //     return $"position: fixed; top: {_mouseYpx}; left: {_mouseXpx}; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: 9999; !important";
+    //     public int x { get; set; }
+    //     public int y { get; set; }
     // }
-    //
-    public class MousePosition
-    {
-        public int x { get; set; }
-        public int y { get; set; }
-    }
 }
