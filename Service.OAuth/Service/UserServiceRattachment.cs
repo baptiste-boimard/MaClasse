@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;

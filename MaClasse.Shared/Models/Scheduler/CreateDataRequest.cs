@@ -1,6 +1,6 @@
 ﻿namespace MaClasse.Shared.Models.Scheduler;
 
-public class CreateSchedulerRequest
+public class CreateDataRequest
 {
     public string UserId { get; set; }
 }

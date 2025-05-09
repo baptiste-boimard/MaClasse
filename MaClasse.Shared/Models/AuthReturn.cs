@@ -1,4 +1,6 @@
-﻿namespace MaClasse.Shared.Models;
+﻿using MaClasse.Shared.Models.Lesson;
+
+namespace MaClasse.Shared.Models;
 
 public class AuthReturn
 {

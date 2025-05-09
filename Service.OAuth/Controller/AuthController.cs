@@ -1,5 +1,6 @@
 ﻿using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Auth;
+using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Services;
@@ -40,6 +41,7 @@ public class AuthController: ControllerBase
 
     private AuthReturn _returnResponse = new();
     private Scheduler newScheduler = new();
+    private LessonBook newLessonBook = new();
     
     [HttpPost]
     [Route("google-login")]
@@ -120,6 +122,7 @@ public class AuthController: ControllerBase
         //* avec le CreateDataService
         //* le scheduler
         newScheduler = await _createDataService.CreateDataScheduler(newUser.Id);
+        newLessonBook = await _createDataService.CreateDateLessonBook(newUser.Id);
         
         //* Création du token de session
         var sessionTokenSignup = Guid.NewGuid().ToString();
@@ -279,7 +282,10 @@ public class AuthController: ControllerBase
             
             if (user != null)
             {
+                //* Je delete le user et ces data
                 var deletedUser = await _authRepository.DeleteUser(user);
+                
+                //! Je delete agalement le scheduler et le lessonBook du user
                 
                 if (deletedUser != null)
                 {

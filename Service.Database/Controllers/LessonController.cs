@@ -22,6 +22,17 @@ public class LessonController : ControllerBase
     }
 
     [HttpPost]
+    [Route("get-lessonbook")]
+    public async Task<IActionResult> GetLessonBook(CreateDataRequest request)
+    {
+        var existingLessonBook = _lessonRepository.GetLessonBook(request.UserId);
+
+        if (existingLessonBook == null) return NotFound();
+
+        return Ok(existingLessonBook);
+    }
+
+    [HttpPost]
     [Route("get-lesson")]
     public async Task<IActionResult> GetLessonByAppointmentId(Appointment appointment)
     {

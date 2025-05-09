@@ -31,7 +31,7 @@ public class SchedulerController :  ControllerBase
     
     [HttpPost]
     [Route("get-scheduler")]
-    public async Task<IActionResult> GetScheduler(CreateSchedulerRequest request)
+    public async Task<IActionResult> GetScheduler(CreateDataRequest request)
     {
         var scheduler = await _schedulerRepository.GetScheduler(request.UserId);
         
@@ -57,7 +57,7 @@ public class SchedulerController :  ControllerBase
     
     [HttpPost]
     [Route("add-scheduler")]
-    public async Task<IActionResult> AddScheduler([FromBody] CreateSchedulerRequest request)
+    public async Task<IActionResult> AddScheduler([FromBody] CreateDataRequest request)
     {
         var newScheduler = await _schedulerRepository.AddScheduler(request.UserId);
         
