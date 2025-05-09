@@ -33,6 +33,7 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 //* Ajout des interfaces et repositories
 builder.Services.AddScoped<ISchedulerRepository, SchedulerRepository>();
+builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 
 //* Gestion des cors
 builder.Services.AddCors(options =>

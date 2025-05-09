@@ -7,22 +7,6 @@
             margin-right: 0.3rem;
             border: #1E88E5 solid 1px;
             border-radius: 0.8rem;">
-    
-    @* <MudMenu @ref="_contextMenu" *@
-    @*          AnchorEl="_menuAnchor" *@
-    @*          AnchorOrigin="Origin.TopLeft" *@
-    @*          TransformOrigin="Origin.TopLeft" *@
-    @*          OpenOnClick="false" *@
-    @*          DisableAutoClose="true" *@
-    @*          Class="mud-elevation-8"> *@
-    @* *@
-    @*     <MudMenuItem OnClick="OpenEditPanelForSelectedAppointment">Modifier</MudMenuItem> *@
-    @*     <MudMenuItem OnClick="GoToToday">Supprimer</MudMenuItem> *@
-    @* </MudMenu> *@
-    @* *@
-    @* <div @ref="_menuAnchorRef" style="@GetAnchorStyle()"></div> *@
-
-
     <div style="
         display: flex;
         flex-direction: column;
@@ -85,11 +69,11 @@
                   Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
                   @onmousedown:stopPropagation>
             <MudList T="object">
-                <MudListItem T="object" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
-                    <MudText>Modifier</MudText>
+                <MudListItem T="object" OnClick="@(() => { OpenLessonForSelectedAppointment(); CloseCustomMenu(); })">
+                    <MudText>Afficher</MudText>
                 </MudListItem>
                 <MudListItem T="object" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
-                    <MudText>Supprimer</MudText>
+                    <MudText>Modifier</MudText>
                 </MudListItem>
 
             </MudList>

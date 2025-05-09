@@ -20,6 +20,7 @@ public partial class Scheduler : ComponentBase
     private readonly DialogService _dialogService;
     private readonly SchedulerState _schedulerState;
     private readonly UserState _userState;
+    private readonly LessonState _lessonState;
     private readonly ViewDashboardState _viewDashboardState;
     private readonly IJSRuntime _jsRuntime;
 
@@ -28,12 +29,14 @@ public partial class Scheduler : ComponentBase
         DialogService dialogService,
         SchedulerState schedulerState,
         UserState userState,
+        LessonState lessonState,
         ViewDashboardState viewDashboardState,
         IJSRuntime jsRuntime)
     {
         _dialogService = dialogService;
         _schedulerState = schedulerState;
         _userState = userState;
+        _lessonState = lessonState;
         _viewDashboardState = viewDashboardState;
         _jsRuntime = jsRuntime;
     }
@@ -179,13 +182,7 @@ public partial class Scheduler : ComponentBase
     }
     
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
-    {
-        selectedStart = args.Data.Start;
-        selectedEnd = args.Data.End;
-        selectedAppointment = args.Data;
-        isEditMode = true;
-        showAppointmentPanel = true;
-    }
+    {}
     
     private void OpenEditPanelForSelectedAppointment()
     {
@@ -196,6 +193,11 @@ public partial class Scheduler : ComponentBase
             isEditMode = true;
             showAppointmentPanel = true;
         }
+    }
+
+    private void OpenLessonForSelectedAppointment()
+    {
+        _lessonState.SetLessonSelected(selectedAppointment);
     }
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)

@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using MongoDB.Driver;
 
@@ -15,5 +16,6 @@ public class MongoDbContext
     }
     
     public IMongoCollection<Scheduler> Schedulers => _database.GetCollection<Scheduler>("Schedulers");
-    
+    public IMongoCollection<LessonBook> LessonBooks => _database.GetCollection<LessonBook>("LessonBooks");
+
 }
