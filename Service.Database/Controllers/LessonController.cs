@@ -1,4 +1,5 @@
-﻿using MaClasse.Shared.Models.Lesson;
+﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Interfaces;
@@ -47,5 +48,28 @@ public class LessonController : ControllerBase
         
         var newLesson = _lessonRepository.AddLesson(request.Lesson, idUser);
         return Ok();
+    }
+
+    [HttpPost]
+    [Route("add-lessonbook")]
+    public async Task<IActionResult> AddLessonBook([FromBody] CreateDataRequest request)
+    {
+        var newLessonBook = await _lessonRepository.AddLessonBook(request.UserId);
+
+        if (newLessonBook == null) return NotFound();
+
+        return Ok(newLessonBook);
+    }
+        
+        
+    [HttpPost]
+    [Route("delete-lessonbook")]
+    public async Task<IActionResult> DeleteLessonBook([FromBody] DeleteUserRequest request)
+    {
+        var deletedLessonBook = await _lessonRepository.DeleteLessonBook(request.IdUser);
+
+        if (deletedLessonBook == null) return NotFound();
+        
+        return Ok(deletedLessonBook);
     }
 }

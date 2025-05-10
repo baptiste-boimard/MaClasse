@@ -60,6 +60,14 @@ public class SchedulerRepository : ISchedulerRepository
         
         return newScheduler;
     }
+
+    public async Task<Scheduler> DeleteScheduler(string userId)
+    {
+        var deletedScheduler = await _mongoDbContext.Schedulers.FindOneAndDeleteAsync(
+            Builders<Scheduler>.Filter.Eq(s => s.IdUser, userId));
+
+        return deletedScheduler;
+    }
     
     public async Task<Appointment> GetOneAppointment(string userId, Appointment appointment)
     {

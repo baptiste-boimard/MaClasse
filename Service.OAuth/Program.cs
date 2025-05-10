@@ -17,6 +17,8 @@ builder.Services.AddScoped<CreateDataService>();
 builder.Services.AddScoped<ValidateGoogleTokenService>();
 builder.Services.AddScoped<GenerateIdRole>();
 builder.Services.AddScoped<UserServiceRattachment>();
+builder.Services.AddScoped<DeleteUserService>();
+
 
 //* Gestion des cors
 builder.Services.AddCors(options =>

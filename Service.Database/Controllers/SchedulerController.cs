@@ -63,6 +63,17 @@ public class SchedulerController :  ControllerBase
         
         return Ok(newScheduler);
     }
+
+    [HttpPost]
+    [Route("delete-scheduler")]
+    public async Task<IActionResult> DeleteScheduler([FromBody] DeleteUserRequest request)
+    {
+        var deletedScheduler = await _schedulerRepository.DeleteScheduler(request.IdUser);
+
+        if (deletedScheduler == null) return NotFound();
+
+        return Ok(deletedScheduler);
+    }
     
     [HttpPost]
     [Route("add-appointment")]

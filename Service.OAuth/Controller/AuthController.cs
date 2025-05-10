@@ -20,6 +20,7 @@ public class AuthController: ControllerBase
     private readonly UserServiceRattachment _userServiceRattachment;
     private readonly GenerateIdRole _generateIdRole;
     private readonly CreateDataService _createDataService;
+    private readonly DeleteUserService _deleteUserService;
 
     public AuthController(
         IConfiguration configuration,
@@ -28,7 +29,8 @@ public class AuthController: ControllerBase
         ISessionRepository sessionRepository,
         UserServiceRattachment userServiceRattachment,
         GenerateIdRole generateIdRole,
-        CreateDataService createDataService)
+        CreateDataService createDataService,
+        DeleteUserService deleteUserService)
     {
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
@@ -37,6 +39,7 @@ public class AuthController: ControllerBase
         _userServiceRattachment = userServiceRattachment;
         _generateIdRole = generateIdRole;
         _createDataService = createDataService;
+        _deleteUserService = deleteUserService;
     }
 
     private AuthReturn _returnResponse = new();
@@ -286,6 +289,8 @@ public class AuthController: ControllerBase
                 var deletedUser = await _authRepository.DeleteUser(user);
                 
                 //! Je delete agalement le scheduler et le lessonBook du user
+                _deleteUserService.DeleteLessonBook(user.Id);
+                _deleteUserService.DeleteScheduler(user.Id);
                 
                 if (deletedUser != null)
                 {
