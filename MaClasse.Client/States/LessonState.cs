@@ -97,6 +97,17 @@ public class LessonState
             NotifyStateChanged();
         }
     }
+
+    public async void UpdateSelectedAppointment(List<Appointment> appointments)
+    {
+        var updated = appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
+
+        if (updated != null)
+        {
+            SelectedAppointment = updated;
+            NotifyStateChanged();
+        }
+    }
     
     public void NotifyStateChanged()
     {

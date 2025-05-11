@@ -39,14 +39,41 @@ public partial class LessonView : ComponentBase
 
     private async void SaveLesson()
     {
-        var resultSave = await _lessonState.AddLesson(lesson, appointement);
-
-        if (resultSave)
+        if (appointement.Id != null)
         {
-            //* Ouverture d'une popup pour confirmation la save
+            var resultSave = await _lessonState.AddLesson(lesson, appointement);
+
+            if (resultSave)
+            {
+                //* Ouverture d'une popup pour confirmation la save
+                var parameters = new DialogParameters
+                {
+                    ["Message"] = "Votre cours a été sauvegardé avec succès !!",
+                };
+        
+                var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = true,
+                    CloseButton = true,
+                    MaxWidth = MaxWidth.ExtraSmall,
+                    FullWidth = true
+                };
+        
+                var dialog = await _dialogService.ShowAsync<ConfirmSaveLessonDialog>("Confirmation de Sauvegarde", parameters, options);
+        
+                var result = await dialog.Result;
+            }
+        }
+    }
+
+    private async void DeleteLesson()
+    {
+        if (appointement.Id != null)
+        {
+            //* Ouverture d'une popup de confirmation
             var parameters = new DialogParameters
             {
-                ["Message"] = "Votre cours a été sauvegardé avec succès !!",
+                ["Message"] = "Êtes-vous sûr de vouloir supprimer ce cour ?",
             };
         
             var options = new DialogOptions
@@ -57,42 +84,14 @@ public partial class LessonView : ComponentBase
                 FullWidth = true
             };
         
-            var dialog = await _dialogService.ShowAsync<ConfirmSaveLessonDialog>("Confirmation de Sauvegarde", parameters, options);
+            var dialog = await _dialogService.ShowAsync<ConfirmDeleteLessonDialog>("Confirmation de suppression", parameters, options);
         
             var result = await dialog.Result;
 
-            // if (!result.Canceled)
-            // {
-            //     _lessonState.DeleteLesson(lesson);
-            //     // lesson = new Shared.Models.Lesson.Lesson();
-            // }
-        }
-    }
-
-    private async void DeleteLesson()
-    {
-        //* Ouverture d'une popup de confirmation
-        var parameters = new DialogParameters
-        {
-            ["Message"] = "Êtes-vous sûr de vouloir supprimer ce cour ?",
-        };
-        
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            MaxWidth = MaxWidth.ExtraSmall,
-            FullWidth = true
-        };
-        
-        var dialog = await _dialogService.ShowAsync<ConfirmDeleteLessonDialog>("Confirmation de suppression", parameters, options);
-        
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            _lessonState.DeleteLesson(lesson);
-            // lesson = new Shared.Models.Lesson.Lesson();
+            if (!result.Canceled)
+            {
+                _lessonState.DeleteLesson(lesson);
+            }
         }
     }
 }

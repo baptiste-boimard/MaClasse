@@ -12,17 +12,20 @@ public partial class AddAppointmentPage : ComponentBase
     private readonly HttpClient _httpClient;
     private readonly UserState _userState;
     private readonly SchedulerState _schedulerState;
+    private readonly LessonState _lessonState;
     private readonly IConfiguration _configuration;
 
     public AddAppointmentPage(
         HttpClient httpClient,
         UserState userState,
         SchedulerState schedulerState,
+        LessonState lessonState,
         IConfiguration configuration)
     {
         _httpClient = httpClient;
         _userState = userState;
         _schedulerState = schedulerState;
+        _lessonState = lessonState;
         _configuration = configuration;
     }
     
@@ -85,55 +88,60 @@ public partial class AddAppointmentPage : ComponentBase
                 tempEndDate.HasValue &&
                 tempEndTime.HasValue &&
                 model.Text != null
+                
                 )
             {
                 model.Start = tempStartDate.Value.Date + tempStartTime.Value;
                 model.End = tempEndDate.Value.Date + tempEndTime.Value;
 
-                await OnSave.InvokeAsync(model);
-                
-                var newSchedulerRequest = new SchedulerRequest
+                if (model.Start < model.End)
                 {
-                    IdSession = _userState.IdSession,
-                    Appointment = new Appointment
+                    await OnSave.InvokeAsync(model);
+                
+                    var newSchedulerRequest = new SchedulerRequest
                     {
-                        Id = model.Id,
-                        Start = model.Start,
-                        End = model.End,
-                        Text = model.Text,
-                        Color = _colorValue,
-                        Recurring = _recurring,
-                        IdRecurring = model.IdRecurring
-                    }
-                };
+                        IdSession = _userState.IdSession,
+                        Appointment = new Appointment
+                        {
+                            Id = model.Id,
+                            Start = model.Start,
+                            End = model.End,
+                            Text = model.Text,
+                            Color = _colorValue,
+                            Recurring = _recurring,
+                            IdRecurring = model.IdRecurring
+                        }
+                    };
                 
-                //* Requete si IsEditMode = false
-                if (!IsEditMode)
-                {
-                    var response = await _httpClient.PostAsJsonAsync(
-                        $"{_configuration["Url:ApiGateway"]}/api/database/add-appointment",
-                        newSchedulerRequest);
+                    //* Requete si IsEditMode = false
+                    if (!IsEditMode)
+                    {
+                        var response = await _httpClient.PostAsJsonAsync(
+                            $"{_configuration["Url:ApiGateway"]}/api/database/add-appointment",
+                            newSchedulerRequest);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
                     
-                        _schedulerState.SetAppointments(appointmentList);
+                            _schedulerState.SetAppointments(appointmentList);
+                        }
                     }
-                }
                 
-                //* Requete si IsEditMode = true
-                if (IsEditMode)
-                {
-                    var response = await _httpClient.PostAsJsonAsync(
-                        $"{_configuration["Url:ApiGateway"]}/api/database/update-appointment",
-                        newSchedulerRequest);
-
-                    if (response.IsSuccessStatusCode)
+                    //* Requete si IsEditMode = true
+                    if (IsEditMode)
                     {
-                        var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
+                        var response = await _httpClient.PostAsJsonAsync(
+                            $"{_configuration["Url:ApiGateway"]}/api/database/update-appointment",
+                            newSchedulerRequest);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
                     
-                        _schedulerState.SetAppointments(appointmentList);
+                            _schedulerState.SetAppointments(appointmentList);
+                            _lessonState.UpdateSelectedAppointment(appointmentList);
+                        }
                     }
                 }
             }
