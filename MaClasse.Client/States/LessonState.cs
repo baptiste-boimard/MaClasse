@@ -26,40 +26,39 @@ public class LessonState
     public Lesson Lesson { get; set; }
     public Appointment SelectedAppointment { get; set; }
 
-    public void SetLessonSelected(Appointment appointment)
+    public async void SetLessonSelected(Appointment appointment)
     {
         //* Je récupére l'appointment selectionnée
         SelectedAppointment = appointment;
         
         //* Je vais voir en base de données si j'ai une Lesson liée
-        
-        
-        
-        
-        
+        var lesson = await GetLessonFromAppointment();
+
+        Lesson = lesson;
         
         NotifyStateChanged();
     }
 
-    public async void GetLessonFromAppointment(Appointment selectedAppointment)
-    {   
-   
+    public async Task<Lesson> GetLessonFromAppointment()
+    {
+        var lessonRequest = new LessonRequest
+        {
+            Appointment = SelectedAppointment,
+            IdSession = _userState.IdSession
+        };
+        
         var response = await _httpClient.PostAsJsonAsync(
-            $"{_configuration["Url:ApiGateway"]}/api/database/get-lesson", selectedAppointment);
+            $"{_configuration["Url:ApiGateway"]}/api/database/get-lesson", lessonRequest);
 
         if (response.IsSuccessStatusCode)
         {
-            //! Implementer
+            var lesson = await response.Content.ReadFromJsonAsync<Lesson>();
+            return lesson;
         }
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            Lesson = new Lesson();
-        }
-
+        return new Lesson();
     }
 
-    public async void AddLesson(Lesson lesson, Appointment appointment)
+    public async Task<bool> AddLesson(Lesson lesson, Appointment appointment)
     {
         lesson.IdAppointment = appointment.Id;
 
@@ -74,12 +73,31 @@ public class LessonState
 
         if (response.IsSuccessStatusCode)
         {
-            
+            Lesson = await response.Content.ReadFromJsonAsync<Lesson>();
+            return true;
         }
+
+        return false;
+    }
+
+    public async void DeleteLesson(Lesson lesson)
+    {
+        var newRequestLesson = new RequestLesson
+        {
+            Lesson = lesson,
+            IdSession = _userState.IdSession
+        };
         
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/database/delete-lesson", newRequestLesson);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Lesson = new Lesson();
+            NotifyStateChanged();
+        }
     }
     
-
     public void NotifyStateChanged()
     {
         OnChange?.Invoke();

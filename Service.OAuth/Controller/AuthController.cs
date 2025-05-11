@@ -289,8 +289,8 @@ public class AuthController: ControllerBase
                 var deletedUser = await _authRepository.DeleteUser(user);
                 
                 //! Je delete agalement le scheduler et le lessonBook du user
-                _deleteUserService.DeleteLessonBook(user.Id);
-                _deleteUserService.DeleteScheduler(user.Id);
+                await _deleteUserService.DeleteLessonBook(user.Id);
+                await _deleteUserService.DeleteScheduler(user.Id);
                 
                 if (deletedUser != null)
                 {

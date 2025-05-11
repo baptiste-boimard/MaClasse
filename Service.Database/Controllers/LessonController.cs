@@ -35,21 +35,62 @@ public class LessonController : ControllerBase
 
     [HttpPost]
     [Route("get-lesson")]
-    public async Task<IActionResult> GetLessonByAppointmentId(Appointment appointment)
+    public async Task<IActionResult> GetLessonByAppointmentId(LessonRequest request)
     {
-        return Ok();
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        var existingLesson = await _lessonRepository.GetLesson(
+            request.Appointment.Id, idUser);
+
+        if (existingLesson == null) return null;
+        
+        return Ok(existingLesson);
     }
 
     [HttpPost]
     [Route("add-lesson")]
     public async Task<IActionResult> AddLesson(RequestLesson request)
     {
-        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        var idUser =  _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        //* Lesson ne possède pas d'Id donc c'est une création 
+        if (request.Lesson.IdLesson == null)
+        {
+            var newLesson = await _lessonRepository.AddLesson(request.Lesson, idUser);
+            
+            if (newLesson == null) return BadRequest();
         
-        var newLesson = _lessonRepository.AddLesson(request.Lesson, idUser);
-        return Ok();
+            return Ok(newLesson);
+        }
+        else
+        { 
+            var updatedLesson = await _lessonRepository.UpdateLesson(request.Lesson, idUser);
+
+            if (updatedLesson == null) return BadRequest();
+            
+            return Ok(updatedLesson);
+        }
+        
     }
 
+
+    [HttpPost]
+    [Route("delete-lesson")]
+    public async Task<IActionResult> DeleteLesson(RequestLesson request)
+    {
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        var existingLesson = await _lessonRepository.GetLesson(request.Lesson.IdAppointment, idUser);
+
+        if (existingLesson == null) return NotFound();
+
+        var deletedLesson = await _lessonRepository.DeleteLesson(request.Lesson, idUser);
+
+        if (deletedLesson == null) return NotFound();
+        
+        return Ok(deletedLesson);
+    }
+    
     [HttpPost]
     [Route("add-lessonbook")]
     public async Task<IActionResult> AddLessonBook([FromBody] CreateDataRequest request)

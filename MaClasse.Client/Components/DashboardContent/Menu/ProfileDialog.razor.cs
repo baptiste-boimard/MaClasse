@@ -298,7 +298,5 @@ public partial class ProfileDialog : ComponentBase
                 _navigationManager.NavigateTo("/");
             }
         }
-        
-        
     }
 }

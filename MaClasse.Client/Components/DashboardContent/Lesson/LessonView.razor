@@ -15,13 +15,20 @@
     else
     {
         <div>
+            @{
+                var parisTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris");
+                var startLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.Start, parisTimeZone);
+                var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
+            }
             <p style="font-size: 1.5rem;
                   font-weight: bold;
                   margin-left: 1rem">
                 Cours du
-                @appointement.Start.ToString("dddd d MMMM yyyy", new CultureInfo("fr-FR"))
-                de @appointement.Start.ToString("H\\hmm", new CultureInfo("fr-FR"))
-                à @appointement.End.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                @startLocal.ToString("dddd d MMMM yyyy", new CultureInfo("fr-FR"))
+                de
+                @startLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                à
+                @endLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
             </p>
         </div>
 
@@ -34,115 +41,91 @@
                 @appointement.Text
             </MudChip>
         }
-
-        @if (lesson.IdLesson == null)
-        {
-            <div>
-                @if (lesson.IdLesson == null)
-                {
-                    <p style="margin-left: 2rem">
-                        Cet événement ne possède pas de cours, vous pouvez en créer un
-                    </p>
-                }
-                else
-                {
-                    <p style="margin-left: 2rem">
-                        Lesson contient des données
-                    </p>
-                }
-            </div>
-        }
     }
 </div>
 
 <div style="margin-top: -1rem">
-    @if (lesson.IdLesson == null)
-    {
-        <div style="display: flex;
-                flex-direction: row">
-            <div style="width: 33%;
-                    padding: 1rem">
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.Class"
-                              Label="Classe"
-                              Variant="MudBlazor.Variant.Outlined"></MudTextField>
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.Tilte"
-                              Label="Titre"
-                              Variant="MudBlazor.Variant.Outlined"></MudTextField>
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.Objective" 
-                              Label="Objectifs"
-                              Variant="MudBlazor.Variant.Outlined" 
-                              Lines="7"></MudTextField>
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.Skills" 
-                              Label="Compétences" 
-                              Variant="MudBlazor.Variant.Outlined"
-                              Lines="7"></MudTextField>
-            </div>
-            <div style="width: 33%;
-                    padding: 1rem">
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.Material"
-                              Label="Matériel"
-                              Variant="MudBlazor.Variant.Outlined" 
-                              Lines="6"></MudTextField>
-                <MudTextField ShrinkLabel
-                              @bind-Value="lesson.Process" 
-                              Label="Déroulement" 
-                              Variant="MudBlazor.Variant.Outlined"
-                              Lines="6"></MudTextField>
-                <MudTextField ShrinkLabel
-                              @bind-Value="lesson.Behavior"
-                              Label="Comportement attendu"
-                              Variant="MudBlazor.Variant.Outlined" 
-                              Lines="7"></MudTextField>
-            </div>
-            <div style="width: 33%;
-                    padding: 1rem">
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.TeacherTask" 
-                              Label="Tâches de l'enseignant" 
-                              Variant="MudBlazor.Variant.Outlined" 
-                              Lines="5"></MudTextField>
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.StudentTask" 
-                              Label="Tâches des élèves" 
-                              Variant="MudBlazor.Variant.Outlined" 
-                              Lines="5"></MudTextField>
-                <MudTextField ShrinkLabel 
-                              @bind-Value="lesson.SuccessCriteria" 
-                              Label="Critères de succès"
-                              Variant="MudBlazor.Variant.Outlined"
-                              Lines="5"></MudTextField>
+    <div style="display: flex;
+            flex-direction: row">
+        <div style="width: 33%;
+                padding: 1rem">
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.Class"
+                          Label="Classe"
+                          Variant="MudBlazor.Variant.Outlined"></MudTextField>
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.Tilte"
+                          Label="Titre"
+                          Variant="MudBlazor.Variant.Outlined"></MudTextField>
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.Objective" 
+                          Label="Objectifs"
+                          Variant="MudBlazor.Variant.Outlined" 
+                          Lines="7"></MudTextField>
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.Skills" 
+                          Label="Compétences" 
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="7"></MudTextField>
+        </div>
+        <div style="width: 33%;
+                padding: 1rem">
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.Material"
+                          Label="Matériel"
+                          Variant="MudBlazor.Variant.Outlined" 
+                          Lines="6"></MudTextField>
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.Process" 
+                          Label="Déroulement" 
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="6"></MudTextField>
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.Behavior"
+                          Label="Comportement attendu"
+                          Variant="MudBlazor.Variant.Outlined" 
+                          Lines="7"></MudTextField>
+        </div>
+        <div style="width: 33%;
+                padding: 1rem">
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.TeacherTask" 
+                          Label="Tâches de l'enseignant" 
+                          Variant="MudBlazor.Variant.Outlined" 
+                          Lines="5"></MudTextField>
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.StudentTask" 
+                          Label="Tâches des élèves" 
+                          Variant="MudBlazor.Variant.Outlined" 
+                          Lines="5"></MudTextField>
+            <MudTextField ShrinkLabel 
+                          @bind-Value="lesson.SuccessCriteria" 
+                          Label="Critères de succès"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="5"></MudTextField>
 
-                <div style="margin-top: 2rem;
-                            display: flex;
-                            flex-direction: row;
-                            justify-content: space-evenly">
-                    <MudButton
-                        Variant="MudBlazor.Variant.Filled"
-                        Color="Color.Success"
-                        OnClick="SaveLesson">
-                        Sauvegarder
-                    </MudButton>
-                    <MudButtonGroup Color="Color.Info"
-                                    Size="Size.Medium"
-                                    Variant="MudBlazor.Variant.Filled">
-                        <MudButton>Copier</MudButton>
-                        <MudButton>Coller</MudButton>
-                    </MudButtonGroup>
-                    <MudButton Variant="MudBlazor.Variant.Filled"
-                               Color="Color.Error">
-                        Supprimer
-                    </MudButton>
-                </div>
+            <div style="margin-top: 2rem;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-evenly">
+                <MudButton
+                    Variant="MudBlazor.Variant.Filled"
+                    Color="Color.Success"
+                    OnClick="SaveLesson">
+                    Sauvegarder
+                </MudButton>
+                <MudButtonGroup Color="Color.Info"
+                                Size="Size.Medium"
+                                Variant="MudBlazor.Variant.Filled">
+                    <MudButton>Copier</MudButton>
+                    <MudButton>Coller</MudButton>
+                </MudButtonGroup>
+                <MudButton Variant="MudBlazor.Variant.Filled"
+                           Color="Color.Error"
+                           OnClick="DeleteLesson">
+                    Supprimer
+                </MudButton>
             </div>
         </div>
-    }
-    else
-    {
-        <p>Lesson contient des données</p>
-    }
+    </div>
 </div>

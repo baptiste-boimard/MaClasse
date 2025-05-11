@@ -19,7 +19,8 @@ public class DeleteUserService
     {
         var newDeleteUserRequest = new DeleteUserRequest
         {
-            IdUser = userId
+            IdUser = userId,
+            IdSession = null
         };
 
         var response = await _httpClient.PostAsJsonAsync(
