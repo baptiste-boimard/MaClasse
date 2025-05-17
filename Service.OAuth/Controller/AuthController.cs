@@ -19,6 +19,7 @@ public class AuthController: ControllerBase
     private readonly GenerateIdRole _generateIdRole;
     private readonly CreateDataService _createDataService;
     private readonly DeleteUserService _deleteUserService;
+    private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IConfiguration configuration,
@@ -28,7 +29,8 @@ public class AuthController: ControllerBase
         UserServiceRattachment userServiceRattachment,
         GenerateIdRole generateIdRole,
         CreateDataService createDataService,
-        DeleteUserService deleteUserService)
+        DeleteUserService deleteUserService,
+        ILogger<AuthController> logger)
     {
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
@@ -38,6 +40,7 @@ public class AuthController: ControllerBase
         _generateIdRole = generateIdRole;
         _createDataService = createDataService;
         _deleteUserService = deleteUserService;
+        _logger = logger;
     }
 
     private AuthReturn _returnResponse = new();
@@ -48,6 +51,7 @@ public class AuthController: ControllerBase
     [Route("google-login")]
     public async Task<IActionResult> GoogleLogin(GoogleTokenRequest request)
     {
+        _logger.LogInformation("sdqsdqsdsd", request.Token);
         var payload = await _validateGoogleTokenService.ValidateGoogleToken(request.Token);
         if (payload == null)
         {
