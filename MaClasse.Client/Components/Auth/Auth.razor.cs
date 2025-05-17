@@ -22,6 +22,7 @@ public partial class Auth : ComponentBase
     private readonly ProtectedLocalStorage _protectedLocalStorage;
     private readonly RefreshService _refreshService;
     private readonly SchedulerState _schedulerState;
+    private readonly ILogger<Auth> _logger;
 
 
     public Auth (
@@ -36,7 +37,8 @@ public partial class Auth : ComponentBase
         UserState userState,
         ProtectedLocalStorage protectedLocalStorage,
         RefreshService refreshService,
-        SchedulerState schedulerState)
+        SchedulerState schedulerState,
+        ILogger<Auth> logger)
     {
         _navigationManager = navigationManager;
         _httpClient = httpClient;
@@ -50,6 +52,7 @@ public partial class Auth : ComponentBase
         _protectedLocalStorage = protectedLocalStorage;
         _refreshService = refreshService;
         _schedulerState = schedulerState;
+        _logger = logger;
     }
     
     [Parameter] public EventCallback<string> OnTokenReceived { get; set; }
@@ -83,7 +86,7 @@ public partial class Auth : ComponentBase
         StateHasChanged();
 
         var coucou = _configuration["Url:ApiGateway"];
-        Console.WriteLine(coucou);
+        _logger.LogInformation(coucou);
 
         try
         {
