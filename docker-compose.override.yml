@@ -31,9 +31,7 @@
       - ApiGatewayBaseUrl=https://maclasse.punkydev.fr
       - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=maclasse;Username=maclasse;Password=maclasse
       - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
-      - Url--ApiGateway=http://apigateway:7261
-      - Url--Client=http://localhost:7235
-
+      - Url__ApiGateway=http://apigateway:7261
 
     volumes:
       - "./dataprotection_keys_prod:/app/keys"

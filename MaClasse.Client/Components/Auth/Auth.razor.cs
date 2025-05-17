@@ -86,7 +86,7 @@ public partial class Auth : ComponentBase
         StateHasChanged();
 
         var coucou = _configuration["Url:ApiGateway"];
-        _logger.LogInformation(coucou);
+        _logger.LogInformation("Url:ApiGateway", coucou);
 
         try
         {

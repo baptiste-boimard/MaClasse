@@ -5,7 +5,7 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+            "Host": "oauth",
           "Port": 7011
         }
       ],
@@ -20,7 +20,7 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "database",
           "Port": 7012
         }
       ],
