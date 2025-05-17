@@ -9,11 +9,11 @@
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7261
     volumes:
-      - "./dataprotection_keys_prod:/app/keys" 
+      - "./dataprotection_keys_prod:/app/keys"
     networks:
-        - maclasse_network
+      - maclasse_network
     labels:
-        - "traefik.enable=true"
+      - "traefik.enable=true"
 
   client:
     depends_on:
@@ -29,17 +29,23 @@
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7235
       - ApiGatewayBaseUrl=https://maclasse.punkydev.fr
+      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=maclasse;Username=maclasse;Password=maclasse
+      - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
+      - Url--ApiGateway=http://apigateway:7261
+      - Url--Client=http://localhost:7235
+
+
     volumes:
       - "./dataprotection_keys_prod:/app/keys"
     networks:
-        - maclasse_network
+      - maclasse_network
     labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=maclasse_network"
-        - "traefik.http.routers.maclasse-client-prod.rule=Host(`maclasse.punkydev.fr`)"
-        - "traefik.http.routers.maclasse-client-prod.entrypoints=websecure"
-        - "traefik.http.routers.maclasse-client-prod.tls.certresolver=myresolver"
-        - "traefik.http.services.maclasse-client-prod-svc.loadbalancer.server.port=7235"
+      - "traefik.enable=true"
+      - "traefik.docker.network=maclasse_network"
+      - "traefik.http.routers.maclasse-client-prod.rule=Host(`maclasse.punkydev.fr`)"
+      - "traefik.http.routers.maclasse-client-prod.entrypoints=websecure"
+      - "traefik.http.routers.maclasse-client-prod.tls.certresolver=myresolver"
+      - "traefik.http.services.maclasse-client-prod-svc.loadbalancer.server.port=7235"
 
 
   database:
@@ -51,6 +57,10 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7012
+      - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
+      - ConnectionStrings__MongoDbContext=mongodb://localhost:27017
+      - ConnectionStrings__MongoDbSettings__DatabaseName=maclasse
+
     volumes:
       - "./dataprotection_keys_prod:/app/keys"
     networks:
@@ -69,13 +79,16 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7011
+      - ConnectionStrings__PostgresDBContext=Host=localhost;Port=5432;Username=maclasse;Password=maclasse;Database=maclasse
+      - Url__ApiGateway=http://localhost:7261
+
     volumes:
       - "./dataprotection_keys_prod:/app/keys"
     networks:
       - maclasse_network
     labels:
       - "traefik.enable=true"
-        
+
 networks:
   maclasse_network:
     driver: bridge

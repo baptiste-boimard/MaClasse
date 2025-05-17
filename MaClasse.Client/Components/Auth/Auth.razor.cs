@@ -82,65 +82,77 @@ public partial class Auth : ComponentBase
         _isGoogleLogin = true;
         StateHasChanged();
 
-        var response = await _httpClient.PostAsJsonAsync(
+        var coucou = _configuration["Url:ApiGateway"];
+        Console.WriteLine(coucou);
+
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync(
             $"{_configuration["Url:ApiGateway"]}/api/auth/google-login",
             new GoogleTokenRequest{ Token = jwtToken });
         
-        if (response.IsSuccessStatusCode)
-        {
-            returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
-            
-            //* Enregistrement dans le ProtectedLocalStorage
-            await _protectedLocalStorage.SetAsync("MaClasseAuth", returnResponse.IdSession);
-            
-            //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
-            _userService.AuthenticateUser(returnResponse.UserWithRattachment.UserProfile);
-            
-            //* Enregistrement dans le UserState
-            var newUserState = new UserState
+            if (response.IsSuccessStatusCode)
             {
-                AccessToken = returnResponse.UserWithRattachment.AccessToken,
-                IdSession = returnResponse.IdSession,
-                Id = returnResponse.UserWithRattachment.UserProfile.Id,
-                IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
-                Email = returnResponse.UserWithRattachment.UserProfile.Email,
-                Name = returnResponse.UserWithRattachment.UserProfile.Name,
-                Role = returnResponse.UserWithRattachment.UserProfile.Role,
-                Zone = returnResponse.UserWithRattachment.UserProfile.Zone,
-                GivenName = returnResponse.UserWithRattachment.UserProfile.GivenName,
-                FamilyName = returnResponse.UserWithRattachment.UserProfile.FamilyName,
-                Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
-                CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
-                UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
-                AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
-                AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
+                returnResponse = await response.Content.ReadFromJsonAsync<AuthReturn>();
                 
-            };
-
-            var newSchedulerState = new SchedulerState
-            {
-                IdScheduler = returnResponse.Scheduler.IdScheduler,
-                IdUser = returnResponse.Scheduler.IdUser,
-                Appointments = returnResponse.Scheduler.Appointments,
-                CreatedAt = returnResponse.Scheduler.CreatedAt,
-                UpdatedAt = returnResponse.Scheduler.UpdatedAt,
-                SchedulerDisplayed = returnResponse.Scheduler.IdUser
-            };
+                //* Enregistrement dans le ProtectedLocalStorage
+                await _protectedLocalStorage.SetAsync("MaClasseAuth", returnResponse.IdSession);
                 
-            _userState.SetUser(newUserState);
-            _schedulerState.SetScheduler(newSchedulerState);
-            
+                //* Utilisation du ServiceUser pour l'enregistrer dans notre pipeline d'auth
+                _userService.AuthenticateUser(returnResponse.UserWithRattachment.UserProfile);
+                
+                //* Enregistrement dans le UserState
+                var newUserState = new UserState
+                {
+                    AccessToken = returnResponse.UserWithRattachment.AccessToken,
+                    IdSession = returnResponse.IdSession,
+                    Id = returnResponse.UserWithRattachment.UserProfile.Id,
+                    IdRole = returnResponse.UserWithRattachment.UserProfile.IdRole,
+                    Email = returnResponse.UserWithRattachment.UserProfile.Email,
+                    Name = returnResponse.UserWithRattachment.UserProfile.Name,
+                    Role = returnResponse.UserWithRattachment.UserProfile.Role,
+                    Zone = returnResponse.UserWithRattachment.UserProfile.Zone,
+                    GivenName = returnResponse.UserWithRattachment.UserProfile.GivenName,
+                    FamilyName = returnResponse.UserWithRattachment.UserProfile.FamilyName,
+                    Picture = returnResponse.UserWithRattachment.UserProfile.Picture,
+                    CreatedAt = returnResponse.UserWithRattachment.UserProfile.CreatedAt,
+                    UpdatedAt = returnResponse.UserWithRattachment.UserProfile.UpdatedAt,
+                    AsDirecteur = returnResponse.UserWithRattachment.AsDirecteur,
+                    AsProfesseur = returnResponse.UserWithRattachment.AsProfesseur
+                    
+                };
 
-            //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
-            if (returnResponse.IsNewUser)
-            {
-                await OpenDialogAuth(returnResponse.UserWithRattachment.UserProfile);
-            }
-            else
-            {
-                _navigationManager.NavigateTo("/dashboard");
+                var newSchedulerState = new SchedulerState
+                {
+                    IdScheduler = returnResponse.Scheduler.IdScheduler,
+                    IdUser = returnResponse.Scheduler.IdUser,
+                    Appointments = returnResponse.Scheduler.Appointments,
+                    CreatedAt = returnResponse.Scheduler.CreatedAt,
+                    UpdatedAt = returnResponse.Scheduler.UpdatedAt,
+                    SchedulerDisplayed = returnResponse.Scheduler.IdUser
+                };
+                    
+                _userState.SetUser(newUserState);
+                _schedulerState.SetScheduler(newSchedulerState);
+                
+
+                //* Recherche si c'est un nouvel utilisateur, dans ce cas on ouvre la modal de complément d'infos
+                if (returnResponse.IsNewUser)
+                {
+                    await OpenDialogAuth(returnResponse.UserWithRattachment.UserProfile);
+                }
+                else
+                {
+                    _navigationManager.NavigateTo("/dashboard");
+                }
             }
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
     
     private async Task OpenDialogAuth(UserProfile user)
