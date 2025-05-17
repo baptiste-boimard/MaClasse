@@ -1,24 +1,12 @@
+using Microsoft.AspNetCore.DataProtection;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.Services.AddHttpClient("ApiGateway", client =>
-// {
-//     client.BaseAddress = new Uri("https://apigateway");
-// });
-
-// builder.WebHost.ConfigureKestrel(serverOptions =>
-// {
-//     serverOptions.ListenAnyIP(443, listenOptions =>
-//     {
-//         listenOptions.UseHttps();
-//     });
-// });
-//
-// builder.Services.AddDataProtection()
-//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
-//     .SetApplicationName("MaClasse");
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Indique d'utiliser le dossier mappé
+    .SetApplicationName("MaClasseSharedProd");
 
 builder.Services.AddHttpClient();
 

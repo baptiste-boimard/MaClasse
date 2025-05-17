@@ -11,17 +11,9 @@ using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.WebHost.ConfigureKestrel(serverOptions =>
-// {
-//     serverOptions.ListenAnyIP(443, listenOptions =>
-//     {
-//         listenOptions.UseHttps();
-//     });
-// });
-//
-// builder.Services.AddDataProtection()
-//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
-//     .SetApplicationName("MaClasse");
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Indique d'utiliser le dossier mappé
+    .SetApplicationName("MaClasseSharedProd");
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ServiceLogout>();
