@@ -1,10 +1,24 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Resource;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// builder.Services.AddHttpClient("ApiGateway", client =>
+// {
+//     client.BaseAddress = new Uri("https://apigateway");
+// });
+
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps();
+//     });
+// });
+//
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+//     .SetApplicationName("MaClasse");
 
 builder.Services.AddHttpClient();
 

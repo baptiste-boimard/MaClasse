@@ -36,3 +36,7 @@ Thumbs.db
 #appsettings.json
 **/appsettings.json
 **/appsettings.Development.json
+
+
+/dataprotection-keys/
+

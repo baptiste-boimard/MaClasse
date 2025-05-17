@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
 using Service.OAuth.Interfaces;
@@ -6,6 +7,18 @@ using Service.OAuth.Repositories;
 using Service.OAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps();
+//     });
+// });
+//
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+//     .SetApplicationName("MaClasse");
 
 //* Ajout des interfaces et repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();

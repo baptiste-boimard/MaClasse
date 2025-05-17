@@ -4,12 +4,24 @@ using MaClasse.Client.Components;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps();
+//     });
+// });
+//
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+//     .SetApplicationName("MaClasse");
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ServiceLogout>();

@@ -129,7 +129,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
-      <ProjectReference Include="..\Service.OAuth\Service.OAuth.csproj" />
     </ItemGroup>
 
     <ItemGroup>

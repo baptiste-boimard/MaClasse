@@ -1,0 +1,68 @@
+﻿services:
+  apigateway:
+    build:
+      context: .
+      dockerfile: MaClasse.ApiGateway/Dockerfile
+    ports:
+      - "7261:7261"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:7261
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+    volumes:
+      - C:/Users/bapti/.aspnet/https:/https:ro
+      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+
+
+  client:
+    depends_on:
+      - oauth
+      - apigateway
+      - database
+    build:
+      context: .
+      dockerfile: MaClasse.Client/Dockerfile
+    ports:
+      - "7235:7235"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:7235
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+    volumes:
+      - C:/Users/bapti/.aspnet/https:/https:ro
+      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+
+
+  database:
+    build:
+      context: .
+      dockerfile: Service.Database/Dockerfile
+    ports:
+      - "7012:7012"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:7012
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+    volumes:
+      - C:/Users/bapti/.aspnet/https:/https:ro
+      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+
+
+  oauth:
+    build:
+      context: .
+      dockerfile: Service.OAuth/Dockerfile
+    ports:
+      - "7011:7011"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:7011
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+    volumes:
+      - C:/Users/bapti/.aspnet/https:/https:ro
+      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+

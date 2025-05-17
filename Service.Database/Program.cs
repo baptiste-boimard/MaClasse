@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Web.Resource;
@@ -9,6 +10,18 @@ using Service.Database.Repositories;
 using Service.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps();
+//     });
+// });
+//
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+//     .SetApplicationName("MaClasse");
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<HolidaysService>();
