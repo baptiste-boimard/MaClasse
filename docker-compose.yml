@@ -3,17 +3,17 @@
     build:
       context: .
       dockerfile: MaClasse.ApiGateway/Dockerfile
-    ports:
-      - "7261:7261"
+    container_name: maclasse_apigateway
+    restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:7261
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7261
     volumes:
-      - C:/Users/bapti/.aspnet/https:/https:ro
-      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
-
+      - "./dataprotection_keys_prod:/app/keys" 
+    networks:
+        - maclasse_network
+    labels:
+        - "traefik.enable=true"
 
   client:
     depends_on:
@@ -23,46 +23,60 @@
     build:
       context: .
       dockerfile: MaClasse.Client/Dockerfile
-    ports:
-      - "7235:7235"
+    container_name: maclasse_client
+    restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:7235
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7235
+      - ApiGatewayBaseUrl=https://maclasse.punkydev.fr
     volumes:
-      - C:/Users/bapti/.aspnet/https:/https:ro
-      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+      - "./dataprotection_keys_prod:/app/keys"
+    networks:
+        - maclasse_network
+    labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=maclasse_network"
+        - "traefik.http.routers.maclasse-client-prod.rule=Host(`maclasse.punkydev.fr`)"
+        - "traefik.http.routers.maclasse-client-prod.entrypoints=websecure"
+        - "traefik.http.routers.maclasse-client-prod.tls.certresolver=myresolver"
+        - "traefik.http.services.maclasse-client-prod-svc.loadbalancer.server.port=7235"
 
 
   database:
     build:
       context: .
       dockerfile: Service.Database/Dockerfile
-    ports:
-      - "7012:7012"
+    container_name: maclasse_client
+    restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:7012
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7012
     volumes:
-      - C:/Users/bapti/.aspnet/https:/https:ro
-      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+      - "./dataprotection_keys_prod:/app/keys"
+    networks:
+      - maclasse_network
+    labels:
+      - "traefik.enable=true"
 
 
   oauth:
     build:
       context: .
       dockerfile: Service.OAuth/Dockerfile
-    ports:
-      - "7011:7011"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:7011
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword123!
-    volumes:
-      - C:/Users/bapti/.aspnet/https:/https:ro
-      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    container_name: maclasse_client
+    restart: unless-stopped
 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7011
+    volumes:
+      - "./dataprotection_keys_prod:/app/keys"
+    networks:
+      - maclasse_network
+    labels:
+      - "traefik.enable=true"
+        
+networks:
+  maclasse_network:
+    driver: bridge
+    name: maclasse_network 
