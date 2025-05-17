@@ -2,10 +2,10 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-            "Host": "oauth",
+          "Host": "oauth",
           "Port": 7011
         }
       ],
@@ -17,7 +17,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "database",
@@ -32,6 +32,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7261"
+    "BaseUrl": "http://apigateway:7261"
   }
 }
