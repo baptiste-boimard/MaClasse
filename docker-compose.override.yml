@@ -29,7 +29,6 @@
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7235
       - ApiGatewayBaseUrl=https://maclasse.punkydev.fr
-      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=maclasse;Username=maclasse;Password=maclasse
       - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
       - Authentication__Google__ClientSecret=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
       - Url__ApiGateway=http://apigateway:7261
@@ -57,7 +56,7 @@
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7012
       - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
-      - ConnectionStrings__MongoDbContext=mongodb://localhost:27017
+      - ConnectionStrings__MongoDbContext=mongodb://punky:js4life@82.165.132.236:27017
       - ConnectionStrings__MongoDbSettings__DatabaseName=maclasse
 
     volumes:
@@ -78,8 +77,8 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7011
-      - ConnectionStrings__PostgresDBContext=Host=localhost;Port=5432;Username=maclasse;Password=maclasse;Database=maclasse
-      - Url__ApiGateway=http://localhost:7261
+      - ConnectionStrings__PostgresDBContext=Host=82.165.132.236;Port=5432;Username=punky;Password=js4life;Database=maclasse
+      - Url__ApiGateway=http://apigateway:7261
       - Authentication__Google__ClientId=419056052171-4stscg6up8etnu68m5clp4gi0m3im8ea.apps.googleusercontent.com
       - Authentication__Google__ClientSecret=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
 

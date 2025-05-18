@@ -31,10 +31,13 @@ public class CreateDataService
             var newScheduler = await response.Content.ReadFromJsonAsync<Scheduler>();
 
             if (newScheduler != null)
-            {
+            {   
+                Console.WriteLine("dsfdsfdsf", newScheduler);
                 return newScheduler;
             }
         }
+        var error = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"❌ Erreur HTTP: {response.StatusCode}, contenu: {error}");
 
         return null;
     }

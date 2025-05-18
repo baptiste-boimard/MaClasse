@@ -37,6 +37,4 @@ Thumbs.db
 **/appsettings.json
 **/appsettings.Development.json
 
-
-/dataprotection-keys/
-docker-compose.override.yml
+./docker-compose.override.yml

@@ -59,6 +59,8 @@ public class SchedulerController :  ControllerBase
     [Route("add-scheduler")]
     public async Task<IActionResult> AddScheduler([FromBody] CreateDataRequest request)
     {
+        Console.WriteLine($"📦 Scheduler Controller");
+
         var newScheduler = await _schedulerRepository.AddScheduler(request.UserId);
         
         return Ok(newScheduler);
