@@ -6,17 +6,21 @@ namespace Service.Database.Services;
 public class UserService
 {
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
-    public UserService(HttpClient httpClient)
+    public UserService(
+        HttpClient httpClient,
+        IConfiguration configuration)
     {
         _httpClient = httpClient;
+        _configuration = configuration;
     }
 
     public async Task<SessionData> GetUserByIdSession(string idSession)
     {
 
         var response = await _httpClient.PostAsJsonAsync(
-            "https://localhost:7261/api/auth/get-user", new UserBySessionRequest
+            $"{_configuration["Url:ApiGateway"]}/api/auth/get-user", new UserBySessionRequest
             {
                 IdSession = idSession
             });
