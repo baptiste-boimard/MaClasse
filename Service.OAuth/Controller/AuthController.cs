@@ -169,10 +169,10 @@ public class AuthController: ControllerBase
     public async Task<IActionResult> FinishedSignUp([FromBody] SignupDialogResult result)
     {
         //* Récupérer la valeur du cookie
-        var cookieValue = Request.Cookies["MaClasseAuth"];   
+        // var cookieValue = Request.Cookies["MaClasseAuth"];   
 
         //* Avec l'id de session on réucpére le userId
-        var userSession = await _sessionRepository.GetUserIdByCookies(cookieValue);
+        var userSession = await _sessionRepository.GetUserIdByCookies(result.IdSession);
 
         userSession.Role = result.Role;
         //* Je mets a jour mon cookies de Session avec le Role

@@ -185,7 +185,7 @@ public partial class Auth : ComponentBase
                     Role = dialogResult.Role,
                     Zone = dialogResult.Zone,
                     AccessToken = _userState.AccessToken,
-                    
+                    IdSession = _userState.IdSession
                 };
             
             //* Requete vers le back pour compléter le profil
