@@ -4,10 +4,9 @@ WORKDIR /src
 
 COPY . .
 
-ARG PROJECT_PATH=Service.OAuth
+ARG PROJECT_PATH
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
 
-# ✅ Appel explicite avec le chemin du projet
 RUN dotnet restore $PROJECT_FILE
 RUN dotnet publish $PROJECT_FILE -c Release -o /app/out --no-restore
 
