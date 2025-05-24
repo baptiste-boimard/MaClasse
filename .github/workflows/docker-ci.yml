@@ -1,0 +1,68 @@
+﻿name: Build and Push Changed Docker Services
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/Dockerfile'
+      - '**/*.cs'
+      - 'docker-compose.yml'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      apigateway: ${{ steps.filter.outputs.apigateway }}
+      client: ${{ steps.filter.outputs.client }}
+      database: ${{ steps.filter.outputs.database }}
+      oauth: ${{ steps.filter.outputs.oauth }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Detect changed services
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            apigateway:
+              - 'MaClasse.ApiGateway/**'
+            client:
+              - 'MaClasse.Client/**'
+            database:
+              - 'Service.Database/**'
+            oauth:
+              - 'Service.OAuth/**'
+
+  build-push:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: apigateway
+            path: MaClasse.ApiGateway
+          - name: client
+            path: MaClasse.Client
+          - name: database
+            path: Service.Database
+          - name: oauth
+            path: Service.OAuth
+    if: needs.detect-changes.outputs[matrix.name] == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
+          docker build -t $IMAGE_NAME ./${{ matrix.path }}
+          docker push $IMAGE_NAME

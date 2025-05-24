@@ -41,7 +41,6 @@
         - "traefik.http.routers.maclasse-client-prod.tls.certresolver=myresolver"
         - "traefik.http.services.maclasse-client-prod-svc.loadbalancer.server.port=7235"
 
-
   database:
     build:
       context: .
@@ -57,7 +56,6 @@
       - maclasse_network
     labels:
       - "traefik.enable=true"
-
 
   oauth:
     build:
@@ -76,6 +74,7 @@
     labels:
       - "traefik.enable=true"
         
+
 networks:
   maclasse_network:
     driver: bridge

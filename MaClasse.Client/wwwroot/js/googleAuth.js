@@ -10,7 +10,6 @@ window.initializeGoogleLogin = function (dotNetObjRef, clientId) {
     }
 
     waitForGoogleSDK(() => {
-        console.log("ID Client Google utilisé par JavaScript:", clientId);
         google.accounts.id.initialize({
             client_id: clientId,
             callback: (response) => {

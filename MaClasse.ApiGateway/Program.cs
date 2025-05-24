@@ -11,7 +11,7 @@ builder.Services.AddDataProtection()
 builder.Services.AddHttpClient();
 
 //* Charger la configuration d'Ocelot depuis le fichier ocelot.json
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
 
 //* Enregistrer les services d'Ocelot
 builder.Services.AddOcelot(builder.Configuration);
