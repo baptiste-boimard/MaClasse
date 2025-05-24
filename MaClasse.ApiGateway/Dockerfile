@@ -1,25 +1,24 @@
-# Utiliser l'image .NET 9 SDK pour builder
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copier les fichiers de solution
-COPY . . 
+COPY . .
 
-# Restaurer les packages
-RUN dotnet restore
+ARG BUILD_ENV=Production
+RUN echo "Using environment: $BUILD_ENV"
 
-# Publier le projet (remplacer par le vrai nom du projet .csproj)
-RUN dotnet publish "./MaClasse.ApiGateway/MaClasse.ApiGateway.csproj" -c Release -o /out --no-restore
+# Copier le bon fichier ocelot en tant que ocelot.json
+RUN cp MaClasse.ApiGateway/ocelot.$BUILD_ENV.json MaClasse.ApiGateway/ocelot.json
 
-# Image finale
+# Build projet
+ARG PROJECT_PATH=MaClasse.ApiGateway
+ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
+
+RUN dotnet restore $PROJECT_FILE
+RUN dotnet publish $PROJECT_FILE -c Release -o /app/out --no-restore
+
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /out .
+COPY --from=build /app/out .
 
-# 👇 Ajouter cette ligne pour s'assurer que le fichier est bien là
-COPY ./MaClasse.ApiGateway/ocelot.json .
-
-# Utiliser HTTPS avec un certificat dev (aspnet core dev-certs)
 EXPOSE 7261
-
 ENTRYPOINT ["dotnet", "MaClasse.ApiGateway.dll"]
