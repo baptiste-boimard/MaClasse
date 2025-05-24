@@ -71,6 +71,7 @@ public partial class Auth : ComponentBase
     {
         if (firstRender)
         {            
+            Console.WriteLine("coucou");
             dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync(
                 "initializeGoogleLogin",
