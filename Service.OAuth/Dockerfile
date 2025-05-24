@@ -9,7 +9,7 @@ COPY . .
 RUN dotnet restore
 
 # Publier le projet (remplacer par le vrai nom du projet .csproj)
-RUN dotnet publish "./Service.OAuth/Service.OAuth.csproj" -c Release -o /out --no-restore
+RUN dotnet publish "Service.OAuth.csproj" -c Release -o /out --no-restore
 
 # Image finale
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
