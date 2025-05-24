@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY . .
 
-ARG PROJECT_PATH
+ARG PROJECT_PATH=Service.OAuth
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
 
 RUN dotnet restore $PROJECT_FILE
@@ -16,3 +16,5 @@ COPY --from=build /app/out .
 
 EXPOSE 7011
 ENTRYPOINT ["dotnet", "Service.OAuth.dll"]
+
+LABEL "sheperd.autodeploy" = "true"

@@ -22,3 +22,6 @@ COPY --from=build /app/out .
 
 EXPOSE 7261
 ENTRYPOINT ["dotnet", "MaClasse.ApiGateway.dll"]
+
+LABEL "sheperd.autodeploy" = "true"
+

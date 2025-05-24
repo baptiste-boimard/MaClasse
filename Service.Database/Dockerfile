@@ -1,22 +1,21 @@
-# Utiliser l'image .NET 9 SDK pour builder
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copier les fichiers de solution
-COPY . . 
+COPY . .
 
-# Restaurer les packages
-RUN dotnet restore
+ARG PROJECT_PATH=Service.Database
+ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
 
-# Publier le projet (remplacer par le vrai nom du projet .csproj)
-RUN dotnet publish "./Service.Database/Service.Database.csproj" -c Release -o /out --no-restore
+RUN dotnet restore $PROJECT_FILE
+RUN dotnet publish $PROJECT_FILE -c Release -o /app/out --no-restore
 
-# Image finale
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /out .
+COPY --from=build /app/out .
 
-# Utiliser HTTPS avec un certificat dev (aspnet core dev-certs)
 EXPOSE 7012
-
 ENTRYPOINT ["dotnet", "Service.Database.dll"]
+
+LABEL "sheperd.autodeploy" = "true"
+
