@@ -69,10 +69,11 @@ jobs:
         run: echo "No changes in ${{ matrix.name }}, skipping build."
 
       - name: Build and push Docker image
+        if: needs.detect-changes.outputs[matrix.name] == 'true'
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
+          DOCKERFILE=${{ matrix.path }}/Dockerfile
           docker build -t $IMAGE_NAME \
-            -f MaClasse.ApiGateway/Dockerfile . \
-            --build-arg PROJECT_PATH=MaClasse.ApiGateway \
-            --build-arg BUILD_ENV=Production
+            -f $DOCKERFILE . \
+            --build-arg PROJECT_PATH=${{ matrix.path }}
           docker push $IMAGE_NAME
