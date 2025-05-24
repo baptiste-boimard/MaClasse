@@ -1,4 +1,18 @@
-﻿build-push:
+﻿name: Build and Push Changed Docker Services
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'MaClasse.ApiGateway/**'
+      - 'MaClasse.Client/**'
+      - 'Service.Database/**'
+      - 'Service.OAuth/**'
+      - 'docker-compose.yml'
+      - '**/Dockerfile'
+      - '**/*.cs'
+
+build-push:
   needs: detect-changes
   runs-on: ubuntu-latest
   strategy:
