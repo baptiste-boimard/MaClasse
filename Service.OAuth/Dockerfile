@@ -1,22 +1,20 @@
-﻿# Utiliser l'image .NET 9 SDK pour builder
+﻿# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copier les fichiers de solution
-COPY . . 
+# Copier tout le repo
+COPY . .
 
-# Restaurer les packages
+# Construire uniquement le projet Service.OAuth
+ARG PROJECT_PATH=Service.OAuth
+WORKDIR /src/$PROJECT_PATH
+
 RUN dotnet restore
+RUN dotnet publish -c Release -o /app/out --no-restore
 
-# Publier le projet (remplacer par le vrai nom du projet .csproj)
-RUN dotnet publish "Service.OAuth.csproj" -c Release -o /out --no-restore
-
-# Image finale
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /out .
+COPY --from=build /app/out .
 
-# Utiliser HTTPS avec un certificat dev (aspnet core dev-certs)
 EXPOSE 7011
-
 ENTRYPOINT ["dotnet", "Service.OAuth.dll"]

@@ -51,7 +51,7 @@ public class AuthController: ControllerBase
     [Route("google-login")]
     public async Task<IActionResult> GoogleLogin(GoogleTokenRequest request)
     {
-        Console.WriteLine("coucoeeffu");
+        Console.WriteLine("coucrroeeffu");
         var payload = await _validateGoogleTokenService.ValidateGoogleToken(request.Token);
         if (payload == null)
         {
