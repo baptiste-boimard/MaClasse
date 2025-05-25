@@ -86,6 +86,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 app.UseDeveloperExceptionPage();
 
+app.UseWebSockets();
+
 app.UseRouting();
 
 app.UseAuthentication();
