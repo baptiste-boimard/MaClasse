@@ -6,9 +6,6 @@ COPY . .
 ARG BUILD_ENV=Production
 RUN echo "Using environment: $BUILD_ENV"
 
-# Copier le bon fichier ocelot en tant que ocelot.json
-RUN cp MaClasse.ApiGateway/ocelot.$BUILD_ENV.json MaClasse.ApiGateway/ocelot.json
-
 # Build projet
 ARG PROJECT_PATH=MaClasse.ApiGateway
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj

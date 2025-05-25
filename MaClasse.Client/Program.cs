@@ -4,6 +4,7 @@ using MaClasse.Client.Components;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
@@ -26,10 +27,10 @@ builder.Services.AddScoped<LessonState>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée
-// builder.Services.Configure<CircuitOptions>(options =>
-// {
-//     options.DetailedErrors = true;
-// });
+builder.Services.Configure<CircuitOptions>(options =>
+{
+    options.DetailedErrors = true;
+});
 
 //* Ajout des services de Radzen Blazor
 builder.Services.AddRadzenComponents();
