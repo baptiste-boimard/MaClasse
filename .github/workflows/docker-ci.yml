@@ -1,48 +1,70 @@
-﻿name: Build and Push All Docker Services
+﻿name: Build and Push Modified Services
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'MaClasse.ApiGateway/**'
-      - 'MaClasse.Client/**'
-      - 'Service.Database/**'
-      - 'Service.OAuth/**'
-      - 'docker-compose.yml'
-      - '**/Dockerfile'
-      - '**/*.cs'
 
 jobs:
-  build-push:
+  build-apigateway:
+    if: contains(github.event.head_commit.message, '[build-apigateway]') || contains(github.event.head_commit.modified, 'MaClasse.ApiGateway/')
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - name: apigateway
-            path: MaClasse.ApiGateway
-          - name: client
-            path: MaClasse.Client
-          - name: database
-            path: Service.Database
-          - name: oauth
-            path: Service.OAuth
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Log in to GitHub Container Registry
+      - uses: actions/checkout@v3
+      - name: Docker login
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker image
+      - name: Build & push apigateway
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
-          DOCKERFILE=${{ matrix.path }}/Dockerfile
-          docker build -t $IMAGE_NAME \
-            -f $DOCKERFILE . \
-            --build-arg PROJECT_PATH=${{ matrix.path }}
-          docker push $IMAGE_NAME
+          docker build -t ghcr.io/${{ github.repository_owner }}/apigateway:latest -f MaClasse.ApiGateway/Dockerfile . --build-arg PROJECT_PATH=MaClasse.ApiGateway
+          docker push ghcr.io/${{ github.repository_owner }}/apigateway:latest
+
+  build-client:
+    if: contains(github.event.head_commit.message, '[build-client]') || contains(github.event.head_commit.modified, 'MaClasse.Client/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push client
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/client:latest -f MaClasse.Client/Dockerfile . --build-arg PROJECT_PATH=MaClasse.Client
+          docker push ghcr.io/${{ github.repository_owner }}/client:latest
+
+  build-database:
+    if: contains(github.event.head_commit.message, '[build-database]') || contains(github.event.head_commit.modified, 'Service.Database/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push database
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/database:latest -f Service.Database/Dockerfile . --build-arg PROJECT_PATH=Service.Database
+          docker push ghcr.io/${{ github.repository_owner }}/database:latest
+
+  build-oauth:
+    if: contains(github.event.head_commit.message, '[build-oauth]') || contains(github.event.head_commit.modified, 'Service.OAuth/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push oauth
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/oauth:latest -f Service.OAuth/Dockerfile . --build-arg PROJECT_PATH=Service.OAuth
+          docker push ghcr.io/${{ github.repository_owner }}/oauth:latest
