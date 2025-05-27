@@ -24,6 +24,7 @@ public class LessonState
     public event Action OnChange;
     
     public Lesson Lesson { get; set; }
+    public Lesson CopyLesson { get; set; } = new Lesson();
     public Appointment SelectedAppointment { get; set; }
 
     public async void SetLessonSelected(Appointment appointment)
@@ -55,6 +56,7 @@ public class LessonState
             var lesson = await response.Content.ReadFromJsonAsync<Lesson>();
             return lesson;
         }
+        
         return new Lesson();
     }
 
@@ -107,6 +109,27 @@ public class LessonState
             SelectedAppointment = updated;
             NotifyStateChanged();
         }
+    }
+    
+    public async void SetCopyLesson(Lesson lesson)
+    {
+        lesson.IdLesson = null;
+        CopyLesson = lesson;
+    }
+
+    public Lesson GetCopyLesson()
+    {
+        foreach (var prop in typeof(Lesson).GetProperties())
+        {
+            if (prop.Name == "IdLesson") continue;
+
+            var value = prop.GetValue(CopyLesson);
+            prop.SetValue(Lesson, value);
+        }
+        
+        CopyLesson = new Lesson();
+        NotifyStateChanged();
+        return Lesson;
     }
     
     public void NotifyStateChanged()

@@ -42,7 +42,7 @@ public class LessonController : ControllerBase
         var existingLesson = await _lessonRepository.GetLesson(
             request.Appointment.Id, idUser);
 
-        if (existingLesson == null) return null;
+        if (existingLesson == null) return NotFound(null);
         
         return Ok(existingLesson);
     }

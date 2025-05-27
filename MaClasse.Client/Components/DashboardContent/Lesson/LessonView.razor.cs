@@ -23,6 +23,7 @@ public partial class LessonView : ComponentBase
     
     private Appointment appointement = new Appointment();
     private Shared.Models.Lesson.Lesson lesson = new Shared.Models.Lesson.Lesson();
+    private bool isPasteDisabled = true;
     
     protected override void OnInitialized()
     {
@@ -59,7 +60,8 @@ public partial class LessonView : ComponentBase
                     FullWidth = true
                 };
         
-                var dialog = await _dialogService.ShowAsync<ConfirmSaveLessonDialog>("Confirmation de Sauvegarde", parameters, options);
+                var dialog = await _dialogService.ShowAsync<ConfirmSaveLessonDialog>(
+                    "Confirmation de Sauvegarde", parameters, options);
         
                 var result = await dialog.Result;
             }
@@ -84,7 +86,8 @@ public partial class LessonView : ComponentBase
                 FullWidth = true
             };
         
-            var dialog = await _dialogService.ShowAsync<ConfirmDeleteLessonDialog>("Confirmation de suppression", parameters, options);
+            var dialog = await _dialogService.ShowAsync<ConfirmDeleteLessonDialog>(
+                "Confirmation de suppression", parameters, options);
         
             var result = await dialog.Result;
 
@@ -93,5 +96,17 @@ public partial class LessonView : ComponentBase
                 _lessonState.DeleteLesson(lesson);
             }
         }
+    }
+
+    public void CopyLesson()
+    {
+        _lessonState.SetCopyLesson(lesson);
+        isPasteDisabled = false;
+    }
+    
+    public void PasteLesson()
+    {
+        lesson = _lessonState.GetCopyLesson();
+        isPasteDisabled = true;
     }
 }

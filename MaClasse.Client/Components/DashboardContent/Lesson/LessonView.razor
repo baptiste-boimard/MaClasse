@@ -117,8 +117,8 @@
                 <MudButtonGroup Color="Color.Info"
                                 Size="Size.Medium"
                                 Variant="MudBlazor.Variant.Filled">
-                    <MudButton>Copier</MudButton>
-                    <MudButton>Coller</MudButton>
+                    <MudButton OnClick="CopyLesson">Copier</MudButton>
+                    <MudButton OnClick="PasteLesson" Disabled="@isPasteDisabled">Coller</MudButton>
                 </MudButtonGroup>
                 <MudButton Variant="MudBlazor.Variant.Filled"
                            Color="Color.Error"
