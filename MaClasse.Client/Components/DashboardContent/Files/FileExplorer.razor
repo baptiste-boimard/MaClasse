@@ -4,3 +4,14 @@
 <p>@appointement.End</p>
 <p>@appointement.Start</p>
 <p>@appointement.Text</p>
+
+
+<MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ActivatorContent>
+        <MudButton Variant="MudBlazor.Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.CloudUpload">
+            Upload Files
+        </MudButton>
+    </ActivatorContent>
+</MudFileUpload>

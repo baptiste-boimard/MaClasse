@@ -1,6 +1,17 @@
 using CloudinaryDotNet;
+using Service.Cloudinary.Interfaces;
+using Service.Cloudinary.Repositories;
+using Service.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//* Ajout des différents service
+builder.Services.AddScoped<UserService>();
+
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+
+builder.Services.AddHttpClient();
+
 
 //* Connection a Cloudinary
 builder.Services.AddSingleton(x =>

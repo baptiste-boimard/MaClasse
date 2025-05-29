@@ -7,13 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\App.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
-      <_ContentIncludedByDefault Remove="Components\Routes.razor" />
-      <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
-      <_ContentIncludedByDefault Remove="wwwroot\app.css" />
+      <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

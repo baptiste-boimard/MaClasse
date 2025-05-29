@@ -40,6 +40,7 @@ public partial class ProfileDialog : ComponentBase
     public string Email => _userState.Email;
     public string Role => _userState.Role;
     public string Zone => _userState.Zone;
+    private string IdRole => _userState.IdRole;
     public List<Rattachment> AsDirecteur => _userState.AsDirecteur;
     public List<Rattachment> AsProfesseur => _userState.AsProfesseur;
     public string AddDirecteurValue;

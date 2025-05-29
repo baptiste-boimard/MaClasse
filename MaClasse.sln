@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.OAuth", "Service.OA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Database", "Service.Database\Service.Database.csproj", "{F7E8A978-261D-44D2-B9F8-21432686DBCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Cloudinary", "Service.Cloudinary\Service.Cloudinary.csproj", "{EFECAA06-54A0-4BFD-B0C1-88DFCAB68BBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Cloudinary", "Service.Cloudinary\Service.Cloudinary.csproj", "{54F3CD75-2A0E-495B-8E41-04FA32729D46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,10 @@ Global
 		{F7E8A978-261D-44D2-B9F8-21432686DBCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7E8A978-261D-44D2-B9F8-21432686DBCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7E8A978-261D-44D2-B9F8-21432686DBCB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFECAA06-54A0-4BFD-B0C1-88DFCAB68BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFECAA06-54A0-4BFD-B0C1-88DFCAB68BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFECAA06-54A0-4BFD-B0C1-88DFCAB68BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFECAA06-54A0-4BFD-B0C1-88DFCAB68BBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F3CD75-2A0E-495B-8E41-04FA32729D46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F3CD75-2A0E-495B-8E41-04FA32729D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F3CD75-2A0E-495B-8E41-04FA32729D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F3CD75-2A0E-495B-8E41-04FA32729D46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
