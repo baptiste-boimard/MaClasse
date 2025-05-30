@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using MaClasse.Shared.Models.Files;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace MaClasse.Shared.Models.Lesson;
@@ -45,11 +46,10 @@ public class Lesson
     [BsonElement("CreatedAt")]
     public DateTime CreatedAt { get; set; }
     
-    
     [BsonElement("UpdatedAt")]
     public DateTime UpdatedAt { get; set; }
     
     [BsonElement("Documents")]
-    public List<Documents> Documents { get; set; } = new List<Documents>();
+    public List<Document> Documents { get; set; } = new List<Document>();
     
 }

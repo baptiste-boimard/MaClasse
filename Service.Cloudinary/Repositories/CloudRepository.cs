@@ -4,16 +4,16 @@ using Service.Cloudinary.Interfaces;
 
 namespace Service.Cloudinary.Repositories;
 
-public class FileRepository : IFileRepository
+public class CloudRepository : ICloudRepository
 {
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
 
-  public FileRepository(CloudinaryDotNet.Cloudinary cloudinary)
+  public CloudRepository(CloudinaryDotNet.Cloudinary cloudinary)
   {
     _cloudinary = cloudinary;
   }
   
-  public async Task<ImageUploadResult> UploadFileAsync(IFormFile file, string folder = "default-folder")
+  public async Task<ImageUploadResult> UploadFileAsync(IFormFile file, string idUser)
   {
     if (file == null || file.Length == 0)
       throw new ArgumentException("Fichier invalide");
@@ -25,12 +25,34 @@ public class FileRepository : IFileRepository
     var uploadParams = new ImageUploadParams
     {
       File = new FileDescription(file.FileName, memoryStream),
-      Folder = "uploads", // ou ta structure de dossiers Cloudinary
+      Folder = idUser,
       UseFilename = true,
       UniqueFilename = true,
       Overwrite = false
     };
+    
+    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+    
+    return uploadResult;
+  }
 
-    return await _cloudinary.UploadAsync(uploadParams);
+  public async Task<ImageUploadResult> GetFileAsync()
+  {
+    return null;
+  }
+  
+  public async Task<ImageUploadResult> UpdateFileAsync()
+  {
+    return null;
+  }
+  
+  public async Task<ImageUploadResult> DeleteFileAsync()
+  {
+    return null;
+  }
+  
+  public async Task<ImageUploadResult> GetFilesAsync()
+  {
+    return null;
   }
 }

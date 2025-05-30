@@ -24,7 +24,6 @@ builder.Services.AddSingleton<UserState>();
 builder.Services.AddScoped<SchedulerState>();
 builder.Services.AddScoped<ViewDashboardState>();
 builder.Services.AddScoped<LessonState>();
-builder.Services.AddScoped<FileState>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //* Pour des erreurs plus détaillée

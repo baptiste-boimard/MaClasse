@@ -1,6 +1,10 @@
 ﻿using System.Net;
+using System.Text;
+using System.Text.Json;
+using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace MaClasse.Client.States;
 
@@ -36,6 +40,8 @@ public class LessonState
         var lesson = await GetLessonFromAppointment();
 
         Lesson = lesson;
+
+        Lesson.IdAppointment = SelectedAppointment.Id;
         
         NotifyStateChanged();
     }
@@ -76,6 +82,7 @@ public class LessonState
         if (response.IsSuccessStatusCode)
         {
             Lesson = await response.Content.ReadFromJsonAsync<Lesson>();
+            NotifyStateChanged();
             return true;
         }
 
@@ -96,6 +103,29 @@ public class LessonState
         if (response.IsSuccessStatusCode)
         {
             Lesson = new Lesson();
+            NotifyStateChanged();
+        }
+    }
+
+    public async void DeleteLessonAfterAppointmentDeletion(string idAppointment)
+    {
+        var newRequestLesson = new RequestLesson
+        {
+            IdSession = _userState.IdSession,
+            IdAppointement = idAppointment
+        };
+        
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/database/delete-lesson", newRequestLesson);
+
+        if (response.IsSuccessStatusCode)
+        {
+            //* Si la lesson affiché correspond à l'appointment supprimé
+            if (Lesson.IdAppointment == idAppointment)
+            {
+                Lesson = new Lesson();
+            }
+            
             NotifyStateChanged();
         }
     }
@@ -130,6 +160,49 @@ public class LessonState
         CopyLesson = new Lesson();
         NotifyStateChanged();
         return Lesson;
+    }
+    
+    public async void UploadFile(IBrowserFile file)
+    {
+        //! Gérer l'erreur ou on updload sans choisir d'appointment
+        
+        
+        //* Si demande d'ajout de fichiers mais que IdLesson n'est pas encore définit
+        if (Lesson.IdLesson == null)
+        {
+            //* Il faut sauvegarder la Lesson pour avoir son id
+            await AddLesson(Lesson, SelectedAppointment);
+        }
+    
+        var content = new MultipartFormDataContent();
+    
+        //* Ajout du fichier 
+        var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        content.Add(new StreamContent(stream), "file", file.Name);
+    
+        //* Ajouter les métadonnées (JSON sous forme de StringContent)
+        var request = new FileRequest
+        {
+            IdSession = _userState.IdSession,
+        };
+        var json = JsonSerializer.Serialize(request);
+        content.Add(new StringContent(json, Encoding.UTF8, "application/json"), "filerequest");
+    
+        var response =
+            await _httpClient.PostAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/cloud/add-file", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var newDocument = await response.Content.ReadFromJsonAsync<Document>();
+            
+            //* Mise a jour de la Lesson avec le nouveau documents
+            Lesson.Documents.Add(newDocument);
+
+            await AddLesson(Lesson, SelectedAppointment);
+            
+            NotifyStateChanged();
+        }
     }
     
     public void NotifyStateChanged()

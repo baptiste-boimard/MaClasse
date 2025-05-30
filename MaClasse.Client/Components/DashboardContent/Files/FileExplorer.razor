@@ -1,17 +1,46 @@
-﻿<h3>FileExplorer</h3>
+﻿@if (appointement.Id != null)
+{
+    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+        <ActivatorContent>
+            <MudButton Variant="MudBlazor.Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                Upload Files
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+}
 
-<p>@appointement.Id</p>
-<p>@appointement.End</p>
-<p>@appointement.Start</p>
-<p>@appointement.Text</p>
 
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h6">Mes Documents</MudText>
 
-<MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-    <ActivatorContent>
-        <MudButton Variant="MudBlazor.Variant.Filled"
-                   Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.CloudUpload">
-            Upload Files
-        </MudButton>
-    </ActivatorContent>
-</MudFileUpload>
+    <MudGrid>
+        @if (files is not null && files.Any())
+        {
+            @foreach (var doc in files)
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <MudCard Class="ma-2" Style="height: 100%;">
+                        <MudCardMedia Image="@doc.ThumbnailUrl" Alt="@doc.Name" Height="140" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2">@doc.Name</MudText>
+                            <MudText Typo="Typo.caption">@doc.CreatedAt.ToShortDateString()</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Target="_blank" Href="@doc.Url" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" StartIcon="@Icons.Material.Filled.OpenInNew">
+                                Ouvrir
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        }
+        else
+        {
+            <MudItem xs="12">
+                <MudText Typo="Typo.body1" Color="Color.Secondary">Aucun document disponible.</MudText>
+            </MudItem>
+        }
+    </MudGrid>
+</MudPaper>

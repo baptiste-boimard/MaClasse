@@ -61,6 +61,8 @@ public class SchedulerState
         NotifyStateChanged();
     }
     
+    
+    
     private void NotifyStateChanged()
     {
         OnChange?.Invoke();

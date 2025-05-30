@@ -7,8 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 //* Ajout des différents service
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<DatabaseService>();
 
-builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<ICloudRepository, CloudRepository>();
 
 builder.Services.AddHttpClient();
 

@@ -185,6 +185,9 @@ public partial class AddAppointmentPage : ComponentBase
                 var appointmentList = await response.Content.ReadFromJsonAsync<List<Appointment>>();
                     
                 _schedulerState.SetAppointments(appointmentList);
+                
+                //* Il faut supprimer aussi la lesson qui était rattaché à cet appointment
+                _lessonState.DeleteLessonAfterAppointmentDeletion(model.Id);
             }
         }
     }

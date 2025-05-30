@@ -10,21 +10,18 @@ public partial class FileExplorer : ComponentBase
 {
     private readonly LessonState _lessonState;
     private readonly UserState _userState;
-    private readonly FileState _fileState;
 
 
     public FileExplorer(
         LessonState lessonState,
-        UserState userState,
-        FileState fileState)
+        UserState userState)
     {
         _lessonState = lessonState;
         _userState = userState;
-        _fileState = fileState;
     }
 
     private Appointment appointement = new Appointment();
-    private IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private List<Document> files = new List<Document>();
     
     
     protected override void OnInitialized()
@@ -35,15 +32,14 @@ public partial class FileExplorer : ComponentBase
     private void RefreshState()
     {
         appointement = _lessonState.SelectedAppointment;
+        files = _lessonState.Lesson.Documents;
         
         InvokeAsync(() => { StateHasChanged(); });
     }
     
     private async Task UploadFiles(IBrowserFile file)
     {
-        await _fileState.UploadFile(file);
-
-
+        _lessonState.UploadFile(file);
     }
     
     

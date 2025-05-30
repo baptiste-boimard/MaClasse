@@ -78,18 +78,37 @@ public class LessonController : ControllerBase
     [Route("delete-lesson")]
     public async Task<IActionResult> DeleteLesson(RequestLesson request)
     {
+        Lesson existingLesson;
+        
         var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
 
-        var existingLesson = await _lessonRepository.GetLesson(request.Lesson.IdAppointment, idUser);
-
+        if (request.IdAppointement != null)
+        {
+            existingLesson = await _lessonRepository.GetLesson(request.IdAppointement, idUser);
+        }
+        else
+        {
+            existingLesson = await _lessonRepository.GetLesson(request.Lesson.IdAppointment, idUser);
+        }
+        
         if (existingLesson == null) return NotFound();
 
-        var deletedLesson = await _lessonRepository.DeleteLesson(request.Lesson, idUser);
+        var deletedLesson = await _lessonRepository.DeleteLesson(existingLesson, idUser);
 
         if (deletedLesson == null) return NotFound();
         
         return Ok(deletedLesson);
     }
+
+    // [HttpPost]
+    // [Route("delete-lesson-by-idappointment")]
+    // public async Task<IActionResult> DeleteLessonByIdAppointement([FromBody] RequestLesson request)
+    // {
+    //     var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+    //     
+    //     
+    //
+    // }
     
     [HttpPost]
     [Route("add-lessonbook")]

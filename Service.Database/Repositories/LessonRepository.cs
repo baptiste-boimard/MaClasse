@@ -35,6 +35,8 @@ public class LessonRepository : ILessonRepository
     public async Task<Lesson> AddLesson(Lesson lesson, string idUser)
     {
         lesson.IdLesson = ObjectId.GenerateNewId().ToString();
+        lesson.CreatedAt = DateTime.Now;
+        lesson.UpdatedAt = DateTime.Now;
 
         var existingLessonBook = await _mongoDbContext.LessonBooks
             .Find(l => l.IdUser == idUser)
@@ -66,17 +68,35 @@ public class LessonRepository : ILessonRepository
             .FindIndex(l => l.IdLesson == lesson.IdLesson);
 
         if (existingLessonIndex == -1) return null;
-
+        
+        lesson.UpdatedAt = DateTime.Now;
+        
         existingLessonBook.Lessons[existingLessonIndex] = lesson;
+        
+        try
+        {
+          var result = await _mongoDbContext.LessonBooks
+                          .UpdateOneAsync(l => l.IdUser == idUser,
+                              Builders<LessonBook>.Update.Set(
+                                  l => l.Lessons, existingLessonBook.Lessons));
+                        
+            if (result.ModifiedCount == 0) return null;
 
-        var result = await _mongoDbContext.LessonBooks
-            .UpdateOneAsync(l => l.IdUser == idUser,
-                Builders<LessonBook>.Update.Set(
-                    l => l.Lessons, existingLessonBook.Lessons));
+            return lesson;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        // var result = await _mongoDbContext.LessonBooks
+        //     .UpdateOneAsync(l => l.IdUser == idUser,
+        //         Builders<LessonBook>.Update.Set(
+        //             l => l.Lessons, existingLessonBook.Lessons));
 
-        if (result.ModifiedCount == 0) return null;
-
-        return lesson;
+        // if (result.ModifiedCount == 0) return null;
+        //
+        // return lesson;
     }
 
     public async Task<Lesson> DeleteLesson(Lesson lesson, string idUser)
