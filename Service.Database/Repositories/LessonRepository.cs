@@ -1,4 +1,5 @@
-﻿using MaClasse.Shared.Models.Lesson;
+﻿using MaClasse.Shared.Models.Files;
+using MaClasse.Shared.Models.Lesson;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -89,14 +90,6 @@ public class LessonRepository : ILessonRepository
             Console.WriteLine(e);
             throw;
         }
-        // var result = await _mongoDbContext.LessonBooks
-        //     .UpdateOneAsync(l => l.IdUser == idUser,
-        //         Builders<LessonBook>.Update.Set(
-        //             l => l.Lessons, existingLessonBook.Lessons));
-
-        // if (result.ModifiedCount == 0) return null;
-        //
-        // return lesson;
     }
 
     public async Task<Lesson> DeleteLesson(Lesson lesson, string idUser)
@@ -110,6 +103,39 @@ public class LessonRepository : ILessonRepository
         if (result.ModifiedCount == 0) return null;
         
         return lesson;
+    }
+
+    public async Task<Document> GetDocumentInLesson(RequestLesson request, string idUser)
+    {
+        var existingLessonBook = await _mongoDbContext.LessonBooks
+            .Find(Builders<LessonBook>.Filter.Eq(
+                l => l.IdUser, idUser))
+            .FirstOrDefaultAsync();
+
+        if (existingLessonBook == null) return null;
+
+        var existingDocument = existingLessonBook.Lessons
+            .FirstOrDefault(l => l.IdLesson == request.Lesson.IdLesson)
+            .Documents.FirstOrDefault(d => d.IdDocument == request.Document.IdDocument);
+
+        if (existingDocument == null) return null;
+            
+        return existingDocument;
+    }
+
+    public async Task<UpdateResult> DeleteDocumentInLesson(string idUser, string idLesson, string IdDocument)
+    {
+        var result = await _mongoDbContext.LessonBooks.UpdateOneAsync(
+            Builders<LessonBook>.Filter.And(
+                Builders<LessonBook>.Filter.Eq(lb => lb.IdUser, idUser),
+                Builders<LessonBook>.Filter.ElemMatch(lb => lb.Lessons, l => l.IdLesson == idLesson)),
+            Builders<LessonBook>.Update.PullFilter(
+                "Lessons.$.Documents", Builders<Document>.Filter.Eq(
+                    d => d.IdDocument, IdDocument)));
+
+        if (result.ModifiedCount == 0) return null;
+        
+        return result;
     }
 
     public async Task<LessonBook> GetLessonBook(string userId)

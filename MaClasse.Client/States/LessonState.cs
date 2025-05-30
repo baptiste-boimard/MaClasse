@@ -164,9 +164,6 @@ public class LessonState
     
     public async void UploadFile(IBrowserFile file)
     {
-        //! Gérer l'erreur ou on updload sans choisir d'appointment
-        
-        
         //* Si demande d'ajout de fichiers mais que IdLesson n'est pas encore définit
         if (Lesson.IdLesson == null)
         {
@@ -200,6 +197,44 @@ public class LessonState
             Lesson.Documents.Add(newDocument);
 
             await AddLesson(Lesson, SelectedAppointment);
+            
+            NotifyStateChanged();
+        }
+    }
+
+    public async void DeleteFile(Document document)
+    {
+        var response =
+            await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-file", document);
+
+        if (response.IsSuccessStatusCode)
+        {
+            //* Confirmation du delete du fichier, BDD à mettre à jour
+            DeleteDocumentInLesson(document);
+        }
+        
+        NotifyStateChanged();
+    }
+
+    public async void DeleteDocumentInLesson(Document document)
+    {
+        var newRequestLesson = new RequestLesson
+        {
+            Lesson = Lesson,
+            IdSession = _userState.IdSession,
+            Document = document
+        };
+        
+        var response =
+            await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/database/delete-document-in-lesson", newRequestLesson);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var deletedDocument = await response.Content.ReadFromJsonAsync<Document>();
+
+            Lesson.Documents.RemoveAll(d => d.IdDocument == deletedDocument.IdDocument);
             
             NotifyStateChanged();
         }

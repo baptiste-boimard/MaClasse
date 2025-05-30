@@ -1,5 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using MaClasse.Shared.Models.Files;
 using Service.Cloudinary.Interfaces;
 
 namespace Service.Cloudinary.Repositories;
@@ -36,9 +37,13 @@ public class CloudRepository : ICloudRepository
     return uploadResult;
   }
 
-  public async Task<ImageUploadResult> GetFileAsync()
+  public async Task<GetResourceResult> GetFileAsyncByIdCloudinary(string idCloudinary)
   {
-    return null;
+    var existingDocument = await _cloudinary.GetResourceAsync(new GetResourceParams(idCloudinary));
+
+    if (existingDocument == null) return null;
+    
+    return existingDocument;
   }
   
   public async Task<ImageUploadResult> UpdateFileAsync()
@@ -46,9 +51,13 @@ public class CloudRepository : ICloudRepository
     return null;
   }
   
-  public async Task<ImageUploadResult> DeleteFileAsync()
+  public async Task<DelResResult> DeleteFileAsync(string idCloudinary)
   {
-    return null;
+    var deletedDocument = await _cloudinary.DeleteResourcesAsync(idCloudinary);
+
+    if (!deletedDocument.Deleted.TryGetValue(idCloudinary, out var status)) return null;
+      
+    return deletedDocument;
   }
   
   public async Task<ImageUploadResult> GetFilesAsync()

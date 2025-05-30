@@ -1,12 +1,13 @@
-﻿using CloudinaryDotNet.Actions;
+﻿using System.Reflection.Metadata;
+using CloudinaryDotNet.Actions;
 
 namespace Service.Cloudinary.Interfaces;
 
 public interface ICloudRepository
 {
   Task<ImageUploadResult> UploadFileAsync(IFormFile file, string iduser);
-  Task<ImageUploadResult> GetFileAsync();
+  Task<GetResourceResult> GetFileAsyncByIdCloudinary(string idCloudinary);
   Task<ImageUploadResult> UpdateFileAsync();
-  Task<ImageUploadResult> DeleteFileAsync();
+  Task<DelResResult> DeleteFileAsync(string idCloudinary);
   Task<ImageUploadResult> GetFilesAsync();
 }

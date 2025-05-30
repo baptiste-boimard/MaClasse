@@ -41,6 +41,11 @@ public partial class FileExplorer : ComponentBase
     {
         _lessonState.UploadFile(file);
     }
+
+    private async Task DeleteFile(Document document)
+    {
+        _lessonState.DeleteFile(document);
+    }
     
     
     

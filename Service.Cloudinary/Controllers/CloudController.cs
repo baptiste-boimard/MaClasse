@@ -77,12 +77,19 @@ public class CloudController : ControllerBase
   {
     return Ok();
   }
-  
+
   [HttpPost]
   [Route("delete-file")]
-  public async Task<IActionResult> DeleteFile()
+  public async Task<IActionResult> DeleteFile([FromBody] Document document)
   {
-    return Ok();
+    //* Vérification qu'il existe ce document
+    var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(document.IdCloudinary);
+
+    if (existingDocument == null) return NotFound();
+    
+    //* Efface le document
+    var deletedDocument = await _fileRepository.DeleteFileAsync(document.IdCloudinary);
+    return Ok(existingDocument);
   }
   
   [HttpPost]

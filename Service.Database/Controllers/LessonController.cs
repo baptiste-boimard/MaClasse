@@ -1,4 +1,5 @@
 ﻿using MaClasse.Shared.Models;
+using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Mvc;
@@ -100,15 +101,24 @@ public class LessonController : ControllerBase
         return Ok(deletedLesson);
     }
 
-    // [HttpPost]
-    // [Route("delete-lesson-by-idappointment")]
-    // public async Task<IActionResult> DeleteLessonByIdAppointement([FromBody] RequestLesson request)
-    // {
-    //     var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
-    //     
-    //     
-    //
-    // }
+
+    [HttpPost]
+    [Route("delete-document-in-lesson")]
+    public async Task<IActionResult> DeleteDocumentInLesson([FromBody] RequestLesson request)
+    {
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        var existingDocument = await _lessonRepository.GetDocumentInLesson(request, idUser);
+
+        if (existingDocument == null) return NotFound();
+
+        var resultDeletedDocument = await _lessonRepository.DeleteDocumentInLesson(
+            idUser, request.Lesson.IdLesson, existingDocument.IdDocument);
+
+        if (resultDeletedDocument == null) return NotFound();
+        
+        return Ok(request.Document);
+    }
     
     [HttpPost]
     [Route("add-lessonbook")]
