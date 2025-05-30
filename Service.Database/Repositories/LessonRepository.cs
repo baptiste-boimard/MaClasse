@@ -138,6 +138,30 @@ public class LessonRepository : ILessonRepository
         return result;
     }
 
+    public async Task<UpdateResult> UpdateDocumentInLesson(string idUser, string idLesson, Document document)
+    {
+        var doc = await _mongoDbContext.LessonBooks.Find(lb => lb.IdUser == idUser).FirstOrDefaultAsync();
+        
+        var arrayFilters = new List<ArrayFilterDefinition>
+        {
+            // new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("lesson._id", new ObjectId(idLesson))),
+            new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("lesson._id",new ObjectId(idLesson))),
+            new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("doc._id",new ObjectId(document.IdDocument)))
+        };
+        
+        var result = await _mongoDbContext.LessonBooks
+            .UpdateOneAsync(
+                Builders<LessonBook>.Filter.Eq(lb => lb.IdUser, idUser),
+                Builders<LessonBook>.Update
+                    .Set("Lessons.$[lesson].Documents.$[doc].Name", document.Name)
+                    .Set("Lessons.$[lesson].Documents.$[doc].IdCloudinary", document.IdCloudinary),
+                new UpdateOptions { ArrayFilters = arrayFilters });
+
+        if (result.ModifiedCount == 0) return null;
+        
+        return result;
+    }
+
     public async Task<LessonBook> GetLessonBook(string userId)
     {
         return null;

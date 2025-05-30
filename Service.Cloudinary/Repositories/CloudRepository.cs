@@ -8,6 +8,7 @@ namespace Service.Cloudinary.Repositories;
 public class CloudRepository : ICloudRepository
 {
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
+  private ICloudRepository _cloudRepositoryImplementation;
 
   public CloudRepository(CloudinaryDotNet.Cloudinary cloudinary)
   {
@@ -45,12 +46,12 @@ public class CloudRepository : ICloudRepository
     
     return existingDocument;
   }
-  
-  public async Task<ImageUploadResult> UpdateFileAsync()
+
+  public Task<ImageUploadResult> UpdateFileAsync()
   {
-    return null;
+    return _cloudRepositoryImplementation.UpdateFileAsync();
   }
-  
+
   public async Task<DelResResult> DeleteFileAsync(string idCloudinary)
   {
     var deletedDocument = await _cloudinary.DeleteResourcesAsync(idCloudinary);
@@ -58,6 +59,17 @@ public class CloudRepository : ICloudRepository
     if (!deletedDocument.Deleted.TryGetValue(idCloudinary, out var status)) return null;
       
     return deletedDocument;
+  }
+
+  public async Task<RenameResult> RenameFileAsync(string oldPublicId, string newPublicId)
+  {
+    var renameParams = new RenameParams(oldPublicId, newPublicId);
+
+    var result = await _cloudinary.RenameAsync(renameParams);
+
+    if (result.StatusCode != System.Net.HttpStatusCode.OK) return null;
+    
+    return result;
   }
   
   public async Task<ImageUploadResult> GetFilesAsync()

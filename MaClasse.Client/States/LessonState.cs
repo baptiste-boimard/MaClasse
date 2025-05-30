@@ -217,6 +217,20 @@ public class LessonState
         NotifyStateChanged();
     }
 
+    public async void RenameFile(Document document)
+    {
+        var response =
+            await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/cloud/rename-file", document);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var updatedDocument = await response.Content.ReadFromJsonAsync<Document>();
+            //* Confirmation de l'update du fichier, BDD à mettre à jour
+            UploadDocumentInLesson(updatedDocument);
+        }
+    }
+
     public async void DeleteDocumentInLesson(Document document)
     {
         var newRequestLesson = new RequestLesson
@@ -237,6 +251,33 @@ public class LessonState
             Lesson.Documents.RemoveAll(d => d.IdDocument == deletedDocument.IdDocument);
             
             NotifyStateChanged();
+        }
+    }
+
+    public async void UploadDocumentInLesson(Document document)
+    {
+        var newRequestLesson = new RequestLesson
+        {
+            Lesson = Lesson,
+            IdSession = _userState.IdSession,
+            Document = document
+        };
+        
+        var response =
+            await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/database/upload-document-in-lesson", newRequestLesson);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var updatedDocument = await response.Content.ReadFromJsonAsync<Document>();
+
+            var index = Lesson.Documents.FindIndex(d => d.IdDocument == updatedDocument.IdDocument);
+
+            if (index != -1)
+            {
+                Lesson.Documents[index] = updatedDocument;
+                NotifyStateChanged();
+            }
         }
     }
     

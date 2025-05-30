@@ -9,5 +9,6 @@ public interface ICloudRepository
   Task<GetResourceResult> GetFileAsyncByIdCloudinary(string idCloudinary);
   Task<ImageUploadResult> UpdateFileAsync();
   Task<DelResResult> DeleteFileAsync(string idCloudinary);
+  Task<RenameResult> RenameFileAsync(string oldPublicId, string newPublicId);
   Task<ImageUploadResult> GetFilesAsync();
 }

@@ -12,6 +12,7 @@ public interface ILessonRepository
     Task<Lesson> DeleteLesson(Lesson lesson, string idUser);
     Task<Document> GetDocumentInLesson(RequestLesson request, string idUser);
     Task<UpdateResult> DeleteDocumentInLesson(string idUser, string idLesson, string IdDocument);
+    Task<UpdateResult> UpdateDocumentInLesson(string idUser, string idLesson, Document document);
     Task<LessonBook> GetLessonBook(string userId);
     Task<LessonBook> DeleteLessonBook(string userId);
     Task<LessonBook> AddLessonBook(string userId);

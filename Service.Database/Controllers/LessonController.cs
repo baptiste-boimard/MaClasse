@@ -121,6 +121,24 @@ public class LessonController : ControllerBase
     }
     
     [HttpPost]
+    [Route("upload-document-in-lesson")]
+    public async Task<IActionResult> UploadDocumentInLesson([FromBody] RequestLesson request)
+    {
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        var existingDocument = await _lessonRepository.GetDocumentInLesson(request, idUser);
+
+        if (existingDocument == null) return NotFound();
+
+        var resultUpdatedDocument = await _lessonRepository.UpdateDocumentInLesson(
+            idUser, request.Lesson.IdLesson, request.Document);
+
+        if (resultUpdatedDocument == null) return NotFound();
+        
+        return Ok(request.Document);
+    }
+    
+    [HttpPost]
     [Route("add-lessonbook")]
     public async Task<IActionResult> AddLessonBook([FromBody] CreateDataRequest request)
     {

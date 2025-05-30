@@ -1,0 +1,34 @@
+﻿<div style="border-radius: 0.8rem; 
+            margin: 0.5rem;
+            margin-top: 2rem;
+            border: 1px solid #1E88E5">
+    <MudDialog>
+        <DialogContent>
+            <div style="display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    align-items: center;">
+                <div style="display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        margin-bottom: 0;">
+                    @* <p style="margin-bottom: 0"> @Message</p> *@
+                </div>
+
+                <MudTextField @bind-Value = "NewName"
+                          Label="Nouveau nom du fichier"
+                          Variant="MudBlazor.Variant.Filled"
+                          Style="margin-right: 1rem;" />
+                
+                <MudButton
+                    @onclick="@Confirm"
+                    Variant="MudBlazor.Variant.Filled"
+                    Color="Color.Primary"
+                    Style="margin-right: 1rem">
+                    Valider
+                </MudButton>
+            </div>
+        </DialogContent>
+    </MudDialog>
+</div>

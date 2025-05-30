@@ -43,9 +43,6 @@ public class CloudController : ControllerBase
       await _fileRepository.UploadFileAsync(file, idUser);
     
     //* Maintenant j'envoie les informations relatives à l'images vers la base de données
-    // var newDocument = 
-    //   await _databaseService.AddDocumentToDatabase(newFileResult, idUser);
-
     var newDocument = new Document
     {
       IdDocument = ObjectId.GenerateNewId().ToString(),
@@ -58,8 +55,6 @@ public class CloudController : ControllerBase
       Format = newFileResult.Format,
       CreatedAt = newFileResult.CreatedAt   
     };
-
-    // if (newDocument == null) return NotFound();
     
     return Ok(newDocument);
   }
@@ -72,10 +67,28 @@ public class CloudController : ControllerBase
   }
   
   [HttpPost]
-  [Route("update-file")]
-  public async Task<IActionResult> UpdateFile()
+  [Route("rename-file")]
+  public async Task<IActionResult> UpdateFile([FromBody] Document document)
   {
-    return Ok();
+    //* Vérification qu'il existe ce document
+    var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(document.IdCloudinary);
+    
+    if (existingDocument == null) return NotFound();
+    
+    //* Format le nouveau nom de fichier
+    var folderName = existingDocument.PublicId.Substring(0, existingDocument.PublicId.LastIndexOf('/'));
+    var fileName = existingDocument.PublicId.Substring(existingDocument.PublicId.LastIndexOf('/') + 1);
+    var suffix = fileName.Substring(fileName.LastIndexOf('_'));
+    var newFileName = $"{folderName}/{document.Name}{suffix}";
+
+    //* Renomme le document
+    var RenamedDocument = await _fileRepository.RenameFileAsync(existingDocument.PublicId, newFileName);
+
+    if (RenamedDocument == null) return BadRequest();
+
+    document.IdCloudinary = newFileName;
+    
+    return Ok(document);
   }
 
   [HttpPost]
