@@ -15,18 +15,15 @@ public class CloudController : ControllerBase
   private readonly UserService _userService;
   private readonly ICloudRepository _fileRepository;
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
-  private readonly DatabaseService _databaseService;
 
   public CloudController(
     UserService userService,
     ICloudRepository fileRepository,
-    CloudinaryDotNet.Cloudinary cloudinary,
-    DatabaseService databaseService)
+    CloudinaryDotNet.Cloudinary cloudinary)
   {
     _userService = userService;
     _fileRepository = fileRepository;
     _cloudinary = cloudinary;
-    _databaseService = databaseService;
   }
 
   [HttpPost]
@@ -50,7 +47,10 @@ public class CloudController : ControllerBase
       Name = newFileResult.OriginalFilename,
       Url = newFileResult.SecureUrl.ToString(),
       ThumbnailUrl = _cloudinary.Api.UrlImgUp
-        .Transform(new Transformation().Width(150).Height(150).Crop("thumb").Gravity("auto"))
+        .Transform(new Transformation()
+          .Width(100)
+          // .Height(150)
+          .Crop("limit"))
         .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}"),
       Format = newFileResult.Format,
       CreatedAt = newFileResult.CreatedAt   

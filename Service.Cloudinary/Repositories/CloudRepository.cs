@@ -2,21 +2,27 @@
 using CloudinaryDotNet.Actions;
 using MaClasse.Shared.Models.Files;
 using Service.Cloudinary.Interfaces;
+using Service.Database.Services;
 
 namespace Service.Cloudinary.Repositories;
 
 public class CloudRepository : ICloudRepository
 {
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
+  private readonly SlugifyService _slugifyService;
   private ICloudRepository _cloudRepositoryImplementation;
 
-  public CloudRepository(CloudinaryDotNet.Cloudinary cloudinary)
+  public CloudRepository(
+    CloudinaryDotNet.Cloudinary cloudinary,
+    SlugifyService slugifyService)
   {
     _cloudinary = cloudinary;
+    _slugifyService = slugifyService;
   }
   
   public async Task<ImageUploadResult> UploadFileAsync(IFormFile file, string idUser)
   {
+    
     if (file == null || file.Length == 0)
       throw new ArgumentException("Fichier invalide");
 
@@ -24,9 +30,12 @@ public class CloudRepository : ICloudRepository
     await file.CopyToAsync(memoryStream);
     memoryStream.Position = 0;
 
+    //* Traitement du nom du fichier pour enlever les caractères génants
+    var slugFileName = _slugifyService.SlugifyFileName(file.FileName);
+    
     var uploadParams = new ImageUploadParams
     {
-      File = new FileDescription(file.FileName, memoryStream),
+      File = new FileDescription(slugFileName, memoryStream),
       Folder = idUser,
       UseFilename = true,
       UniqueFilename = true,
@@ -63,7 +72,10 @@ public class CloudRepository : ICloudRepository
 
   public async Task<RenameResult> RenameFileAsync(string oldPublicId, string newPublicId)
   {
-    var renameParams = new RenameParams(oldPublicId, newPublicId);
+    //* Traitement du nom du fichier pour enlever les caractères génants
+    var slugNewPublicId = _slugifyService.SlugifyFileName(newPublicId);
+
+    var renameParams = new RenameParams(oldPublicId, slugNewPublicId);
 
     var result = await _cloudinary.RenameAsync(renameParams);
 

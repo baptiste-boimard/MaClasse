@@ -304,11 +304,6 @@ public partial class Scheduler : ComponentBase
             }
         }
     }
-
-    // private void ToogleEditMode()
-    // {
-    //     isEditionMode = !isEditionMode;
-    // }
     
     //* Ouuverture du menu quand clic sur un appointment
     [JSInvokable("ShowCustomMenu")]
@@ -327,16 +322,10 @@ public partial class Scheduler : ComponentBase
     {
         isClosingContextMenu = true;
 
-        await Task.Delay(150); // Donne le temps au clic de se propager
+        await Task.Delay(150);
         showContextMenu = false;
         isClosingContextMenu = false;
 
         await InvokeAsync(StateHasChanged);
     }
-
-    // public class MousePosition
-    // {
-    //     public int x { get; set; }
-    //     public int y { get; set; }
-    // }
 }

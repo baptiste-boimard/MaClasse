@@ -3,29 +3,42 @@ using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace MaClasse.Client.Components.DashboardContent.Files;
 
-public partial class FileExplorer : ComponentBase
+public partial class FileExplorer : ComponentBase, IAsyncDisposable
 {
     private readonly LessonState _lessonState;
     private readonly UserState _userState;
     private readonly IDialogService _dialogService;
+    private readonly IJSRuntime _jsRuntime;
 
 
     public FileExplorer(
         LessonState lessonState,
         UserState userState,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IJSRuntime jsRuntime)
     {
         _lessonState = lessonState;
         _userState = userState;
         _dialogService = dialogService;
+        _jsRuntime = jsRuntime;
     }
 
     private Appointment appointement = new Appointment();
     private List<Document> files = new List<Document>();
+    
+    private Document selectedDoc;
+    private bool showContextMenu;
+    private int menuX;
+    private int menuY;
+    private DotNetObjectReference<FileExplorer>? _dotNetRef;
+    private string menuXpx => $"{menuX}px";
+    private string menuYpx => $"{menuY}px";
     
     
     protected override void OnInitialized()
@@ -41,22 +54,36 @@ public partial class FileExplorer : ComponentBase
         InvokeAsync(() => { StateHasChanged(); });
     }
     
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await _jsRuntime.InvokeVoidAsync("documents.setInstance", _dotNetRef);
+            await _jsRuntime.InvokeVoidAsync("documents.registerOutsideClick");
+        }
+    }
+    
     private async Task UploadFiles(IBrowserFile file)
     {
         _lessonState.UploadFile(file);
     }
 
-    private async Task DeleteFile(Document document)
+    private async Task OpenFileInNewTab()
     {
-        _lessonState.DeleteFile(document);
+        await _jsRuntime.InvokeVoidAsync("open", selectedDoc.Url, "_blank");
+    }
+    
+    private async Task DeleteFile()
+    {
+        _lessonState.DeleteFile(selectedDoc);
     }
 
-    private async Task RenameFile(Document document)
+    private async Task RenameFile()
     {
         var parameters = new DialogParameters
         {
-            // { "Message", "Renommez votre fichier" },
-            { "Document", document }
+            { "Document", selectedDoc }
         };
 
         var options = new DialogOptions
@@ -72,12 +99,82 @@ public partial class FileExplorer : ComponentBase
 
         if (!result.Canceled && result.Data is string newName && !string.IsNullOrWhiteSpace(newName))
         {
-            document.Name = newName;
-            _lessonState.RenameFile(document);
+            selectedDoc.Name = newName;
+            _lessonState.RenameFile(selectedDoc);
         }
     }
     
+    //* Ouuverture du menu quand clic sur un document
+    // [JSInvokable("ShowCustomMenu")]
+    // public async Task ShowCustomMenu(string id, int x, int y)
+    // {
+    //     selectedAppointment = _schedulerState.Appointments.FirstOrDefault(a => a.Id == id);
+    //     menuX = x;
+    //     menuY = y;
+    //     showContextMenu = true;
+    //
+    //     await InvokeAsync(StateHasChanged);
+    // }
+    //
+    // [JSInvokable]
+    // public async void CloseCustomMenu()
+    // {
+    //     isClosingContextMenu = true;
+    //
+    //     await Task.Delay(150);
+    //     showContextMenu = false;
+    //     isClosingContextMenu = false;
+    //
+    //     await InvokeAsync(StateHasChanged);
+    // }
     
+    private async Task OnImageClick(MouseEventArgs e, string documentId)
+    {
+        var x = (int)e.ClientX;
+        var y = (int)e.ClientY;
+        
+        await _jsRuntime.InvokeVoidAsync("documents.handleDocumentClickFromBlazor", documentId, x, y);
+    }
+
+    [JSInvokable]
+    public async Task ShowDocumentMenu(string id, int x, int y)
+    {
+        try
+        {
+            selectedDoc = files.FirstOrDefault(d => d.IdDocument == id);
+
+            if (selectedDoc == null)
+            {
+                Console.WriteLine($"❌ Aucun document trouvé avec l'ID {id}");
+                return;
+            }
+
+            menuX = x;
+            menuY = y;
+            showContextMenu = true;
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erreur dans ShowDocumentMenu: {ex.Message}");
+        }
+    }
+
+
+    [JSInvokable]
+    public async Task CloseDocumentMenu()
+    {
+        showContextMenu = false;
+        await InvokeAsync(StateHasChanged);
+    }
     
-    
+    public async ValueTask DisposeAsync()
+    {
+        if (_dotNetRef != null)
+        {
+            _dotNetRef.Dispose();
+            _dotNetRef = null;
+        }
+    }
 }
