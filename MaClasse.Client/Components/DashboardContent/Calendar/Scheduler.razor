@@ -4,9 +4,10 @@
 
 
 <div style="padding: 0.5rem;
-            margin-right: 0.3rem;
             border: #1E88E5 solid 1px;
-            border-radius: 0.8rem;">
+            border-radius: 0.8rem;
+            margin-left: 0.5rem;
+            margin-top: 0.5rem">
     <div style="
         display: flex;
         flex-direction: column;
@@ -119,7 +120,7 @@
                 Start="@selectedStart"
                 End="@selectedEnd"
                 OnSave="OnAppointmentSaved"
-                OnCancel="ClosePanel"
+                OnCancel="ClosePanel" 
                 IsEditMode="@isEditMode"
                 OnDelete="OnAppointmentDeleted"/>
         </div>
@@ -130,7 +131,7 @@
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"
                          SlotRender=@OnSlotRender
-                         style="@($"height: 49rem; width: {schedulerWidth};")"
+                         style="@($"height: 43rem; width: {schedulerWidth};")"
                          TItem="Appointment"
                          Data=@appointments
                          StartProperty="Start"

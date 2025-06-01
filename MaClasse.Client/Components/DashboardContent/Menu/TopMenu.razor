@@ -6,66 +6,76 @@
             align-items: center;
             border: #1E88E5 solid 1px;
             border-radius: 0.8rem;
-            margin: 0.5rem;
+            margin-top: -0.5rem;
             padding: 0.3rem">
     <img style="padding-left: 1rem;
-                max-width: 5rem"
+                max-width: 8rem"
          src="Images/IconMaClasse.png" alt="Logo_MaClasse"/>
     
     <div style="display: flex;
                 flex-direction: row;
                 gap: 1rem">
-        <MudMenu
-            Label="Classes"
-            Color="Color.Secondary"
-            Size="Size.Small"
-            Variant="MudBlazor.Variant.Filled "
-            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="Item 1" />
-            <MudMenuItem Label="Item 2" />
-            <MudMenuItem Label="Item 3" />
-        </MudMenu>
+        @* <MudMenu *@
+        @*     Label="Classes" *@
+        @*     Color="Color.Secondary" *@
+        @*     Size="Size.Small" *@
+        @*     Variant="MudBlazor.Variant.Filled " *@
+        @*     EndIcon="@Icons.Material.Filled.KeyboardArrowDown"> *@
+        @*     <MudMenuItem Label="Item 1" /> *@
+        @*     <MudMenuItem Label="Item 2" /> *@
+        @*     <MudMenuItem Label="Item 3" /> *@
+        @* </MudMenu> *@
 
-        <MudMenu
-            Label="Matières"
-            Color="Color.Primary"
-            Size="Size.Small"
-            Variant="MudBlazor.Variant.Filled "
-            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="Item 1" />
-            <MudMenuItem Label="Item 2" />
-            <MudMenuItem Label="Item 3" />
-        </MudMenu>
-
-        <MudMenu
-            Label="Elèves"
-            Color="Color.Warning"
-            Size="Size.Small"
-            Variant="MudBlazor.Variant.Filled "
-            EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-            <MudMenuItem Label="Item 1" />
-            <MudMenuItem Label="Item 2" />
-            <MudMenuItem Label="Item 3" />
-        </MudMenu>
+        @* <MudMenu *@
+        @*     Label="Matières" *@
+        @*     Color="Color.Primary" *@
+        @*     Size="Size.Small" *@
+        @*     Variant="MudBlazor.Variant.Filled " *@
+        @*     EndIcon="@Icons.Material.Filled.KeyboardArrowDown"> *@
+        @*     <MudMenuItem Label="Item 1" /> *@
+        @*     <MudMenuItem Label="Item 2" /> *@
+        @*     <MudMenuItem Label="Item 3" /> *@
+        @* </MudMenu> *@
+        @* *@
+        @* <MudMenu *@
+        @*     Label="Elèves" *@
+        @*     Color="Color.Warning" *@
+        @*     Size="Size.Small" *@
+        @*     Variant="MudBlazor.Variant.Filled " *@
+        @*     EndIcon="@Icons.Material.Filled.KeyboardArrowDown"> *@
+        @*     <MudMenuItem Label="Item 1" /> *@
+        @*     <MudMenuItem Label="Item 2" /> *@
+        @*     <MudMenuItem Label="Item 3" /> *@
+        @* </MudMenu> *@
     </div>
     
-    <div>
-        <MudButton 
-            Variant="MudBlazor.Variant.Outlined" 
-            Color="Color.Primary" 
-            Size="Size.Small" 
-            Style="padding: 0 0.8rem">
-            <Date />
-        </MudButton>
+    <div style="display: flex;
+                flex-direction: row;
+                color: #7C4DFF">
+        @* <MudButton  *@
+        @*     Variant="MudBlazor.Variant.Outlined"  *@
+        @*     Color="Color.Primary"  *@
+        @*     Size="Size.Small"  *@
+        @*     Style="padding: 0 0.8rem"> *@
+        @*     <Date /> *@
+        @* </MudButton> *@
+        <div>
+            <Date/>
+        </div>
+        
 
-        <MudButton 
-            Variant="MudBlazor.Variant.Outlined" 
-            Color="Color.Primary" 
-            Size="Size.Small" 
-            Style="margin-left: 1rem;
-                   padding: 0 0.8rem">
-            <Hour />
-        </MudButton>
+@*         <MudButton  *@
+@*             Variant="MudBlazor.Variant.Outlined"  *@
+@*             Color="Color.Primary"  *@
+@*             Size="Size.Small"  *@
+@*             Style="margin-left: 1rem; *@
+@*                    padding: 0 0.8rem"> *@
+@*             <Hour /> *@
+@*         </MudButton> *@
+        <div style="margin-left: 2rem">
+            <Hour />  
+        </div>
+        
     </div>
     
     <div>
@@ -78,7 +88,8 @@
     
     <div style="padding-right: 1rem;
                 display: flex;
-                align-items: center">
+                align-items: center;
+                gap: 2rem">
         <img 
             src="@Picture" 
             title="Mon profil"

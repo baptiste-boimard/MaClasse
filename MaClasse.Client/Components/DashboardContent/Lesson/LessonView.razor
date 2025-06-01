@@ -8,7 +8,9 @@
     {
         <p style="font-size: 1.5rem;
                   font-weight: bold;
-                  margin-left: 1rem">
+                  margin: 0;
+                  margin-left: 1rem;
+                  height: 2rem">
             Aucun événement sélectionné dans l'agenda
         </p>
     }
@@ -22,6 +24,8 @@
             }
             <p style="font-size: 1.5rem;
                   font-weight: bold;
+                  margin: 0;
+                  height: 2rem;
                   margin-left: 1rem">
                 Cours du
                 @startLocal.ToString("dddd d MMMM yyyy", new CultureInfo("fr-FR"))
@@ -36,7 +40,6 @@
         {
             <MudChip T="string"
                      Style="@($"margin-left: 2rem;" +
-                              $"margin-top: -1rem;" +
                               $"background: {appointement.Color}")">
                 @appointement.Text
             </MudChip>
@@ -111,18 +114,22 @@
                 <MudButton
                     Variant="MudBlazor.Variant.Filled"
                     Color="Color.Success"
-                    OnClick="SaveLesson">
+                    OnClick="SaveLesson"
+                    Style="flex-shrink: 0.3;">
                     Sauvegarder
                 </MudButton>
+                
                 <MudButtonGroup Color="Color.Info"
                                 Size="Size.Medium"
                                 Variant="MudBlazor.Variant.Filled">
                     <MudButton OnClick="CopyLesson">Copier</MudButton>
                     <MudButton OnClick="PasteLesson" Disabled="@isPasteDisabled">Coller</MudButton>
                 </MudButtonGroup>
+   
                 <MudButton Variant="MudBlazor.Variant.Filled"
                            Color="Color.Error"
-                           OnClick="DeleteLesson">
+                           OnClick="DeleteLesson"
+                           Style="flex-shrink: 0.4;">
                     Supprimer
                 </MudButton>
             </div>

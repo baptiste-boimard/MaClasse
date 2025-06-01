@@ -29,7 +29,7 @@ public partial class ViewDashBoard : ComponentBase
     }
     
     private List<UserDashboard> Dashboards;
-    private static string _buttonTextOwner = "Votre Dashboard";
+    private static string _buttonTextOwner = "Vous";
     private string _buttonText = _buttonTextOwner;
 
     

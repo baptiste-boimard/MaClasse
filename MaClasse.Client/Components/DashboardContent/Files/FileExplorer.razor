@@ -1,7 +1,7 @@
-﻿<MudPaper Class="p-4"
-          Style="display: flex;
-                flex-direction: column">
-    
+﻿@* <MudPaper Class="p-4" *@
+@*           Style="display: flex; *@
+@*                 flex-direction: column"> *@
+<div style="display: flex; flex-direction: column">
         @if (appointement.Id != null)
         {
             <div style="display: flex; 
@@ -25,82 +25,83 @@
             </div>
         } 
 
-    <MudGrid>
-        @if (files is not null && files.Any())
-        {
-            @if (showContextMenu)
+        <MudGrid>
+            @if (files is not null && files.Any())
             {
-                <MudPaper id="custom-context-menu"
-                          Class="mud-elevation-8"
-                          Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
-                          @onmousedown:stopPropagation>
-                    <MudList T="object">
-                        <MudListItem T="object" OnClick="@(() =>
-                                                         {
-                                                             OpenFileInNewTab();
-                                                             CloseDocumentMenu();
-                                                         })">
-                            <MudText>Ouvrir</MudText>
-                        </MudListItem>
-                        <MudListItem T="object" OnClick="@(() =>
-                                                         {
-                                                             DeleteFile();
-                                                             CloseDocumentMenu();
-                                                         })">
-                            <MudText>Supprimer</MudText>
-                        </MudListItem>
-                        <MudListItem T="object" OnClick="@(() =>
-                                                         {
-                                                             RenameFile();
-                                                             CloseDocumentMenu();
-                                                         })">
-                            <MudText>Renommer</MudText>
-                        </MudListItem>
+                @if (showContextMenu)
+                {
+                    <MudPaper id="custom-context-menu"
+                              Class="mud-elevation-8"
+                              Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
+                              @onmousedown:stopPropagation>
+                        <MudList T="object">
+                            <MudListItem T="object" OnClick="@(() =>
+                                                             {
+                                                                 OpenFileInNewTab();
+                                                                 CloseDocumentMenu();
+                                                             })">
+                                <MudText>Ouvrir</MudText>
+                            </MudListItem>
+                            <MudListItem T="object" OnClick="@(() =>
+                                                             {
+                                                                 DeleteFile();
+                                                                 CloseDocumentMenu();
+                                                             })">
+                                <MudText>Supprimer</MudText>
+                            </MudListItem>
+                            <MudListItem T="object" OnClick="@(() =>
+                                                             {
+                                                                 RenameFile();
+                                                                 CloseDocumentMenu();
+                                                             })">
+                                <MudText>Renommer</MudText>
+                            </MudListItem>
 
-                    </MudList>
-                </MudPaper>
-            }
+                        </MudList>
+                    </MudPaper>
+                }
 
-            @foreach (var doc in files)
-            {
-                <MudItem>
-                    <MudCard @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
-                        <div style="display: flex;
+                @foreach (var doc in files)
+                {
+                    <MudItem>
+                        <MudCard @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
+                            <div style="display: flex;
                                 flex-direction: column;
                                 align-items: center;
                                 padding: 0.5rem;
                                 width: 7rem;">
 
-                            <div style="width: 100%;
+                                <div style="width: 100%;
                                     height: 6rem;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
                                     overflow: hidden;">
-                                <img src="@doc.ThumbnailUrl"
-                                     alt="@doc.Name"
-                                     style="max-width: 100%;
+                                    <img src="@doc.ThumbnailUrl"
+                                         alt="@doc.Name"
+                                         style="max-width: 100%;
                                         max-height: 100%;
                                         object-fit: contain;"/>
-                            </div>
+                                </div>
 
-                            <p style="font-size: 0.7rem;
+                                <p style="font-size: 0.7rem;
                                   margin: 0.25rem 0 0;
                                   word-break: break-word;
                                   text-align: center;">@doc.Name</p>
-                        </div>
-                    </MudCard>
-                </MudItem>
+                            </div>
+                        </MudCard>
+                    </MudItem>
 
 
+                }
             }
-        }
-        else
-        {
-            <MudItem xs="12">
-                <MudText Typo="Typo.h6">Mes Documents</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Secondary">Aucun document disponible.</MudText>
-            </MudItem>
-        }
-    </MudGrid>
-</MudPaper>
+            else
+            {
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">Mes Documents</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">Aucun document disponible.</MudText>
+                </MudItem>
+            }
+        </MudGrid>
+</div>
+@* </MudPaper> *@
