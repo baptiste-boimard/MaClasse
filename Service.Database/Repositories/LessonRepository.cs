@@ -1,4 +1,5 @@
-﻿using MaClasse.Shared.Models.Files;
+﻿using System.Text.Json;
+using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Bson;
@@ -59,6 +60,16 @@ public class LessonRepository : ILessonRepository
 
     public async Task<Lesson> UpdateLesson(Lesson lesson, string idUser)
     {
+      
+        // 🔍 Log complet de l'objet Lesson reçu
+        var lessonLog = JsonSerializer.Serialize(lesson, new JsonSerializerOptions
+        {
+          WriteIndented = true,
+          IgnoreNullValues = false // ou DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull avec .NET 6+
+        });
+        Console.WriteLine("📘 Contenu de l'objet Lesson reçu :\n" + lessonLog);
+      
+      
         var existingLessonBook = await _mongoDbContext.LessonBooks
             .Find(l => l.IdUser == idUser)
             .FirstOrDefaultAsync();

@@ -203,6 +203,14 @@ public class LessonState
             
             //* Mise a jour de la Lesson avec le nouveau documents
             Lesson.Documents.Add(newDocument);
+            
+            // 🔍 Log de toute la liste des documents
+            var logList = JsonSerializer.Serialize(Lesson.Documents, new JsonSerializerOptions
+            {
+              WriteIndented = true,
+              IgnoreNullValues = false
+            });
+            Console.WriteLine("📚 Liste complète des documents dans Lesson :\n" + logList);
 
             await AddLesson(Lesson, SelectedAppointment);
             
