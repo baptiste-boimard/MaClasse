@@ -12,6 +12,8 @@ jobs:
       client: ${{ steps.filter.outputs.client }}
       database: ${{ steps.filter.outputs.database }}
       oauth: ${{ steps.filter.outputs.oauth }}
+      cloudinary: ${{ steps.filter.outputs.cloudinary }}
+      
     steps:
       - uses: actions/checkout@v3
 

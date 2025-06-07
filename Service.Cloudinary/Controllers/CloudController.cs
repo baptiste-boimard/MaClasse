@@ -31,6 +31,7 @@ public class CloudController : ControllerBase
   public async Task<IActionResult> AddFile(
     [FromForm] IFormFile file, [FromForm] string  filerequest)
   {
+    // commentaire pour cloudinary
     var idSession = JsonSerializer.Deserialize<FileRequest>(filerequest);
 
     var idUser =
