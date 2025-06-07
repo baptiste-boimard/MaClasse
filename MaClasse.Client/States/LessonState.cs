@@ -193,6 +193,14 @@ public class LessonState
         {
             var newDocument = await response.Content.ReadFromJsonAsync<Document>();
             
+            // 🔍 LOG COMPLET de newDocument
+            var logjson = JsonSerializer.Serialize(newDocument, new JsonSerializerOptions
+            {
+              WriteIndented = true, // joli format
+              IgnoreNullValues = false // montre les nulls
+            });
+            Console.WriteLine("🔍 Contenu de newDocument :\n" + logjson);
+            
             //* Mise a jour de la Lesson avec le nouveau documents
             Lesson.Documents.Add(newDocument);
 
