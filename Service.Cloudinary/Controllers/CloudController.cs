@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using MaClasse.Shared.Models.Files;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -112,6 +113,24 @@ public class CloudController : ControllerBase
   [Route("get-files")]
   public async Task<IActionResult> GetFiles()
   {
+    return Ok();
+  }
+  
+  [HttpPost]
+  [Route("delete-files")]
+  public async Task<IActionResult> DeleteFiles([FromBody] List<Document> documents)
+  {
+
+    foreach (var document in documents)
+    {
+      var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(document.IdCloudinary);
+      
+      if (existingDocument == null) return NotFound();
+      
+      var result = await _fileRepository.DeleteFileAsync(document.IdCloudinary);
+
+    }
+    
     return Ok();
   }
 }
