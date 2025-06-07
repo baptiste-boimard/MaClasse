@@ -35,7 +35,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "cloud",
+          "Host": "cloudinary",
           "Port": 7013
         }
       ],
