@@ -56,6 +56,9 @@ public class CloudController : ControllerBase
       CreatedAt = newFileResult.CreatedAt   
     };
     
+    Console.WriteLine($"PublicId: {newFileResult.PublicId}, Format: {newFileResult.Format}");
+    Console.WriteLine($"Thumbnail URL: {_cloudinary.Api.UrlImgUp.Transform(new Transformation().Width(100).Crop("limit")).BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}")}");
+    
     return Ok(newDocument);
   }
 
