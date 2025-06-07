@@ -27,6 +27,7 @@ jobs:
           echo "client=$(echo "$CHANGED" | grep -q '^MaClasse.Client/' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "database=$(echo "$CHANGED" | grep -q '^Service.Database/' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "oauth=$(echo "$CHANGED" | grep -q '^Service.OAuth/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "cloudinary=$(echo "$CHANGED" | grep -q '^Service.Cloudinary/' && echo true || echo false)" >> $GITHUB_OUTPUT
 
   build-apigateway:
     needs: detect-changes
@@ -87,3 +88,18 @@ jobs:
       - run: |
           docker build -t ghcr.io/${{ github.repository_owner }}/oauth:latest -f Service.OAuth/Dockerfile . --build-arg PROJECT_PATH=Service.OAuth
           docker push ghcr.io/${{ github.repository_owner }}/oauth:latest
+          
+  build-cloudinary:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.cloudinary == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/cloudinary:latest -f Service.Cloudinary/Dockerfile . --build-arg PROJECT_PATH=Service.Cloudinary
+          docker push ghcr.io/${{ github.repository_owner }}/cloudinary:latest
