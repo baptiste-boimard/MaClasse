@@ -49,7 +49,6 @@ public class CloudController : ControllerBase
       ThumbnailUrl = _cloudinary.Api.UrlImgUp
         .Transform(new Transformation()
           .Width(100)
-          // .Height(150)
           .Crop("limit"))
         .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}"),
       Format = newFileResult.Format,
