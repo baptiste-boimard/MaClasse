@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 //* Ajout des différents service
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<SlugifyService>();
+builder.Services.AddScoped<VerifyDeleteService>();
 
 builder.Services.AddScoped<ICloudRepository, CloudRepository>();
 

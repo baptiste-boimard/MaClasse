@@ -73,8 +73,7 @@ public class LessonController : ControllerBase
         }
         
     }
-
-
+    
     [HttpPost]
     [Route("delete-lesson")]
     public async Task<IActionResult> DeleteLesson(RequestLesson request)
@@ -100,7 +99,6 @@ public class LessonController : ControllerBase
         
         return Ok(deletedLesson);
     }
-
 
     [HttpPost]
     [Route("delete-document-in-lesson")]
@@ -148,8 +146,7 @@ public class LessonController : ControllerBase
 
         return Ok(newLessonBook);
     }
-        
-        
+    
     [HttpPost]
     [Route("delete-lessonbook")]
     public async Task<IActionResult> DeleteLessonBook([FromBody] DeleteUserRequest request)
@@ -159,5 +156,19 @@ public class LessonController : ControllerBase
         if (deletedLessonBook == null) return NotFound();
         
         return Ok(deletedLessonBook);
+    }
+    
+    [HttpPost]
+    [Route("get-lessons-by-idDocument")]
+    public async Task<IActionResult> GetLessonBookByIdDocument([FromBody] RequestLesson request)
+    {
+        //* Récupération de l'ID de l'utilisateur
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        
+        var lessonsWithDocument = await _lessonRepository.GetLessonsByIdDocument(request.Document, idUser);
+
+        if(lessonsWithDocument == null) return NotFound();
+        
+        return Ok(lessonsWithDocument);
     }
 }

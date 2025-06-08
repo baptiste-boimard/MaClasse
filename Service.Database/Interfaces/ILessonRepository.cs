@@ -16,4 +16,6 @@ public interface ILessonRepository
     Task<LessonBook> GetLessonBook(string userId);
     Task<LessonBook> DeleteLessonBook(string userId);
     Task<LessonBook> AddLessonBook(string userId);
+    Task<Dictionary<string, string>> GetLessonsByIdDocument(Document document, string idUser);
+
 }

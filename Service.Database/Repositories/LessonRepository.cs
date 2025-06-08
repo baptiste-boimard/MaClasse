@@ -199,4 +199,31 @@ public class LessonRepository : ILessonRepository
         
         return deletedLessonBook;
     }
+
+    public async Task<Dictionary<string, string>> GetLessonsByIdDocument(Document document, string idUser)
+    {
+        var result = new Dictionary<string, string>();
+        
+        //* Récupération du LessonBook de l'utilisateur
+        var lessonBook = await _mongoDbContext.LessonBooks
+            .Find(lb => lb.IdUser == idUser)
+            .FirstOrDefaultAsync();
+        
+        if (lessonBook == null) return result;
+        
+        //* Recherche du document dans les Lessons
+        foreach (var lesson in lessonBook.Lessons)
+        {
+            var matchingDocument = lesson.Documents
+                .FirstOrDefault(d => d.IdDocument == document.IdDocument);
+
+            if (matchingDocument != null)
+            {
+                result[lesson.IdLesson] = matchingDocument.IdDocument;
+            }
+        }
+        
+        return result;
+    }
 }
+

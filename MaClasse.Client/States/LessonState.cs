@@ -112,12 +112,13 @@ public class LessonState
         var newRequestLesson = new RequestLesson
         {
             IdSession = _userState.IdSession,
-            IdAppointement = idAppointment
+            IdAppointement = idAppointment,
+            Lesson = Lesson
         };
         
         //* Il faut effacer les fichier sur cloudinary
         var deletionResponse = await _httpClient.PostAsJsonAsync(
-            $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-files", Lesson.Documents);
+            $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-files", newRequestLesson);
 
         if (deletionResponse.IsSuccessStatusCode)
         {
@@ -228,9 +229,16 @@ public class LessonState
 
     public async void DeleteFile(Document document)
     {
+        var newRequestLesson = new RequestLesson
+        {
+            Lesson = Lesson,
+            IdSession = _userState.IdSession,
+            Document = document
+        };
+        
         var response =
             await _httpClient.PostAsJsonAsync(
-                $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-file", document);
+                $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-file", newRequestLesson);
 
         if (response.IsSuccessStatusCode)
         {

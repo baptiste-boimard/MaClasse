@@ -2,6 +2,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using MaClasse.Shared.Models.Files;
+using MaClasse.Shared.Models.Lesson;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Service.Cloudinary.Interfaces;
@@ -16,15 +17,18 @@ public class CloudController : ControllerBase
   private readonly UserService _userService;
   private readonly ICloudRepository _fileRepository;
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
+  private readonly VerifyDeleteService _verifyDeleteService;
 
   public CloudController(
     UserService userService,
     ICloudRepository fileRepository,
-    CloudinaryDotNet.Cloudinary cloudinary)
+    CloudinaryDotNet.Cloudinary cloudinary,
+    VerifyDeleteService verifyDeleteService)
   {
     _userService = userService;
     _fileRepository = fileRepository;
     _cloudinary = cloudinary;
+    _verifyDeleteService = verifyDeleteService;
   }
 
   [HttpPost]
@@ -97,15 +101,25 @@ public class CloudController : ControllerBase
 
   [HttpPost]
   [Route("delete-file")]
-  public async Task<IActionResult> DeleteFile([FromBody] Document document)
+  public async Task<IActionResult> DeleteFile([FromBody] RequestLesson request)
   {
     //* Vérification qu'il existe ce document
-    var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(document.IdCloudinary);
+    var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(request.Document.IdCloudinary);
 
     if (existingDocument == null) return NotFound();
+
+    //* Vérification que le document n'est pas utilisé dans une autre leçon
+    var documentsToDelete = await _verifyDeleteService.VerifyDeleteFiles(request);
+    
+    //* Si le retour est vide cela signifie que le document est utilisé dans une autre leçon
+    if(documentsToDelete.Count == 0)
+    {
+      //* On bypass la suppression du document
+      return Ok();
+    }
     
     //* Efface le document
-    var deletedDocument = await _fileRepository.DeleteFileAsync(document.IdCloudinary);
+    var deletedDocument = await _fileRepository.DeleteFileAsync(request.Document.IdCloudinary);
     return Ok(existingDocument);
   }
   
@@ -118,17 +132,18 @@ public class CloudController : ControllerBase
   
   [HttpPost]
   [Route("delete-files")]
-  public async Task<IActionResult> DeleteFiles([FromBody] List<Document> documents)
+  public async Task<IActionResult> DeleteFiles([FromBody] RequestLesson request)
   {
-
-    foreach (var document in documents)
+    var documentsToDelete = await _verifyDeleteService.VerifyDeleteFiles(request);
+    
+    foreach (var document in documentsToDelete)
     {
       var existingDocument = await _fileRepository.GetFileAsyncByIdCloudinary(document.IdCloudinary);
       
       if (existingDocument == null) return NotFound();
       
-      var result = await _fileRepository.DeleteFileAsync(document.IdCloudinary);
-
+      await _fileRepository.DeleteFileAsync(document.IdCloudinary);
+    
     }
     
     return Ok();
