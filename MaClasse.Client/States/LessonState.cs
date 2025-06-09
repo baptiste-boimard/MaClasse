@@ -97,13 +97,22 @@ public class LessonState
             IdSession = _userState.IdSession
         };
         
-        var response = await _httpClient.PostAsJsonAsync(
-            $"{_configuration["Url:ApiGateway"]}/api/database/delete-lesson", newRequestLesson);
+        //* Il faut effacer les fichier sur cloudinary
+        var deletionResponse = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-files", newRequestLesson);
 
-        if (response.IsSuccessStatusCode)
+        if (deletionResponse.IsSuccessStatusCode)
         {
-            Lesson = new Lesson();
-            NotifyStateChanged();
+            var response = await _httpClient.PostAsJsonAsync(
+                $"{_configuration["Url:ApiGateway"]}/api/database/delete-lesson", newRequestLesson);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Lesson = new Lesson();
+                SelectedAppointment = new Appointment();
+            
+                NotifyStateChanged();
+            }
         }
     }
 
@@ -132,6 +141,7 @@ public class LessonState
                 if (Lesson.IdAppointment == idAppointment)
                 {
                     Lesson = new Lesson();
+                    SelectedAppointment = new Appointment();
                 }
                 
                 NotifyStateChanged();
