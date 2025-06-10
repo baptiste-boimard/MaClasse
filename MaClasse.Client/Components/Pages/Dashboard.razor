@@ -9,60 +9,83 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<div style="width: 100%; height: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem">
+<div style="display: grid;
+            grid-template-rows: auto 1fr auto; /* TopMenu, Contenu principal (remplir le reste), Mes Documents */
+            grid-template-columns: 1fr;
+            height: 100vh; /* La page prend toute la hauteur du viewport */
+            overflow: hidden; /* Empêche le défilement de la page principale */">
     
-    <div style="flex-shrink: 0">
+    <div style="grid-row: 1;
+                background-color: #fff;
+                /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
+                padding-top: 0.5rem;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+                /*padding: 0.5rem 1rem;*/
+                z-index: 10;
+                /*display: flex;*/
+                /*justify-content: space-between;*/
+                /*align-items: center;*/
+    ">
         <TopMenu/>
     </div>
 
 
-    <div style="display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-            height: 100%;
-            flex-grow: 1;
-            gap: 0.5rem;
-            padding-bottom: 1rem;
-">
+    <div style="
+        grid-row: 2; /* S'assure qu'il prend l'espace central défini par grid-template-rows */
+        display: flex; /* Utilise Flexbox pour aligner les colonnes côte à côte */
+        gap: 0.5rem; /* Espace entre la colonne gauche et la colonne droite */
+        padding: 0.5rem; /* Padding autour de l'ensemble du contenu principal */
+        overflow: hidden; /* Empêche ce conteneur de déborder */
+        align-items: stretch; /* TRÈS IMPORTANT: Fait en sorte que les éléments enfants s'étirent sur toute la hauteur */
+    ">
         
-        <div style="display: flex; 
-                flex-direction: column;
-                width: 100%;
-                gap: 0.5rem">
+        <div style="
+            display: flex; /* Flexbox pour les éléments internes (haut et bas) */
+            flex-direction: column; /* Pour les empiler verticalement */
+            flex-grow: 1; /* Prend tout l'espace horizontal restant */
+            gap: 0.5rem; /* Espace entre LessonView et FileExplorer */
+            overflow: hidden; /* Empêche cette colonne de déborder verticalement */
+        ">
 
             <div style="
-                    width: 100%;
-                    min-heightheight: 64%;
-                    border: #1E88E5 solid 1px;
-                    border-radius: 0.8rem;
-                    /*padding: 0.5rem;*/
-                    /*padding-bottom: 0;*/
-                    /*margin-bottom: 0.5rem;*/
-                    /*margin-top: 0.5rem;*/
-">
+                border: #1E88E5 solid 1px;
+                border-radius: 0.8rem;
+                padding: 0.5rem;
+                flex-grow: 1; /* TRÈS IMPORTANT: Prend tout l'espace vertical restant dans .left-column */
+                /* flex-basis: 0;  Bonne pratique avec flex-grow */
+                overflow-y: auto; /* Permet le défilement si le contenu dépasse sa hauteur allouée */
+                min-height: 100px; /* Hauteur minimale si vous le souhaitez */
+            ">
                 <LessonView/>
             </div>
 
-            <div style="height: 33%;
-                    /*width: 166vh;*/
-                    border: #1E88E5 solid 1px;
-                    border-radius: 0.8rem;
-                    /*padding: 0.5rem;*/
-                    /*margin-bottom: 0.5rem;*/
-">
+            <div style="
+                border: #1E88E5 solid 1px;
+                border-radius: 0.8rem;
+                padding: 0.5rem;
+                flex-shrink: 0; /* Empêche ce conteneur de se réduire si l'espace est limité */
+                /* height: auto; */ /* Par défaut, il prendra la hauteur de son contenu */
+                min-height: 15.75rem; /* Fixe la hauteur minimale à 15.75rem */
+                /* Si vous voulez une hauteur fixe et non minimale : height: 15.75rem; */
+                overflow-y: auto; /* Permet le défilement si le contenu dépasse cette hauteur */
+            ">
                 <FileExplorer/>
             </div>
 
         </div>
 
-        <div style="display: flex;
-                    flex-direction: column;
-                    justify-content: flex-start;
-                    align-content: flex-end;
-                    height: 100%;
-                /*margin-bottom: 0.5rem*/
-">
+        <div style="
+            border: #1E88E5 solid 1px;
+            border-radius: 0.8rem;
+            /*padding: 0.5rem;*/
+            /* La largeur du Scheduler peut être fixe ou relative */
+            /*width: 300px; !* Exemple: largeur fixe pour le calendrier *!*/
+            /* flex-shrink: 0; */ /* Empêche de rétrécir, si width est flexible */
+            /*overflow-y: auto; !* Le Scheduler peut défiler si son contenu dépasse *!*/
+            /*flex-grow: 0; !* Important pour ne pas qu'il s'étire en largeur si l'espace est très grand *!*/
+            /*flex-shrink: 0; !* Empêche de rétrécir si l'espace est limité *!*/
+        ">
             <Scheduler/>
         </div>
     </div>
