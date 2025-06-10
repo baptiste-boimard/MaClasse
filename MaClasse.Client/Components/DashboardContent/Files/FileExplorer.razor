@@ -1,28 +1,31 @@
 ﻿<div style="display: flex; flex-direction: column;">
+   
+    <div style="display: flex; 
+                flex-direction: row;
+                margin-bottom: 2rem;
+                margin-top: 0.5rem;
+                margin-left: 0.5rem;">
         @if (appointement.Id != null)
         {
-            <div style="display: flex; 
-                        flex-direction: row;
-                        margin-bottom: 2rem;
-                        margin-top: 0.5rem;
-                        margin-left: 0.5rem;">
-                <div style="display: inline-block; position: relative;">
-                    <MudFileUpload T="IBrowserFile"
-                                   FilesChanged="UploadFiles"
-                                   Style="display: inline-block;">
-                        <ActivatorContent>
-                            <MudButton Variant="MudBlazor.Variant.Filled"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload">
-                                Upload Files
-                            </MudButton>
-                        </ActivatorContent>
-                    </MudFileUpload>
-                </div>
-
-                <MudText Typo="Typo.h6" Style="margin-left: 1rem">Mes Documents</MudText>
+            <div style="display: inline-block; position: relative;">
+                <MudFileUpload T="IBrowserFile"
+                               FilesChanged="UploadFiles"
+                               Style="display: inline-block;">
+                    <ActivatorContent>
+                        <MudButton Variant="MudBlazor.Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Upload Files
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
             </div>
-        } 
+        }
+       
+
+        <MudText Typo="Typo.h6" Style="margin-left: 1rem">Mes Documents</MudText>
+    </div>
+        
 
         <MudGrid>
             @if (files is not null && files.Any())
@@ -98,20 +101,14 @@
                             </MudItem>
                         }
                     </div>
-
-
-                    
-
                 </div>
-
-
-
+                
             }
             else
             {
                 <MudItem xs="12">
-                    <MudText Typo="Typo.h6">Mes Documents</MudText>
-                    <MudText Typo="Typo.body1" Color="Color.Secondary">Aucun document disponible.</MudText>
+                    @* <MudText Typo="Typo.h6" Style="margin-left: 1rem">Mes Documents</MudText> *@
+                    <MudText Typo="Typo.body1" Color="Color.Secondary" Style="margin-left: 1rem">Aucun document disponible.</MudText>
                 </MudItem>
             }
         </MudGrid>
