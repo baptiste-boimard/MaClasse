@@ -1,116 +1,153 @@
 ﻿@using System.Globalization
 
-<div style="display: flex; 
-            flex-direction: row;
-            align-items: center">
+<div style="display: flex; flex-direction: column; height: 98%;">
 
-    @if (appointement.Id == null)
-    {
-        <p style="font-size: 1.5rem;
-                  font-weight: bold;
-                  margin: 0;
-                  margin-left: 1rem;
-                  height: 2rem">
-            Aucun événement sélectionné dans l'agenda
-        </p>
-    }
-    else
-    {
-        <div>
-            @{
-                var parisTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris");
-                var startLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.Start, parisTimeZone);
-                var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
-            }
-            <p style="font-size: 1.5rem;
-                  font-weight: bold;
-                  margin: 0;
-                  height: 2rem;
-                  margin-left: 1rem">
-                Cours du
-                @startLocal.ToString("dddd d MMMM yyyy", new CultureInfo("fr-FR"))
-                de
-                @startLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
-                à
-                @endLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
-            </p>
-        </div>
-
-        @if (appointement.Id != null)
-        {
-            <MudChip T="string"
-                     Style="@($"margin-left: 2rem;" +
-                              $"background: {appointement.Color}")">
-                @appointement.Text
-            </MudChip>
-        }
-    }
-</div>
-
-<div style="margin-top: -1rem">
     <div style="display: flex;
-            flex-direction: row">
-        <div style="width: 33%;
-                padding: 1rem">
-            <MudTextField ShrinkLabel 
+                flex-direction: row;
+                align-items: center;
+                flex-shrink: 0; /* Ce header ne se réduit pas */
+                margin-bottom: 0.5rem; /* Espace entre le header et les colonnes de MudTextFields */
+                height: 2rem;
+    ">
+        @if (appointement.Id == null)
+        {
+            <p style="font-size: 1.25rem; font-weight: bold; margin: 0; margin-left: 1rem;">
+                Aucun événement sélectionné dans l'agenda
+            </p>
+        }
+        else
+        {
+            <div>
+                @{
+                    var parisTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris");
+                    var startLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.Start, parisTimeZone);
+                    var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
+                }
+                <p style="font-size: 1.25rem; font-weight: bold; margin: 0; margin-left: 1rem;">
+                    Cours du
+                    @startLocal.ToString("dddd d MMMM", new CultureInfo("fr-FR"))
+                    de
+                    @startLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                    à
+                    @endLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                </p>
+            </div>
+
+            @if (appointement.Id != null)
+            {
+                <MudChip T="string"
+                         Style="@($"margin-left: 2rem; background: {appointement.Color}")">
+                    @appointement.Text
+                </MudChip>
+            }
+        }
+    </div>
+
+    <div style="display: flex;
+                flex-direction: row;
+                flex-grow: 1; /* Ce conteneur prend tout l'espace vertical restant */
+                gap: 0.5rem; /* Espace entre vos 3 colonnes */
+                /* overflow: hidden; Pas besoin de hidden ici, car les colonnes internes vont gérer le défilement */
+                padding-bottom: 0.5rem; /* Pour l'espace au bas des colonnes */
+                align-items: stretch; /* Les colonnes internes s'étirent à la même hauteur */
+    ">
+        <div style="width: 33.33%; /* Utilisez des pourcentages pour la largeur */
+                    padding: 0.5rem; /* Ajustez le padding ici pour un bon espacement */
+                    display: flex; /* Faire de cette div un conteneur flex */
+                    flex-direction: column; /* Empiler les champs verticalement */
+                    gap: 0.5rem; /* Espace entre les MudTextFields */
+                    /* Pas de overflow-y: auto ici, car les champs eux-mêmes vont défiler */
+        ">
+            <MudTextField ShrinkLabel
                           @bind-Value="lesson.Class"
                           Label="Classe"
-                          Variant="MudBlazor.Variant.Outlined"></MudTextField>
-            <MudTextField ShrinkLabel 
+                          Variant="MudBlazor.Variant.Outlined"
+            />
+            <MudTextField ShrinkLabel
                           @bind-Value="lesson.Tilte"
                           Label="Titre"
-                          Variant="MudBlazor.Variant.Outlined"></MudTextField>
-            <MudTextField ShrinkLabel 
-                          @bind-Value="lesson.Objective" 
-                          Label="Objectifs"
-                          Variant="MudBlazor.Variant.Outlined" 
-                          Lines="7"></MudTextField>
-            <MudTextField ShrinkLabel 
-                          @bind-Value="lesson.Skills" 
-                          Label="Compétences" 
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="7"></MudTextField>
+            />
+
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.Objective"
+                          Label="Objectifs"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="7" 
+            Style="overflow-y: auto;"
+            />
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.Skills"
+                          Label="Compétences"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="7" 
+            Style="overflow-y: auto;"
+            />
         </div>
-        <div style="width: 33%;
-                padding: 1rem">
-            <MudTextField ShrinkLabel 
+
+        <div style="width: 33.33%;
+                    padding: 0.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+        ">
+            <MudTextField ShrinkLabel
                           @bind-Value="lesson.Material"
                           Label="Matériel"
-                          Variant="MudBlazor.Variant.Outlined" 
-                          Lines="6"></MudTextField>
-            <MudTextField ShrinkLabel
-                          @bind-Value="lesson.Process" 
-                          Label="Déroulement" 
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="6"></MudTextField>
+                          Lines="6" 
+            />
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.Process"
+                          Label="Déroulement"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="6" 
+            Style="overflow-y: auto;"
+            />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Behavior"
                           Label="Comportement attendu"
-                          Variant="MudBlazor.Variant.Outlined" 
-                          Lines="7"></MudTextField>
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="7" 
+            Style="overflow-y: auto;"
+            />
         </div>
-        <div style="width: 33%;
-                padding: 1rem">
-            <MudTextField ShrinkLabel 
-                          @bind-Value="lesson.TeacherTask" 
-                          Label="Tâches de l'enseignant" 
-                          Variant="MudBlazor.Variant.Outlined" 
-                          Lines="5"></MudTextField>
-            <MudTextField ShrinkLabel 
-                          @bind-Value="lesson.StudentTask" 
-                          Label="Tâches des élèves" 
-                          Variant="MudBlazor.Variant.Outlined" 
-                          Lines="5"></MudTextField>
-            <MudTextField ShrinkLabel 
-                          @bind-Value="lesson.SuccessCriteria" 
+
+        <div style="width: 33.33%;
+                    padding: 0.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+        ">
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.TeacherTask"
+                          Label="Tâches de l'enseignant"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="5" 
+            Style="overflow-y: auto;"
+            />
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.StudentTask"
+                          Label="Tâches des élèves"
+                          Variant="MudBlazor.Variant.Outlined"
+                          Lines="5"
+            Style="overflow-y: auto;"
+            />
+            <MudTextField ShrinkLabel
+                          @bind-Value="lesson.SuccessCriteria"
                           Label="Critères de succès"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="5"></MudTextField>
+                          Lines="5" 
+            Style="overflow-y: auto;"
+            />
 
-            <div style="margin-top: 2rem;
+            <div style="margin-top: auto; /* Pousse ce div vers le bas */
                         display: flex;
                         flex-direction: row;
-                        justify-content: space-evenly">
+                        justify-content: space-evenly;
+                        flex-shrink: 0; /* Ne se réduit pas */
+                        margin-bottom: 1rem; /* Espace au-dessus des boutons */
+            ">
                 <MudButton
                     Variant="MudBlazor.Variant.Filled"
                     Color="Color.Success"
@@ -118,14 +155,14 @@
                     Style="flex-shrink: 0.3;">
                     Sauvegarder
                 </MudButton>
-                
+
                 <MudButtonGroup Color="Color.Info"
                                 Size="Size.Medium"
                                 Variant="MudBlazor.Variant.Filled">
                     <MudButton OnClick="CopyLesson">Copier</MudButton>
                     <MudButton OnClick="PasteLesson" Disabled="@isPasteDisabled">Coller</MudButton>
                 </MudButtonGroup>
-   
+
                 <MudButton Variant="MudBlazor.Variant.Filled"
                            Color="Color.Error"
                            OnClick="DeleteLesson"
