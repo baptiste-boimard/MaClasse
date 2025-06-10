@@ -2,51 +2,69 @@
 @using MaClasse.Client.Components.DashboardContent.Menu
 @using MaClasse.Client.Components.DashboardContent.Calendar
 @using Microsoft.AspNetCore.Authorization
-@using MaClasse.Client.Components.DashboardContent.Calendar
 @using MaClasse.Client.Components.DashboardContent.Files
 @using MaClasse.Client.Components.DashboardContent.Lesson
-@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 
 @attribute [Authorize]
 
 <PageTitle>Dashboard</PageTitle>
 
-<TopMenu />
-
-<div style="display: flex;
-            flex-direction: row;
-            justify-content: space-between">
-    <div style="display: flex; 
-                flex-direction: column;
-                width: 100%;">
-        
-        <div style="height: auto;
-                    min-width: 100%;
-                    border: #1E88E5 solid 1px;
-                    border-radius: 0.8rem;
-                    padding: 0.5rem;
-                    padding-bottom: 0;
-                    margin-bottom: 0.5rem;
-                    margin-top: 0.5rem">
-            <LessonView/>
-        </div>
-        
-        <div style="height: 15.75rem;
-                    max-width: 100%;
-                    border: #1E88E5 solid 1px;
-                    border-radius: 0.8rem;
-                    padding: 0.5rem;
-                    margin-bottom: 0.5rem">
-            <FileExplorer/>
-        </div>
-        
-    </div>
+<div style="width: 100%; height: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem">
     
-    <div style="display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                align-content: flex-end;
-                margin-bottom: 0.5rem">
-        <Scheduler />
+    <div style="flex-shrink: 0">
+        <TopMenu/>
     </div>
+
+
+    <div style="display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+">
+        
+        <div style="display: flex; 
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem">
+
+            <div style="
+                    width: 100%;
+                    min-heightheight: 64%;
+                    border: #1E88E5 solid 1px;
+                    border-radius: 0.8rem;
+                    /*padding: 0.5rem;*/
+                    /*padding-bottom: 0;*/
+                    /*margin-bottom: 0.5rem;*/
+                    /*margin-top: 0.5rem;*/
+">
+                <LessonView/>
+            </div>
+
+            <div style="height: 33%;
+                    /*width: 166vh;*/
+                    border: #1E88E5 solid 1px;
+                    border-radius: 0.8rem;
+                    /*padding: 0.5rem;*/
+                    /*margin-bottom: 0.5rem;*/
+">
+                <FileExplorer/>
+            </div>
+
+        </div>
+
+        <div style="display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-content: flex-end;
+                    height: 100%;
+                /*margin-bottom: 0.5rem*/
+">
+            <Scheduler/>
+        </div>
+    </div>
+
 </div>
