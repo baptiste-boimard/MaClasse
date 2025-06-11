@@ -10,7 +10,7 @@ public class Document
   public string IdDocument { get; set; }
     
   [BsonElement("IdCloudinary")]
-  public string IdCloudinary { get; set; }
+  public string? IdCloudinary { get; set; }
 
   [BsonElement("Name")]
   public string? Name { get; set; }

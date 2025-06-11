@@ -345,6 +345,32 @@ public class LessonState
         
         NotifyStateChanged();
     }
+
+    public async Task<Document> GetDocument(string idUser, string idDocument)
+    {
+        var newDocument = new Document
+        {
+            IdDocument = idDocument,
+        };
+        
+        var newFileRequestToDatabase = new FileRequestToDatabase
+        {
+            IdUser = idUser,
+            Document = newDocument
+        };
+        
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/database/get-document", newFileRequestToDatabase);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var document = await response.Content.ReadFromJsonAsync<Document>();
+
+            return document;
+        }
+
+        return null;
+    }
     
     public void NotifyStateChanged()
     {

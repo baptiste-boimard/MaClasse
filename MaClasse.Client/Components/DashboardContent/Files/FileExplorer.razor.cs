@@ -1,4 +1,5 @@
-﻿using MaClasse.Client.States;
+﻿using System.Text;
+using MaClasse.Client.States;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
@@ -15,18 +16,21 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private readonly UserState _userState;
     private readonly IDialogService _dialogService;
     private readonly IJSRuntime _jsRuntime;
+    private readonly SchedulerState _schedulerState;
 
 
     public FileExplorer(
         LessonState lessonState,
         UserState userState,
         IDialogService dialogService,
-        IJSRuntime jsRuntime)
+        IJSRuntime jsRuntime,
+        SchedulerState schedulerState)
     {
         _lessonState = lessonState;
         _userState = userState;
         _dialogService = dialogService;
         _jsRuntime = jsRuntime;
+        _schedulerState = schedulerState;
     }
 
     private Appointment appointement = new Appointment();
@@ -76,7 +80,17 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task OpenFileInNewTab()
     {
-        await _jsRuntime.InvokeVoidAsync("open", selectedDoc.Url, "_blank");
+        // await _jsRuntime.InvokeVoidAsync("open", selectedDoc.Url, "_blank");
+        
+        if (selectedDoc is null)
+            return;
+
+        string concatString = $"{_schedulerState.IdUser}-{selectedDoc.IdDocument}";
+
+        var base64EncodedconcatString = Convert.ToBase64String(Encoding.UTF8.GetBytes(concatString));
+        
+        var viewerUrl = $"/documents/view/{base64EncodedconcatString}";
+        await _jsRuntime.InvokeVoidAsync("open", viewerUrl, "_blank");
     }
     
     private async Task DeleteFile()

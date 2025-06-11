@@ -149,6 +149,27 @@ public class LessonRepository : ILessonRepository
         return result;
     }
 
+    public async Task<Document> GetDocument(string idDocument, string idUser)
+    {
+        Document doc = null;
+        
+        var userLessons = await _mongoDbContext.LessonBooks
+            .Find(lb => lb.IdUser == idUser)
+            .FirstOrDefaultAsync();
+
+        foreach (var lesson in userLessons.Lessons)
+        {
+            doc = lesson.Documents
+                .FirstOrDefault(d => d.IdDocument == idDocument);
+            
+            if (doc != null) continue;
+        }
+        
+        if (doc != null) return doc;
+        
+        return null;
+    }
+
     public async Task<UpdateResult> UpdateDocumentInLesson(string idUser, string idLesson, Document document)
     {
         var doc = await _mongoDbContext.LessonBooks.Find(lb => lb.IdUser == idUser).FirstOrDefaultAsync();

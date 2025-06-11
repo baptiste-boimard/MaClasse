@@ -110,6 +110,17 @@ public class LessonController : ControllerBase
     }
 
     [HttpPost]
+    [Route("get-document")]
+    public async Task<IActionResult> GetDocument([FromBody] FileRequestToDatabase request)
+    {
+        var existingDocument = await _lessonRepository.GetDocument(request.Document.IdDocument, request.IdUser);
+        
+        if (existingDocument == null) return NotFound();
+        
+        return Ok(existingDocument);
+    }
+
+    [HttpPost]
     [Route("delete-document-in-lesson")]
     public async Task<IActionResult> DeleteDocumentInLesson([FromBody] RequestLesson request)
     {
