@@ -1,36 +1,111 @@
-﻿@page "/Error"
-@using System.Diagnostics
+﻿@page "/NotFound"
 
-<PageTitle>Error</PageTitle>
+<PageTitle>404 - Page non trouvée</PageTitle>
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+    <div class="content-404">
+        <div class="hero-section">
+            <h1 class="text-404">404</h1>
+            <p class="message-principal">Oups ! La page que vous cherchez est introuvable.</p>
+            <p class="message-secondaire">Il semblerait que vous ayez tapé une mauvaise adresse ou que la page ait été déplacée.</p>
+            <button class="btn-retour-accueil" @onclick="NavigateToHome">
+                Retourner à l'accueil
+            </button>
+        </div>
 
-@if (ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@RequestId</code>
-    </p>
+        <div class="illustration-section">
+            <p class="illustration-placeholder">?</p>
+            <p class="illustration-text">Nous cherchons toujours...</p>
+        </div>
+    </div>
+
+@code {
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
 }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+<style>
+    /* Styles spécifiques à la page 404 */
+    .content-404 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 0px)); /* Ajustez si vous avez un pied de page */
+        text-align: center;
+        padding: 2rem;
+        background-color: #f0f2f5; /* Couleur de fond légèrement différente pour contraster, comme votre zone de contenu */
+        border-radius: 8px; /* Bords arrondis comme sur votre design */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère pour le bloc principal */
+        margin: 2rem auto; /* Centre le bloc sur la page */
+        max-width: 900px; /* Limite la largeur */
+    }
 
-@code{
-    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+    .hero-section {
+        margin-bottom: 2rem;
+    }
 
-    private string? RequestId { get; set; }
-    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    .text-404 {
+        font-size: 8em; /* Très grand 404 */
+        font-weight: bold;
+        color: #673AB7; /* Un rouge-orange vif pour attirer l'attention, comme le bouton "SUPPRIMER" */
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour le texte */
+        margin-bottom: 0.5rem;
+    }
 
-    protected override void OnInitialized() =>
-        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+    .message-principal {
+        font-size: 1.8em;
+        color: #333;
+        margin-bottom: 1rem;
+    }
 
-}
+    .message-secondaire {
+        font-size: 1.1em;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .btn-retour-accueil {
+        background-color: #3f51b5; /* Bleu comme vos boutons "ENREGISTRER", "COPIER", "COLLER" */
+        color: white;
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 5px; /* Bords légèrement arrondis */
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombre comme les boutons de votre design */
+    }
+
+    .btn-retour-accueil:hover {
+        background-color: #303f9f; /* Bleu plus foncé au survol */
+    }
+
+    .illustration-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .illustration-placeholder {
+        font-size: 3em;
+        color: #673AB7;
+        font-weight: bold;
+    }
+
+    .illustration-text {
+        font-size: 0.9em;
+        color: #999;
+    }
+
+    /* Styles pour s'assurer que le header et le reste s'affichent correctement */
+    /* Vous pourriez avoir besoin d'ajuster ces variables ou si vous avez des classes spécifiques dans Layout.MainLayout */
+    :root {
+        --header-height: 60px; /* Exemple, ajustez à la hauteur de votre header */
+    }
+</style>

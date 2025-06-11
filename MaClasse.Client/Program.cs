@@ -74,6 +74,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddAntiforgery();
+
 var app = builder.Build();
 
 app.UseCors("AllowAll"); // Applique la politique CORS dans l'app
@@ -99,5 +101,15 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapStaticAssets();
+
+// app.UseStatusCodePagesWithReExecute("/NotFound", "?statusCode={0}");
+app.UseStatusCodePages(async context =>
+{
+    if (context.HttpContext.Response.StatusCode == 404)
+    {
+        // Redirection côté client via JavaScript
+        context.HttpContext.Response.Redirect("/NotFound");
+    }
+});
 
 app.Run();

@@ -1,4 +1,4 @@
-﻿@* @using MaClasse.Client.Components.Account.Shared *@
+﻿@using MaClasse.Client.Components.Pages
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
@@ -9,5 +9,8 @@
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="routeData" Selector="h1"/>
         </Found>
+        <NotFound>
+            <Error /> @* Utilise maintenant le composant dédié *@
+        </NotFound>
     </Router>
 </CascadingAuthenticationState>
