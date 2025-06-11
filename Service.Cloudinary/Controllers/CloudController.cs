@@ -36,6 +36,9 @@ public class CloudController : ControllerBase
   public async Task<IActionResult> AddFile(
     [FromForm] IFormFile file, [FromForm] string  filerequest)
   {
+
+    string thumbnailUrl;
+    
     // commentaire pour cloudinary
     var idSession = JsonSerializer.Deserialize<FileRequest>(filerequest);
 
@@ -44,6 +47,25 @@ public class CloudController : ControllerBase
 
     var newFileResult =
       await _fileRepository.UploadFileAsync(file, idUser);
+
+    if (newFileResult.Format.ToLower() == "pdf")
+    {
+      thumbnailUrl = _cloudinary.Api.UrlImgUp
+        .Transform(new Transformation()
+          .Page("1")
+          .FetchFormat("png")
+          .Width(100)
+          .Crop("fill"))
+        .BuildUrl($"{newFileResult.PublicId}");
+    }
+    else
+    {
+      thumbnailUrl = _cloudinary.Api.UrlImgUp
+        .Transform(new Transformation()
+          .Width(100)
+          .Crop("limit"))
+        .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}");
+    }
     
     //* Maintenant j'envoie les informations relatives à l'images vers la base de données
     var newDocument = new Document
@@ -52,11 +74,7 @@ public class CloudController : ControllerBase
       IdCloudinary = newFileResult.PublicId,
       Name = newFileResult.OriginalFilename,
       Url = newFileResult.SecureUrl.ToString(),
-      ThumbnailUrl = _cloudinary.Api.UrlImgUp
-        .Transform(new Transformation()
-          .Width(100)
-          .Crop("limit"))
-        .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}"),
+      ThumbnailUrl = thumbnailUrl,
       Format = newFileResult.Format,
       CreatedAt = newFileResult.CreatedAt   
     };
