@@ -13,19 +13,22 @@ public partial class ViewDashBoard : ComponentBase
     private readonly SchedulerState _schedulerState;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly LessonState _lessonState;
 
     public ViewDashBoard(
         UserState userState,
         ViewDashboardState viewDashboardState,
         SchedulerState schedulerState,
         HttpClient httpClient,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        LessonState lessonState)
     {
         _userState = userState;
         _viewDashboardState = viewDashboardState;
         _schedulerState = schedulerState;
         _httpClient = httpClient;
         _configuration = configuration;
+        _lessonState = lessonState;
     }
     
     private List<UserDashboard> Dashboards;
@@ -66,6 +69,11 @@ public partial class ViewDashBoard : ComponentBase
     private void SetButtonText(string userName, string userId)
     {
         _buttonText = userName;
+        _lessonState.ResetLessonState();
         _schedulerState.SetViewDashboard(userId);
+        _lessonState.SetViewDashboard(userId);
+        _viewDashboardState.GetUserAppointments(userId);
+        // _lessonState.SelectedAppointment = new Appointment();
+        
     }
 }

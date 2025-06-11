@@ -13,15 +13,18 @@ public class LessonState
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly UserState _userState;
+    private readonly SchedulerState _schedulerState;
 
     public LessonState(
         HttpClient httpClient,
         IConfiguration configuration,
-        UserState userState)
+        UserState userState,
+        SchedulerState schedulerState)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _userState = userState;
+        _schedulerState = schedulerState;
     }
     
     public event Action OnAppointmentSelected;
@@ -30,7 +33,10 @@ public class LessonState
     public Lesson Lesson { get; set; }
     public Lesson CopyLesson { get; set; } = new Lesson();
     public Appointment SelectedAppointment { get; set; }
+    public bool IsReadOnly { get; set; } = false;
+    public string? UserLessonDisplayed { get; set; } = null;
 
+    
     public async void SetLessonSelected(Appointment appointment)
     {
         //* Je récupére l'appointment selectionnée
@@ -51,7 +57,8 @@ public class LessonState
         var lessonRequest = new LessonRequest
         {
             Appointment = SelectedAppointment,
-            IdSession = _userState.IdSession
+            IdSession = _userState.IdSession,
+            UserLessonDisplayed = UserLessonDisplayed
         };
         
         var response = await _httpClient.PostAsJsonAsync(
@@ -321,6 +328,22 @@ public class LessonState
                 NotifyStateChanged();
             }
         }
+    }
+    
+    public void SetViewDashboard(string userId)
+    {
+        UserLessonDisplayed = userId;
+        IsReadOnly = userId != _schedulerState.IdUser ? true : false;
+    }
+    
+    public void ResetLessonState()
+    {
+        Lesson = new Lesson();
+        CopyLesson = new Lesson();
+        SelectedAppointment = new Appointment();
+        UserLessonDisplayed = null;
+        
+        NotifyStateChanged();
     }
     
     public void NotifyStateChanged()

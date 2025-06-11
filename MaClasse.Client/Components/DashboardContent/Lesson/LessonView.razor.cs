@@ -24,16 +24,21 @@ public partial class LessonView : ComponentBase
     private Appointment appointement = new Appointment();
     private Shared.Models.Lesson.Lesson lesson = new Shared.Models.Lesson.Lesson();
     private bool isPasteDisabled = true;
+    private bool isReadOnly;
     
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
+        
+        isReadOnly = _lessonState.IsReadOnly;
     }
 
     private async void RefreshState()
     {
         appointement = _lessonState.SelectedAppointment;
         lesson =_lessonState.Lesson;
+        isReadOnly = _lessonState.IsReadOnly;
+
         
         InvokeAsync(() => { StateHasChanged(); });
     }

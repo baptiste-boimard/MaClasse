@@ -63,7 +63,7 @@ public partial class Scheduler : ComponentBase
     private int menuX = 0;
     private int menuY = 0;
     private bool isClosingContextMenu = false;
-
+    private bool isReadOnly;
 
 
     
@@ -73,6 +73,8 @@ public partial class Scheduler : ComponentBase
         _dotNetRef = DotNetObjectReference.Create(this);
         await _jsRuntime.InvokeVoidAsync("appointments.setInstance", _dotNetRef);
         await _jsRuntime.InvokeVoidAsync("appointments.registerOutsideClick");
+
+        isReadOnly = _schedulerState.isReadOnly;
         
         _schedulerState.OnChange += RefreshAppointments;
         
@@ -94,6 +96,8 @@ public partial class Scheduler : ComponentBase
     private void RefreshAppointments()
     {
         //* Récupération des appointments avec l'heure local en fonction de qui je regarde
+
+        isReadOnly = _schedulerState.isReadOnly;
 
         if (_schedulerState.SchedulerDisplayed == _userState.Id)
         {

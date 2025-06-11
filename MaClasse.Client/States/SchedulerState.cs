@@ -60,6 +60,8 @@ public class SchedulerState
         isReadOnly = userId != IdUser ? true : false;
         NotifyStateChanged();
     }
+
+  
     
     private void NotifyStateChanged()
     {

@@ -9,15 +9,18 @@ public class ViewDashboardState
     private readonly UserState _userState;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly SchedulerState _schedulerState;
 
     public ViewDashboardState(
         UserState userState,
         HttpClient httpClient,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        SchedulerState schedulerState)
     {
         _userState = userState;
         _httpClient = httpClient;
         _configuration = configuration;
+        _schedulerState = schedulerState;
     }
 
     public event Action OnChange;
@@ -95,6 +98,28 @@ public class ViewDashboardState
     public void ResetViewDashboardState()
     {
         DashBoards = new List<UserDashboard>();
+    }
+    
+    public async void GetUserAppointments(string userId)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/database/get-scheduler", new CreateDataRequest
+            {
+                UserId = userId
+            });
+
+        if (response.IsSuccessStatusCode)
+        {
+            var scheduler = await response.Content.ReadFromJsonAsync<Scheduler>();
+            
+            if (scheduler != null)
+            {
+                _schedulerState.SetAppointments(scheduler.Appointments);
+                
+                NotifyStateChanged();
+            }
+        }
+
     }
 
     private void NotifyStateChanged()

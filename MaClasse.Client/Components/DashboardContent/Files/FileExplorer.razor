@@ -10,10 +10,12 @@
             <div style="display: inline-block; position: relative;">
                 <MudFileUpload T="IBrowserFile"
                                FilesChanged="UploadFiles"
-                               Style="display: inline-block;">
+                               Style="display: inline-block;"
+                               Disabled="isReadOnly">
                     <ActivatorContent>
                         <MudButton Variant="MudBlazor.Variant.Filled"
                                    Color="Color.Primary"
+                                   Disabled="@isReadOnly"
                                    StartIcon="@Icons.Material.Filled.CloudUpload">
                             Upload Files
                         </MudButton>
@@ -44,14 +46,14 @@
                                                              })">
                                 <MudText>Ouvrir</MudText>
                             </MudListItem>
-                            <MudListItem T="object" OnClick="@(() =>
+                            <MudListItem T="object" Disabled="@isReadOnly" OnClick="@(() =>
                                                              {
                                                                  DeleteFile();
                                                                  CloseDocumentMenu();
                                                              })">
                                 <MudText>Supprimer</MudText>
                             </MudListItem>
-                            <MudListItem T="object" OnClick="@(() =>
+                            <MudListItem T="object" Disabled="@isReadOnly" OnClick="@(() =>
                                                              {
                                                                  RenameFile();
                                                                  CloseDocumentMenu();

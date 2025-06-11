@@ -38,7 +38,16 @@ public class LessonController : ControllerBase
     [Route("get-lesson")]
     public async Task<IActionResult> GetLessonByAppointmentId(LessonRequest request)
     {
-        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        string idUser;
+        
+        if (request.UserLessonDisplayed == null)
+        {
+            idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        }
+        else
+        {
+            idUser = request.UserLessonDisplayed;
+        }
 
         var existingLesson = await _lessonRepository.GetLesson(
             request.Appointment.Id, idUser);

@@ -39,17 +39,22 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private DotNetObjectReference<FileExplorer>? _dotNetRef;
     private string menuXpx => $"{menuX}px";
     private string menuYpx => $"{menuY}px";
+    private bool isReadOnly;
     
     
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
+        
+        isReadOnly = _lessonState.IsReadOnly;
     }
 
     private void RefreshState()
     {
         appointement = _lessonState.SelectedAppointment;
         files = _lessonState.Lesson.Documents;
+        isReadOnly = _lessonState.IsReadOnly;
+
         
         InvokeAsync(() => { StateHasChanged(); });
     }

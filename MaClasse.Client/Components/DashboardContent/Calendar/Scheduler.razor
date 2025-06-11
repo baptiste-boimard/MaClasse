@@ -79,7 +79,7 @@ display: flex; /* Faire de ce div un conteneur flex */
                 <MudListItem T="object" OnClick="@(() => { OpenLessonForSelectedAppointment(); CloseCustomMenu(); })">
                     <MudText>Afficher</MudText>
                 </MudListItem>
-                <MudListItem T="object" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
+                <MudListItem T="object" Disabled="@isReadOnly" OnClick="@(() => { OpenEditPanelForSelectedAppointment(); CloseCustomMenu(); })">
                     <MudText>Modifier</MudText>
                 </MudListItem>
 

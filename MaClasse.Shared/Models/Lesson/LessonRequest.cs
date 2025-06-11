@@ -6,4 +6,5 @@ public class LessonRequest
 {
     public Appointment Appointment { get; set; }
     public string IdSession { get; set; }
+    public string? UserLessonDisplayed { get; set; }
 }

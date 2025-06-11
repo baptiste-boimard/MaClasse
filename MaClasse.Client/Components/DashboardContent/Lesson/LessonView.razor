@@ -62,26 +62,30 @@
                           @bind-Value="lesson.Class"
                           Label="Classe"
                           Variant="MudBlazor.Variant.Outlined"
+                          ReadOnly="@isReadOnly"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Tilte"
                           Label="Titre"
                           Variant="MudBlazor.Variant.Outlined"
+                          ReadOnly="@isReadOnly"
             />
 
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Objective"
                           Label="Objectifs"
                           Variant="MudBlazor.Variant.Outlined"
+                          ReadOnly="@isReadOnly"
                           Lines="7" 
-            Style="overflow-y: auto;"
+                          Style="overflow-y: auto;"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Skills"
                           Label="Compétences"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="7" 
-            Style="overflow-y: auto;"
+                          Lines="7"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
         </div>
 
@@ -95,21 +99,24 @@
                           @bind-Value="lesson.Material"
                           Label="Matériel"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="6" 
+                          Lines="6"
+                          ReadOnly="@isReadOnly"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Process"
                           Label="Déroulement"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="6" 
-            Style="overflow-y: auto;"
+                          Lines="6"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Behavior"
                           Label="Comportement attendu"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="7" 
-            Style="overflow-y: auto;"
+                          Lines="7"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
         </div>
 
@@ -123,22 +130,25 @@
                           @bind-Value="lesson.TeacherTask"
                           Label="Tâches de l'enseignant"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="5" 
-            Style="overflow-y: auto;"
+                          Lines="5"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.StudentTask"
                           Label="Tâches des élèves"
                           Variant="MudBlazor.Variant.Outlined"
                           Lines="5"
-            Style="overflow-y: auto;"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.SuccessCriteria"
                           Label="Critères de succès"
                           Variant="MudBlazor.Variant.Outlined"
-                          Lines="5" 
-            Style="overflow-y: auto;"
+                          Lines="5"
+                          ReadOnly="@isReadOnly"
+                          Style="overflow-y: auto;"
             />
 
             <div style="margin-top: auto; /* Pousse ce div vers le bas */
@@ -152,20 +162,22 @@
                     Variant="MudBlazor.Variant.Filled"
                     Color="Color.Success"
                     OnClick="SaveLesson"
-                    Style="flex-shrink: 0.3;">
+                    Style="flex-shrink: 0.3;"
+                    Disabled="@isReadOnly">
                     Sauvegarder
                 </MudButton>
 
                 <MudButtonGroup Color="Color.Info"
                                 Size="Size.Medium"
                                 Variant="MudBlazor.Variant.Filled">
-                    <MudButton OnClick="CopyLesson">Copier</MudButton>
-                    <MudButton OnClick="PasteLesson" Disabled="@isPasteDisabled">Coller</MudButton>
+                    <MudButton OnClick="CopyLesson" Disabled="@isReadOnly">Copier</MudButton>
+                    <MudButton OnClick="PasteLesson" Disabled="@(isPasteDisabled || isReadOnly)">Coller</MudButton>
                 </MudButtonGroup>
 
                 <MudButton Variant="MudBlazor.Variant.Filled"
                            Color="Color.Error"
                            OnClick="DeleteLesson"
+                           Disabled="@isReadOnly"
                            Style="flex-shrink: 0.4;">
                     Supprimer
                 </MudButton>
