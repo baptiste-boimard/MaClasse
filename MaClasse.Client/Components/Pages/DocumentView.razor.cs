@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models.Files;
-using MaClasse.Shared.Models.Lesson;
 using Microsoft.AspNetCore.Components;
 
 namespace MaClasse.Client.Components.Pages;
@@ -18,13 +17,42 @@ public partial class DocumentView : ComponentBase
     _lessonState = lessonState;
     _httpClient = httpClient;
   }
+
+  private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
+  private static readonly string[] PdfFormats = { "pdf", "application/pdf" };
+
+  private bool IsImage(string format)
+    => !string.IsNullOrEmpty(format) && ImageFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
+
+  // private bool IsPdf(string format)
+  //   => !string.IsNullOrEmpty(format) && PdfFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
+  private bool IsPdf(string format) =>
+    !string.IsNullOrEmpty(format) && 
+    (format.Equals("pdf", StringComparison.OrdinalIgnoreCase) ||
+     format.Equals("application/pdf", StringComparison.OrdinalIgnoreCase));
+
   
   [Parameter] public string ConcatString { get; set; }
 
   private Document document;
   private bool isLoading = true;
 
-  protected async override void OnInitialized()
+  private string PdfViewUrl
+  {
+    get
+    {
+      if (document?.Url == null)
+      {
+        return null;
+      }
+      // On ajoute #toolbar=0 pour cacher la barre d'outils
+      // et #navpanes=0 pour cacher le panneau latéral (pour la compatibilité)
+      // return $"{document.Url}#toolbar=0&navpanes=0";
+      return $"{document.Url}";
+    }
+  }
+
+  protected override async Task OnInitializedAsync()
   {
     await LoadDocumentAsync();
   }
@@ -33,27 +61,14 @@ public partial class DocumentView : ComponentBase
   {
     isLoading = true;
     document = null;
+    
     try
     {
 
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
       
-      // Ici, vous faites un appel API pour récupérer le document par son ID
-      // Assurez-vous d'avoir un endpoint API qui retourne un Document par ID.
-      // Exemple : GET /api/documents/{documentId}
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
 
-      // if (response.IsSuccessStatusCode)
-      // {
-      //   document = await response.Content.ReadFromJsonAsync<Document>();
-      //   // Optionnel : si le document vient d'être chargé, mettre à jour le LessonState
-      //   // Cela pourrait être utile si d'autres composants s'attendent à ce que LessonState contienne ce document.
-      //   // _lessonState.AddOrUpdateDocument(document); // Vous devrez implémenter cette méthode dans LessonState
-      // }
-      // else
-      // {
-      //   Console.WriteLine($"Error loading document: {response.StatusCode} - {response.ReasonPhrase}");
-      // }
     }
     catch (Exception ex)
     {
@@ -62,7 +77,7 @@ public partial class DocumentView : ComponentBase
     finally
     {
       isLoading = false;
-      await InvokeAsync(StateHasChanged); // Forcer le rafraîchissement de l'UI
+      await InvokeAsync(StateHasChanged);
     }
   }
   

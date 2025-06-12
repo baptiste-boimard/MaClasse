@@ -38,6 +38,11 @@ public class CloudController : ControllerBase
   {
 
     string thumbnailUrl;
+    string originalFilename = "";
+    DateTime createdAt = DateTime.Now;
+    var format = Path.GetExtension(file.FileName)?.TrimStart('.').ToLowerInvariant();
+    string url = "";
+    
     
     // commentaire pour cloudinary
     var idSession = JsonSerializer.Deserialize<FileRequest>(filerequest);
@@ -47,24 +52,23 @@ public class CloudController : ControllerBase
 
     var newFileResult =
       await _fileRepository.UploadFileAsync(file, idUser);
+    
+    Console.WriteLine(JsonSerializer.Serialize(newFileResult));
+    
+    //* Fonction du format du fichier
+    if (newFileResult is RawUploadResult rawResult)
+    {
+      originalFilename = rawResult.OriginalFilename;
+      createdAt = rawResult.CreatedAt;
+      // format = rawResult.Format;
 
-    if (newFileResult.Format.ToLower() == "pdf")
-    {
-      thumbnailUrl = _cloudinary.Api.UrlImgUp
-        .Transform(new Transformation()
-          .Page("1")
-          .FetchFormat("png")
-          .Width(100)
-          .Crop("fill"))
-        .BuildUrl($"{newFileResult.PublicId}");
     }
-    else
+    else if (newFileResult is ImageUploadResult imageResult)
     {
-      thumbnailUrl = _cloudinary.Api.UrlImgUp
-        .Transform(new Transformation()
-          .Width(100)
-          .Crop("limit"))
-        .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}");
+      originalFilename = imageResult.OriginalFilename;
+      createdAt = imageResult.CreatedAt;
+      // format = imageResult.Format;
+
     }
     
     //* Maintenant j'envoie les informations relatives à l'images vers la base de données
@@ -72,15 +76,53 @@ public class CloudController : ControllerBase
     {
       IdDocument = ObjectId.GenerateNewId().ToString(),
       IdCloudinary = newFileResult.PublicId,
-      Name = newFileResult.OriginalFilename,
-      Url = newFileResult.SecureUrl.ToString(),
-      ThumbnailUrl = thumbnailUrl,
-      Format = newFileResult.Format,
-      CreatedAt = newFileResult.CreatedAt   
+      Name = "",
+      Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString() ?? "",
+      ThumbnailUrl = "",
+      Format = "",
+      CreatedAt = DateTime.Now   
     };
+
+    if (format.ToLower() == "pdf")
+    {
+      newDocument.ThumbnailUrl = _cloudinary.Api.UrlImgUp
+        .Transform(new Transformation()
+          .Page("1")
+          .FetchFormat("png")
+          .Width(100)
+          .Crop("fill"))
+        .BuildUrl($"{newFileResult.PublicId}");
+      
+      // newDocument.Url = _cloudinary.Api.UrlImgUp
+      //   .ResourceType("raw") // Indique que c'est une ressource "raw" (non image/vidéo)
+      //   .Format("pdf")       // Spécifie explicitement le format
+      //   .Transform(new Transformation().Flags("attachment:false")) // Applique la transformation avec le flag
+      //   .BuildUrl(newFileResult.PublicId);
+      //
+      // newDocument.ThumbnailUrl = _cloudinary.Api.UrlImgUp
+      //   .Transform(new Transformation()
+      //     .Width(100)
+      //     .Crop("limit"))
+      //   .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}");
+
+      // newDocument.Url = $"https://res.cloudinary.com/{{cloud}}/raw/upload/fl_inline/{{PublicId}}.pdf";
+      // newDocument.Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString() ?? "";
+
+    }
+    else
+    {
+      newDocument.ThumbnailUrl = _cloudinary.Api.UrlImgUp
+        .Transform(new Transformation()
+          .Width(100)
+          .Crop("limit"))
+        .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}");
+
+      newDocument.Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString() ?? "";
+    }
     
-    Console.WriteLine($"PublicId: {newFileResult.PublicId}, Format: {newFileResult.Format}");
-    Console.WriteLine($"Thumbnail URL: {_cloudinary.Api.UrlImgUp.Transform(new Transformation().Width(100).Crop("limit")).BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}")}");
+    newDocument.Name = originalFilename;
+    newDocument.Format = format;
+    newDocument.CreatedAt = createdAt;
     
     return Ok(newDocument);
   }

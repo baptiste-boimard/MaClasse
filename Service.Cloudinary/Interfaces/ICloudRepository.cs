@@ -5,7 +5,7 @@ namespace Service.Cloudinary.Interfaces;
 
 public interface ICloudRepository
 {
-  Task<ImageUploadResult> UploadFileAsync(IFormFile file, string iduser);
+  Task<UploadResult> UploadFileAsync(IFormFile file, string iduser);
   Task<GetResourceResult> GetFileAsyncByIdCloudinary(string idCloudinary);
   Task<ImageUploadResult> UpdateFileAsync();
   Task<DelResResult> DeleteFileAsync(string idCloudinary);
