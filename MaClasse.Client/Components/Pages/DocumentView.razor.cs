@@ -22,7 +22,7 @@ public partial class DocumentView : ComponentBase
     _logger = logger;
   }
   
-  // essais 6
+  // essais 7
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
   private bool IsImage(string format)
@@ -77,9 +77,11 @@ public partial class DocumentView : ComponentBase
     {
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
       
-      _logger.LogInformation("################# ConcatString #############: ", ConcatString);
+// Pour ConcatString
+      _logger.LogInformation("################# ConcatString #############: {ConcatStringValue}", ConcatString);
 
-      _logger.LogInformation("################# decodedstring #############: ", decodedString);
+// Pour decodedString (qui est un tableau de chaînes, nous allons le joindre pour l'affichage)
+      _logger.LogInformation("################# decodedString #############: {DecodedStringValue}", decodedString != null ? string.Join("-", decodedString) : "null");
 
       
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
