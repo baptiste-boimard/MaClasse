@@ -14,15 +14,20 @@ public class LessonController : ControllerBase
 {
     private readonly ILessonRepository _lessonRepository;
     private readonly UserService _userService;
+    private readonly ILogger<LessonController> _logger;
 
     public LessonController(
         ILessonRepository lessonRepository,
-        UserService userService)
+        UserService userService,
+        ILogger<LessonController> logger)
     {
         _lessonRepository = lessonRepository;
         _userService = userService;
+        _logger = logger;
     }
 
+    // essai 1
+    
     [HttpPost]
     [Route("get-lessonbook")]
     public async Task<IActionResult> GetLessonBook(CreateDataRequest request)
@@ -113,9 +118,15 @@ public class LessonController : ControllerBase
     [Route("get-document")]
     public async Task<IActionResult> GetDocument([FromBody] FileRequestToDatabase request)
     {
+        _logger.LogInformation("--- Service.Database: GetDocument method HIT! ---");
+        _logger.LogInformation("Received request for Document ID: {DocId}, User ID: {UserId}", request?.Document?.IdDocument, request?.IdUser);
+        
         var existingDocument = await _lessonRepository.GetDocument(request.Document.IdDocument, request.IdUser);
         
         if (existingDocument == null) return NotFound();
+        
+        _logger.LogInformation("Service.Database: Document found: Name: {DocumentName}", existingDocument.Name);
+
         
         return Ok(existingDocument);
     }

@@ -14,17 +14,20 @@ public class LessonState
     private readonly IConfiguration _configuration;
     private readonly UserState _userState;
     private readonly SchedulerState _schedulerState;
+    private readonly ILogger<LessonState> _logger;
 
     public LessonState(
         HttpClient httpClient,
         IConfiguration configuration,
         UserState userState,
-        SchedulerState schedulerState)
+        SchedulerState schedulerState, 
+        ILogger<LessonState> logger)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _userState = userState;
         _schedulerState = schedulerState;
+        _logger = logger;
     }
     
     public event Action OnAppointmentSelected;
