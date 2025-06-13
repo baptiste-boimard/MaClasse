@@ -37,14 +37,11 @@ public class CloudController : ControllerBase
     [FromForm] IFormFile file, [FromForm] string  filerequest)
   {
 
-    string thumbnailUrl;
     string originalFilename = "";
     DateTime createdAt = DateTime.Now;
     var format = Path.GetExtension(file.FileName)?.TrimStart('.').ToLowerInvariant();
     string url = "";
-    
-    
-    // commentaire pour cloudinary
+
     var idSession = JsonSerializer.Deserialize<FileRequest>(filerequest);
 
     var idUser =
@@ -60,15 +57,11 @@ public class CloudController : ControllerBase
     {
       originalFilename = rawResult.OriginalFilename;
       createdAt = rawResult.CreatedAt;
-      // format = rawResult.Format;
-
     }
     else if (newFileResult is ImageUploadResult imageResult)
     {
       originalFilename = imageResult.OriginalFilename;
       createdAt = imageResult.CreatedAt;
-      // format = imageResult.Format;
-
     }
     
     //* Maintenant j'envoie les informations relatives à l'images vers la base de données
@@ -92,22 +85,6 @@ public class CloudController : ControllerBase
           .Width(100)
           .Crop("fill"))
         .BuildUrl($"{newFileResult.PublicId}");
-      
-      // newDocument.Url = _cloudinary.Api.UrlImgUp
-      //   .ResourceType("raw") // Indique que c'est une ressource "raw" (non image/vidéo)
-      //   .Format("pdf")       // Spécifie explicitement le format
-      //   .Transform(new Transformation().Flags("attachment:false")) // Applique la transformation avec le flag
-      //   .BuildUrl(newFileResult.PublicId);
-      //
-      // newDocument.ThumbnailUrl = _cloudinary.Api.UrlImgUp
-      //   .Transform(new Transformation()
-      //     .Width(100)
-      //     .Crop("limit"))
-      //   .BuildUrl($"{newFileResult.PublicId}.{newFileResult.Format}");
-
-      // newDocument.Url = $"https://res.cloudinary.com/{{cloud}}/raw/upload/fl_inline/{{PublicId}}.pdf";
-      // newDocument.Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString() ?? "";
-
     }
     else
     {

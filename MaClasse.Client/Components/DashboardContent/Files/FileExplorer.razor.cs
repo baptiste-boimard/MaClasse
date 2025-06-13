@@ -80,12 +80,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task OpenFileInNewTab()
     {
-        // await _jsRuntime.InvokeVoidAsync("open", selectedDoc.Url, "_blank");
-        
         if (selectedDoc is null)
             return;
 
-        string concatString = $"{_schedulerState.IdUser}-{selectedDoc.IdDocument}";
+        string concatString = $"{_schedulerState.SchedulerDisplayed}-{selectedDoc.IdDocument}";
 
         var base64EncodedconcatString = Convert.ToBase64String(Encoding.UTF8.GetBytes(concatString));
         
@@ -123,30 +121,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
     
-    //* Ouuverture du menu quand clic sur un document
-    // [JSInvokable("ShowCustomMenu")]
-    // public async Task ShowCustomMenu(string id, int x, int y)
-    // {
-    //     selectedAppointment = _schedulerState.Appointments.FirstOrDefault(a => a.Id == id);
-    //     menuX = x;
-    //     menuY = y;
-    //     showContextMenu = true;
-    //
-    //     await InvokeAsync(StateHasChanged);
-    // }
-    //
-    // [JSInvokable]
-    // public async void CloseCustomMenu()
-    // {
-    //     isClosingContextMenu = true;
-    //
-    //     await Task.Delay(150);
-    //     showContextMenu = false;
-    //     isClosingContextMenu = false;
-    //
-    //     await InvokeAsync(StateHasChanged);
-    // }
-    
     private async Task OnImageClick(MouseEventArgs e, string documentId)
     {
         var x = (int)e.ClientX;
@@ -164,7 +138,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
             if (selectedDoc == null)
             {
-                Console.WriteLine($"❌ Aucun document trouvé avec l'ID {id}");
                 return;
             }
 
@@ -176,7 +149,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Erreur dans ShowDocumentMenu: {ex.Message}");
+            Console.WriteLine($"Erreur dans ShowDocumentMenu: {ex.Message}");
         }
     }
 

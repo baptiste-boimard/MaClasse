@@ -1,6 +1,5 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using MaClasse.Shared.Models.Files;
 using Service.Cloudinary.Interfaces;
 using Service.Database.Services;
 
@@ -31,30 +30,15 @@ public class CloudRepository : ICloudRepository
     memoryStream.Position = 0;
 
     //* Traitement du nom du fichier pour enlever les caractères génants
-    // var slugName = _slugifyService.SlugifyFileName(file.FileName);
-    // var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-    // var slugFileName = _slugifyService.SlugifyFileName(slugName + extension);
-    
     var nameWithoutExt = Path.GetFileNameWithoutExtension(file.FileName);
     var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
     var finalFileName = _slugifyService.SlugifyFileName($"{nameWithoutExt}{extension}");
     
-    // var knownRawExtensions = new[] { ".pdf", ".docx", ".doc", ".xls", ".xlsx", ".txt", ".csv" };
     var imageLikeExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".webp" };
 
-    // UploadResult uploadResult;
     
-    if (imageLikeExtensions.Contains(extension)) // formats non-image
+    if (imageLikeExtensions.Contains(extension))
     {
-      // var rawParams = new RawUploadParams
-      // {
-      //   File = new FileDescription(finalFileName, memoryStream),
-      //   Folder = idUser,
-      //   UseFilename = true,
-      //   UniqueFilename = false,
-      //   Overwrite = false,
-      // };
-      
       var imageParams = new ImageUploadParams
       {
         File = new FileDescription(finalFileName, memoryStream),
@@ -68,39 +52,11 @@ public class CloudRepository : ICloudRepository
 
       };
 
-      // uploadResult = await _cloudinary.UploadAsync(imageParams);
       var uploadResult = await _cloudinary.UploadAsync(imageParams);
       
       return uploadResult;
 
     }
-    
-    // else
-    // {
-    //   var imageParams = new ImageUploadParams
-    //   {
-    //     File = new FileDescription(finalFileName, memoryStream),
-    //     Folder = idUser,
-    //     UseFilename = true,
-    //     UniqueFilename = true,
-    //     Overwrite = false
-    //   };
-    //
-    //   uploadResult = await _cloudinary.UploadAsync(imageParams);
-    // }
-    
-    // var uploadParams = new ImageUploadParams
-    // {
-    //   File = new FileDescription(slugFileName, memoryStream),
-    //   Folder = idUser,
-    //   UseFilename = true,
-    //   UniqueFilename = true,
-    //   Overwrite = false
-    // };
-    
-    // var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-    
-    // return uploadResult;
     return null;
   }
 

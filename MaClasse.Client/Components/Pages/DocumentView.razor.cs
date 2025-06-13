@@ -2,55 +2,62 @@
 using MaClasse.Client.States;
 using MaClasse.Shared.Models.Files;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace MaClasse.Client.Components.Pages;
 
 public partial class DocumentView : ComponentBase
 {
   private readonly LessonState _lessonState;
-  private readonly HttpClient _httpClient;
+  private readonly IJSRuntime _jsRuntime;
 
   public DocumentView(
     LessonState lessonState,
-    HttpClient httpClient)
+    IJSRuntime jsRuntime)
   {
     _lessonState = lessonState;
-    _httpClient = httpClient;
+    _jsRuntime = jsRuntime;
   }
 
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
-  private static readonly string[] PdfFormats = { "pdf", "application/pdf" };
 
   private bool IsImage(string format)
     => !string.IsNullOrEmpty(format) && ImageFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
-
-  // private bool IsPdf(string format)
-  //   => !string.IsNullOrEmpty(format) && PdfFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
+  
   private bool IsPdf(string format) =>
     !string.IsNullOrEmpty(format) && 
     (format.Equals("pdf", StringComparison.OrdinalIgnoreCase) ||
      format.Equals("application/pdf", StringComparison.OrdinalIgnoreCase));
-
   
   [Parameter] public string ConcatString { get; set; }
 
   private Document document;
   private bool isLoading = true;
 
-  private string PdfViewUrl
+  private string PdfViewUrl 
   {
     get
     {
-      if (document?.Url == null)
-      {
-        return null;
-      }
-      // On ajoute #toolbar=0 pour cacher la barre d'outils
-      // et #navpanes=0 pour cacher le panneau latéral (pour la compatibilité)
-      // return $"{document.Url}#toolbar=0&navpanes=0";
+      if (document?.Url == null) return null;
+            
+      //? Info
+      //? On ajoute #toolbar=0 pour cacher la barre d'outils
+      //? et #navpanes=0 pour cacher le panneau latéral (pour la compatibilité)
+      //? return $"{document.Url}#toolbar=0&navpanes=0";
+      
       return $"{document.Url}";
     }
   }
+  
+  //* Propriétés pour le zoom
+  private double currentZoom = 1.0;
+  private const double ZOOM_STEP = 0.1; 
+  private const double MAX_ZOOM = 2.0; 
+  private const double MIN_ZOOM = 0.5; 
+  
+  //* Propriétés pour le plein écran
+  private ElementReference documentContainerRef;
+  private bool isFullscreen = false; 
 
   protected override async Task OnInitializedAsync()
   {
@@ -81,6 +88,48 @@ public partial class DocumentView : ComponentBase
     }
   }
   
+  private async Task ToggleFullscreen()
+  {
+    if (documentContainerRef.Id == null) return;
+
+    if (!isFullscreen)
+    {
+      await _jsRuntime.InvokeVoidAsync("requestFullscreen", documentContainerRef);
+      isFullscreen = true;
+    }
+    else
+    {
+      await _jsRuntime.InvokeVoidAsync("exitFullscreen");
+      isFullscreen = false;
+    }
+  }
   
-  
+  private void ZoomIn()
+  {
+    double newZoom = Math.Min(currentZoom + ZOOM_STEP, MAX_ZOOM);
+    currentZoom = Math.Round(newZoom, 2); 
+    StateHasChanged();
+    
+  }
+
+  private void ZoomOut()
+  {
+    double newZoom = Math.Max(currentZoom - ZOOM_STEP, MIN_ZOOM);
+    currentZoom = Math.Round(newZoom, 2); 
+    StateHasChanged();
+    
+  }
+
+  private void ResetZoom()
+  {
+    currentZoom = 1.0;
+    StateHasChanged();
+
+  }
+
+  private async void CloseDocumentView()
+  {
+    await _jsRuntime.InvokeVoidAsync("closeCurrentTab");
+
+  }
 }

@@ -1,63 +1,124 @@
 ﻿@page "/documents/view/{ConcatString}"
+@using MaClasse.Client.Components.Utils
 
 <PageTitle>Document : @(document?.Name ?? "Chargement...")</PageTitle>
 
-    <div class="d-flex flex-column align-items-center justify-content-center">
-        @if (isLoading)
-        {
-            <MudProgressCircular Indeterminate Color="Color.Primary" />
-            <MudText Class="mt-2">Chargement du document...</MudText>
-        }
-        else if (document != null)
-        {
-            <h3 class="mb-4">Visualisation : @document.Name</h3>
-
-            @if (IsPdf(document.Format))
-            {
-                <div style="width: 100%; height: 90vh; overflow: auto; border: 1px solid #ccc;">
-                    @* <object data="@document.Url" type="application/pdf" width="100%" height="600px"> *@
-                    @*     <p>Votre navigateur ne supporte pas l'affichage des PDFs intégrés. Vous pouvez <a href="@document.Url" target="_blank">télécharger le PDF ici</a>.</p> *@
-                    @* </object> *@
-                    <iframe src="@PdfViewUrl" style="width: 100%; height: 100%; border: none;">
-                        <p>
-                            Votre navigateur ne supporte pas l'affichage de ce type de documents intégrés.
-                            Vous pouvez <a href="@document.Url" target="_blank" rel="noopener noreferrer">télécharger le PDF ici</a>.
-                        </p>
-                    </iframe>
-                </div>
+<div
+    @ref="documentContainerRef"
+    class="d-flex flex-column align-items-center justify-content-center"
+    style="overflow: hidden;max-height: 100vh;">
+    
+    @if(document != null)
+    {
+        <div style="display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    width: 100%;
+                    z-index: 10;
+                    margin-top: @(isFullscreen ? "4rem" : "2rem");">
+            
+            <MudStack Row="true" Spacing="2" Class="mb-4">
                 
-            }
-            else if (IsImage(document.Format))
-            {
-                <div style="max-width: 100%; max-height: 80vh; overflow: auto; border: 1px solid #ccc;">
-                    <img src="@document.Url" alt="@document.Name" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;"/>
-                </div>
-            }
-            else
-            {
-                <MudText Typo="Typo.h5" Color="Color.Error">Type de fichier non pris en charge pour l'affichage direct.</MudText>
-                <MudButton Href="@document.Url" Target="_blank" Variant="MudBlazor.Variant.Filled" Color="Color.Primary" Class="mt-4">Télécharger le fichier</MudButton>
-            }
-        }
-        else
-        {
-            <MudText Typo="Typo.h5" Color="Color.Warning">Document introuvable ou URL manquante.</MudText>
-        }
-        
-    </div>
+                <MudButton 
+                    Variant="MudBlazor.Variant.Filled"
+                    Size="Size.Small"
+                    Color="Color.Primary"
+                    OnClick="ToggleFullscreen">
+                    @(isFullscreen ? "Quitter le plein écran" : "Plein écran")
+                </MudButton>
 
-@* @code { *@
-@* *@
-@*     [Inject] *@
-@*     public NavigationManager NavigationManager { get; set; } *@
-@* *@
-@*     private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" }; *@
-@*     private static readonly string[] PdfFormats = { "pdf", "application/pdf" }; *@
-@* *@
-@*     private bool IsImage(string format) *@
-@*         => !string.IsNullOrEmpty(format) && ImageFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase)); *@
-@* *@
-@*     private bool IsPdf(string format) *@
-@*         => !string.IsNullOrEmpty(format) && PdfFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase)); *@
-@*      *@
-@* } *@
+                @if (IsImage(document.Format))
+                {
+                    <MudButton 
+                        Variant="MudBlazor.Variant.Filled"
+                        Size="Size.Small"
+                        Color="Color.Primary"
+                        OnClick="ZoomIn">
+                        Zoom +
+                    </MudButton>
+                    <MudButton 
+                        Variant="MudBlazor.Variant.Filled"
+                        Size="Size.Small"
+                        Color="Color.Primary"
+                        OnClick="ZoomOut">
+                        Zoom -
+                    </MudButton>
+                    <MudButton 
+                        Variant="MudBlazor.Variant.Filled" 
+                        Size="Size.Small"
+                        Color="Color.Secondary" 
+                        OnClick="ResetZoom">
+                        Réinitialiser le zoom
+                    </MudButton>
+                }
+
+                <MudButton 
+                    Variant="MudBlazor.Variant.Filled"
+                    Size="Size.Small"
+                    Color="Color.Tertiary"
+                    OnClick="CloseDocumentView">
+                    Fermer
+                </MudButton>
+            </MudStack>
+            
+            <div style="margin-left: 2rem; color: #673ab7">
+                <Hour />
+            </div>
+        </div>
+    }
+    
+    
+    @if (isLoading)
+    {
+        <MudProgressCircular Indeterminate Color="Color.Primary"/>
+        <MudText Class="mt-2">Chargement du document...</MudText>
+    }
+    else if (document != null)
+    {
+        <div style="overflow: @(IsPdf(document.Format) ? "hidden" : "auto"); width: 100%; height: 100%; background-color: white; flex-shrink: 0; box-sizing: border-box;">
+            <div
+                style="
+                    width: 100%; 
+                    height: 95vh; 
+                    flex-grow: 1; 
+                    display: flex; 
+                    justify-content: center;
+                    align-items: center; 
+                    transform: scale(@currentZoom.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    transform-origin: top center; 
+                    background-color: white;
+                    min-width: fit-content;
+                    min-height: fit-content; 
+                    box-sizing: border-box;">
+
+                @if (IsPdf(document.Format))
+                {
+                    <div style=" width: 100%; height: 95vh;">
+                        <iframe src="@PdfViewUrl" style="width: 100%;height: 100%;border: none;">
+                            <p>
+                                Votre navigateur ne supporte pas l'affichage de ce type de documents intégrés.
+                                Vous pouvez <a href="@document.Url" target="_blank" rel="noopener noreferrer">télécharger le fichier ici</a>.
+                            </p>
+                        </iframe>
+                    </div>
+
+                }
+                else if (IsImage(document.Format))
+                {
+                    <img src="@document.Url" alt="@document.Name" style="max-width: 100%; max-height: 100%; object-fit: contain"/>
+                }
+                else
+                {
+                    <MudText Typo="Typo.h5" Color="Color.Error">Type de fichier non pris en charge pour l'affichage direct.</MudText>
+                    <MudButton Href="@document.Url" Target="_blank" Variant="MudBlazor.Variant.Filled" Color="Color.Primary" Class="mt-4">Télécharger le fichier</MudButton>
+                }
+            </div>
+        </div>
+        
+    }
+    else
+    {
+        <MudText Typo="Typo.h5" Color="Color.Warning">Document introuvable ou URL manquante.</MudText>
+    }
+
+</div>
