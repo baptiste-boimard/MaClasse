@@ -14,7 +14,8 @@ public partial class DocumentView : ComponentBase
 
   public DocumentView(
     LessonState lessonState,
-    IJSRuntime jsRuntime, ILogger<DocumentView> logger)
+    IJSRuntime jsRuntime,
+    ILogger<DocumentView> logger)
   {
     _lessonState = lessonState;
     _jsRuntime = jsRuntime;
@@ -77,12 +78,12 @@ public partial class DocumentView : ComponentBase
 
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
       
-      Console.WriteLine("dsfsdfsdfdsfdsf: ", decodedString);
+      _logger.LogInformation("dsfsdfsdfdsfdsf: ", decodedString);
 
       
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
 
-      Console.WriteLine("Document '' (ID : ) récupéré avec succès. URL: ", document.Name, document.IdDocument, document.Url);
+      _logger.LogInformation("Document  récupéré avec succès. URL: ", document.Name, document.IdDocument, document.Url);
 
     }
     catch (Exception ex)
