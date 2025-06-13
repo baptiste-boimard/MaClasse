@@ -22,7 +22,7 @@ public partial class DocumentView : ComponentBase
     _logger = logger;
   }
   
-  // essais 7
+  // essais 8
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
   private bool IsImage(string format)
@@ -86,8 +86,7 @@ public partial class DocumentView : ComponentBase
       
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
 
-      _logger.LogInformation("#######################################", document.Name, document.IdDocument, document.Url);
-
+      _logger.LogInformation("####################################### Name: {DocumentName}, ID: {DocumentId}, URL: {DocumentUrl}", document.Name, document.IdDocument, document.Url);
     }
     catch (Exception ex)
     {
