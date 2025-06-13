@@ -18,7 +18,8 @@ public partial class DocumentView : ComponentBase
     _lessonState = lessonState;
     _jsRuntime = jsRuntime;
   }
-
+  
+  // essais 
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
   private bool IsImage(string format)
