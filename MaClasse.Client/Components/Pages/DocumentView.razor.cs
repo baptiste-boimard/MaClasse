@@ -75,15 +75,16 @@ public partial class DocumentView : ComponentBase
     
     try
     {
-
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
       
-      _logger.LogInformation("dsfsdfsdfdsfdsf: ", decodedString);
+      _logger.LogInformation("################# ConcatString #############: ", ConcatString);
+
+      _logger.LogInformation("################# decodedstring #############: ", decodedString);
 
       
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
 
-      _logger.LogInformation("Document  récupéré avec succès. URL: ", document.Name, document.IdDocument, document.Url);
+      _logger.LogInformation("#######################################", document.Name, document.IdDocument, document.Url);
 
     }
     catch (Exception ex)
