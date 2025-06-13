@@ -10,16 +10,18 @@ public partial class DocumentView : ComponentBase
 {
   private readonly LessonState _lessonState;
   private readonly IJSRuntime _jsRuntime;
+  private readonly ILogger<DocumentView> _logger;
 
   public DocumentView(
     LessonState lessonState,
-    IJSRuntime jsRuntime)
+    IJSRuntime jsRuntime, ILogger<DocumentView> logger)
   {
     _lessonState = lessonState;
     _jsRuntime = jsRuntime;
+    _logger = logger;
   }
   
-  // essais 4
+  // essais 5
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
   private bool IsImage(string format)
@@ -75,7 +77,12 @@ public partial class DocumentView : ComponentBase
 
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
       
+      _logger.LogInformation("dsfsdfsdfdsfdsf: ", decodedString);
+
+      
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
+
+      _logger.LogInformation("Document '' (ID : ) récupéré avec succès. URL: ", document.Name, document.IdDocument, document.Url);
 
     }
     catch (Exception ex)
