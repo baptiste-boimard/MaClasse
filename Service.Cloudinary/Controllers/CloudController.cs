@@ -14,18 +14,18 @@ namespace Service.Cloudinary.Controllers;
 [Route("api")]
 public class CloudController : ControllerBase
 {
-  private readonly UserService _userService;
+  private readonly UserCloudService _userCloudService;
   private readonly ICloudRepository _fileRepository;
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
   private readonly VerifyDeleteService _verifyDeleteService;
 
   public CloudController(
-    UserService userService,
+    UserCloudService userCloudService,
     ICloudRepository fileRepository,
     CloudinaryDotNet.Cloudinary cloudinary,
     VerifyDeleteService verifyDeleteService)
   {
-    _userService = userService;
+    _userCloudService = userCloudService;
     _fileRepository = fileRepository;
     _cloudinary = cloudinary;
     _verifyDeleteService = verifyDeleteService;
@@ -45,7 +45,7 @@ public class CloudController : ControllerBase
     var idSession = JsonSerializer.Deserialize<FileRequest>(filerequest);
 
     var idUser =
-      _userService.GetUserByIdSession(idSession.IdSession).Result.UserId;
+      _userCloudService.GetUserByIdSession(idSession.IdSession).Result.UserId;
 
     var newFileResult =
       await _fileRepository.UploadFileAsync(file, idUser);

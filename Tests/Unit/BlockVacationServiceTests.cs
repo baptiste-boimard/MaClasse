@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MaClasse.Shared.Models.Scheduler;
 using Service.Database.Services;
 using Xunit;

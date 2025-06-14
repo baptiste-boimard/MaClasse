@@ -3,12 +3,12 @@ using MaClasse.Shared.Models.Auth;
 
 namespace Service.Database.Services;
 
-public class UserService
+public class UserCloudService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
 
-    public UserService(
+    public UserCloudService(
         HttpClient httpClient,
         IConfiguration configuration)
     {

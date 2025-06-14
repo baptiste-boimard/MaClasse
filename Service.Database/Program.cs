@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Abstractions;
-using Microsoft.Identity.Web.Resource;
 using Service.Database.Database;
 using Service.Database.Interfaces;
 using Service.Database.Repositories;
@@ -17,17 +12,6 @@ builder.Services.AddDataProtection()
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<HolidaysService>();
-    // .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
-    // {
-    //     PooledConnectionLifetime = TimeSpan.FromMinutes(5),
-    //     ConnectTimeout = TimeSpan.FromSeconds(30),
-    //     UseProxy = false,
-    //     SslOptions = new System.Net.Security.SslClientAuthenticationOptions
-    //     {
-    //         EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
-    //     }
-    // })
-    // ;
 
 //* Ajout des Services
 builder.Services.AddScoped<UserService>();
@@ -64,3 +48,8 @@ app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
+
+namespace Service.Database
+{
+    public partial class Program { }
+}

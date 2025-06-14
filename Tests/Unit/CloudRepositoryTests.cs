@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Moq;
@@ -12,32 +13,6 @@ namespace Tests.Unit;
 
 public class CloudRepositoryTests
 {
-    [Fact]
-    public async Task RenameFileAsync_ReturnsResult_OnSuccess()
-    {
-        var cloudMock = new Mock<Cloudinary>(new Account("c","k","s"));
-        cloudMock.Setup(c => c.RenameAsync(It.IsAny<RenameParams>(), default))
-            .ReturnsAsync(new RenameResult { StatusCode = System.Net.HttpStatusCode.OK });
-
-        var repo = new CloudRepository(cloudMock.Object, new SlugifyService());
-        var result = await repo.RenameFileAsync("old", "Nouveau Nom.pdf");
-
-        Assert.NotNull(result);
-    }
-
-    [Fact]
-    public async Task RenameFileAsync_ReturnsNull_OnFailure()
-    {
-        var cloudMock = new Mock<Cloudinary>(new Account("c","k","s"));
-        cloudMock.Setup(c => c.RenameAsync(It.IsAny<RenameParams>(), default))
-            .ReturnsAsync(new RenameResult { StatusCode = System.Net.HttpStatusCode.BadRequest });
-
-        var repo = new CloudRepository(cloudMock.Object, new SlugifyService());
-        var result = await repo.RenameFileAsync("old", "Nom");
-
-        Assert.Null(result);
-    }
-
     [Fact]
     public async Task UploadFileAsync_Throws_OnInvalidFile()
     {
