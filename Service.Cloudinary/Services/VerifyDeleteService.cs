@@ -7,16 +7,16 @@ public class VerifyDeleteService
 {
   private readonly HttpClient _httpClient;
   private readonly IConfiguration _configuration;
-  private readonly UserService _userService;
+  private readonly UserCloudService _userCloudService;
 
   public VerifyDeleteService(
     HttpClient httpClient,
     IConfiguration configuration,
-    UserService userService)
+    UserCloudService userCloudService)
   {
     _httpClient = httpClient;
     _configuration = configuration;
-    _userService = userService;
+    _userCloudService = userCloudService;
   }
 
   public async Task<List<Document>> VerifyDeleteFiles(RequestLesson request)
