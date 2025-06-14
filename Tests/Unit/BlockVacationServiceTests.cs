@@ -26,7 +26,7 @@ public class BlockVacationServiceTests
         var vacation = new Appointment { Start = new DateTime(2024, 6, 10) };
         var result = await service.GenerateWeeklyMondaysAsync("1", prototype, vacation, new List<Appointment>());
         Assert.Equal(3, result.Count);
-        Assert.True(result.All(a => a.Text == prototype.Text));
+        Assert.Equal(new[]{new DateTime(2024,5,20), new DateTime(2024,5,27), new DateTime(2024,6,3)}, result.Select(r => r.Start.Date));
     }
 
     [Fact]
@@ -51,8 +51,7 @@ public class BlockVacationServiceTests
             }
         };
         var result = await service.GenerateWeeklyMondaysAsync("1", prototype, vacation, blocking);
-        Assert.Equal(2, result.Count);
-        Assert.DoesNotContain(result, a => a.Start.Date == new DateTime(2024,5,27));
+        Assert.Equal(new[]{new DateTime(2024,5,20), new DateTime(2024,6,3)}, result.Select(a=>a.Start.Date));
     }
 }
 

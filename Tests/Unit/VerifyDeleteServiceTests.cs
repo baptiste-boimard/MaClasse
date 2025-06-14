@@ -48,12 +48,14 @@ public class VerifyDeleteServiceTests
         var result = await service.VerifyDeleteFiles(request);
         Assert.Single(result);
         Assert.Equal("A", result[0].IdDocument);
+        Assert.Equal(2, call);
     }
 
     [Fact]
     public async Task VerifyDeleteFiles_IgnoresFailures()
     {
-        var handler = new ConstantHandler(_ => new HttpResponseMessage(HttpStatusCode.BadRequest));
+        int calls = 0;
+        var handler = new ConstantHandler(r => { calls++; return new HttpResponseMessage(HttpStatusCode.BadRequest); });
         var client = new HttpClient(handler){BaseAddress = new Uri("http://localhost")};
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string>{{"Url:ApiGateway","http://localhost"}}).Build();
         var service = new VerifyDeleteService(client, config, new UserService(new HttpClient(), config));
@@ -63,5 +65,6 @@ public class VerifyDeleteServiceTests
 
         var result = await service.VerifyDeleteFiles(request);
         Assert.Empty(result);
+        Assert.Equal(1, calls);
     }
 }
