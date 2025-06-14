@@ -22,7 +22,7 @@ public partial class DocumentView : ComponentBase
     _logger = logger;
   }
   
-  // essais 9
+  // essais 10
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
   private bool IsImage(string format)
