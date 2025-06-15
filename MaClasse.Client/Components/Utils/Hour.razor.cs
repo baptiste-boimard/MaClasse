@@ -23,7 +23,8 @@ public partial class Hour : ComponentBase
 
     private void MettreAJourHeure()
     {
-        var maintenant = DateTime.Now;
+        var fuseauHoraire = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
+        var maintenant = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, fuseauHoraire);
         heure = maintenant.ToString("HH:mm");
     }
 
