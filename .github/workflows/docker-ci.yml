@@ -13,7 +13,7 @@ jobs:
       database: ${{ steps.filter.outputs.database }}
       oauth: ${{ steps.filter.outputs.oauth }}
       cloudinary: ${{ steps.filter.outputs.cloudinary }}
-      
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -31,8 +31,34 @@ jobs:
           echo "oauth=$(echo "$CHANGED" | grep -q '^Service.OAuth/' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "cloudinary=$(echo "$CHANGED" | grep -q '^Service.Cloudinary/' && echo true || echo false)" >> $GITHUB_OUTPUT
 
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: TestResults
+
   build-apigateway:
-    needs: detect-changes
+    needs: [detect-changes, run-tests]
     if: needs.detect-changes.outputs.apigateway == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +73,7 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/apigateway:latest
 
   build-client:
-    needs: detect-changes
+    needs: [detect-changes, run-tests]
     if: needs.detect-changes.outputs.client == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +88,7 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/client:latest
 
   build-database:
-    needs: detect-changes
+    needs: [detect-changes, run-tests]
     if: needs.detect-changes.outputs.database == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +103,7 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/database:latest
 
   build-oauth:
-    needs: detect-changes
+    needs: [detect-changes, run-tests]
     if: needs.detect-changes.outputs.oauth == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -90,9 +116,9 @@ jobs:
       - run: |
           docker build -t ghcr.io/${{ github.repository_owner }}/oauth:latest -f Service.OAuth/Dockerfile . --build-arg PROJECT_PATH=Service.OAuth
           docker push ghcr.io/${{ github.repository_owner }}/oauth:latest
-          
+  
   build-cloudinary:
-    needs: detect-changes
+    needs: [detect-changes, run-tests]
     if: needs.detect-changes.outputs.cloudinary == 'true'
     runs-on: ubuntu-latest
     steps:
