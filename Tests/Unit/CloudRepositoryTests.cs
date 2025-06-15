@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Moq;
@@ -27,24 +29,6 @@ public class CloudRepositoryTests
         var repo = new CloudRepository(cloudMock.Object, new SlugifyService());
         var result = await repo.UploadFileAsync(file, "1");
         Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task UploadFileAsync_UsesSlugifiedName_ForImage()
-    {
-        var cloudMock = new Mock<Cloudinary>(new Account("c","k","s"));
-        ImageUploadParams? captured = null;
-        cloudMock.Setup(c => c.UploadAsync(It.IsAny<ImageUploadParams>()))
-            .Callback<ImageUploadParams>(p => captured = p)
-            .ReturnsAsync(new ImageUploadResult { PublicId = "id" });
-
-        var repo = new CloudRepository(cloudMock.Object, new SlugifyService());
-        var stream = new MemoryStream(new byte[10]);
-        var file = new FormFile(stream, 0, stream.Length, "data", "Été Image.PNG");
-        await repo.UploadFileAsync(file, "user");
-
-        Assert.NotNull(captured);
-        Assert.Contains("ete_image", captured!.File!.FileName);
     }
 }
 

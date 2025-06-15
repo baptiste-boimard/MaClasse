@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -7,6 +8,8 @@ using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using Xunit;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tests.Unit;
 
@@ -28,7 +31,6 @@ public class VerifyDeleteServiceTests
     [Fact]
     public async Task VerifyDeleteFiles_ReturnsOnlyUnusedDocuments()
     {
-        // handler returns success with dictionary count=1 for first call, empty for others
         int call = 0;
         var handler = new ConstantHandler(_ =>
         {
@@ -40,7 +42,7 @@ public class VerifyDeleteServiceTests
         });
         var client = new HttpClient(handler){BaseAddress = new Uri("http://localhost")};
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string>{{"Url:ApiGateway","http://localhost"}}).Build();
-        var service = new VerifyDeleteService(client, config, new UserService(new HttpClient(), config));
+        var service = new VerifyDeleteService(client, config, new UserCloudService(new HttpClient(), config));
 
         var docs = new List<Document>{ new Document{IdDocument="A"}, new Document{IdDocument="B"} };
         var request = new RequestLesson{ IdSession="s", Lesson = new Lesson{ Documents = docs } };
@@ -58,7 +60,7 @@ public class VerifyDeleteServiceTests
         var handler = new ConstantHandler(r => { calls++; return new HttpResponseMessage(HttpStatusCode.BadRequest); });
         var client = new HttpClient(handler){BaseAddress = new Uri("http://localhost")};
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string>{{"Url:ApiGateway","http://localhost"}}).Build();
-        var service = new VerifyDeleteService(client, config, new UserService(new HttpClient(), config));
+        var service = new VerifyDeleteService(client, config, new UserCloudService(new HttpClient(), config));
 
         var docs = new List<Document>{ new Document{IdDocument="A"} };
         var request = new RequestLesson{ IdSession="s", Lesson = new Lesson{ Documents = docs } };

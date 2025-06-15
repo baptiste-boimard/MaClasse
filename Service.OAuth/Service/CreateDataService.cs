@@ -32,12 +32,11 @@ public class CreateDataService
 
             if (newScheduler != null)
             {   
-                Console.WriteLine("dsfdsfdsf", newScheduler);
                 return newScheduler;
             }
         }
         var error = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"❌ Erreur HTTP: {response.StatusCode}, contenu: {error}");
+        Console.WriteLine($"Erreur HTTP: {response.StatusCode}, contenu: {error}");
 
         return null;
     }
@@ -98,25 +97,5 @@ public class CreateDataService
         
         return null;
     }
-
-    // public async Task<LessonBook> GetDataLessonBook(string userId)
-    // {
-    //     var newCreateDateRequest = new CreateDataRequest
-    //     {
-    //         UserId = userId
-    //     };
-    //
-    //     var response = await _httpClient.PostAsJsonAsync(
-    //         $"{_configuration["Url:ApiGateway"]}/api/database/get-lessonbook", newCreateDateRequest);
-    //
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         var lessonBook = await response.Content.ReadFromJsonAsync<LessonBook>();
-    //
-    //         if (lessonBook != null) return lessonBook;
-    //     }
-    //
-    //     return null;
-    // }
 }
     

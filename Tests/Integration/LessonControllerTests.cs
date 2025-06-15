@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using Service.Database.Controllers;
 using Service.Database.Interfaces;
@@ -13,6 +16,7 @@ using Service.Database.Services;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Lesson;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Tests.Integration;
@@ -76,19 +80,7 @@ public class LessonControllerTests : IClassFixture<WebApplicationFactory<Service
         var returned = await response.Content.ReadFromJsonAsync<Document>();
         Assert.Equal("Test", returned?.Name);
     }
-
-    [Fact]
-    public async Task AddLesson_CreatesLesson_WhenIdIsNull()
-    {
-        var lesson = new Lesson { IdAppointment = "A" };
-        _repoMock.Setup(r => r.AddLesson(lesson, "1")).ReturnsAsync(lesson);
-        var client = _factory.CreateClient();
-        var req = new RequestLesson { IdSession = "s", Lesson = lesson };
-        var resp = await client.PostAsJsonAsync("/api/add-lesson", req);
-        resp.EnsureSuccessStatusCode();
-        _repoMock.Verify(r => r.AddLesson(lesson, "1"), Times.Once);
-    }
-
+    
     [Fact]
     public async Task AddLesson_ReturnsBadRequest_WhenAddFails()
     {

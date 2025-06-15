@@ -14,5 +14,6 @@
     <ProjectReference Include="..\Service.Database\Service.Database.csproj" />
     <ProjectReference Include="..\Service.Cloudinary\Service.Cloudinary.csproj" />
     <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
+    <ProjectReference Include="..\Service.OAuth\Service.OAuth.csproj" />
   </ItemGroup>
 </Project>

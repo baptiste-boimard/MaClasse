@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,6 +12,10 @@ using MaClasse.Shared.Models.Files;
 using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Tests.Integration;
@@ -38,7 +44,7 @@ public class CloudControllerTests : IClassFixture<WebApplicationFactory<Service.
         var handler = new ConstantHandler(verifyResponse);
         var verifyClient = new HttpClient(handler){BaseAddress = new Uri("http://localhost")};
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string>{{"Url:ApiGateway","http://localhost"}}).Build();
-        var verifyService = new VerifyDeleteService(verifyClient, config, new UserService(new HttpClient(), config));
+        var verifyService = new VerifyDeleteService(verifyClient, config, new UserCloudService(new HttpClient(), config));
 
         _factory = factory.WithWebHostBuilder(builder =>
         {
@@ -95,7 +101,7 @@ public class CloudControllerTests : IClassFixture<WebApplicationFactory<Service.
         var handler = new ConstantHandler(verifyResponse);
         var verifyClient = new HttpClient(handler){BaseAddress = new Uri("http://localhost")};
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string>{{"Url:ApiGateway","http://localhost"}}).Build();
-        var verifyService = new VerifyDeleteService(verifyClient, config, new UserService(new HttpClient(), config));
+        var verifyService = new VerifyDeleteService(verifyClient, config, new UserCloudService(new HttpClient(), config));
         var factory = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>

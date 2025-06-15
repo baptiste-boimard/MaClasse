@@ -14,6 +14,7 @@ public class ServiceLogout
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly NavigationManager _navigationManager;
     private readonly ProtectedLocalStorage _protectedLocalStorage;
+    private readonly LessonState _lessonState;
     private readonly HttpClient _httpClient;
 
     public ServiceLogout(
@@ -24,7 +25,8 @@ public class ServiceLogout
         ViewDashboardState viewDashboardState,
         AuthenticationStateProvider authenticationStateProvider,
         NavigationManager navigationManager,
-        ProtectedLocalStorage protectedLocalStorage)
+        ProtectedLocalStorage protectedLocalStorage,
+        LessonState lessonState)
     {
         _configuration = configuration;
         _userState = userState;
@@ -33,6 +35,7 @@ public class ServiceLogout
         _authenticationStateProvider = authenticationStateProvider;
         _navigationManager = navigationManager;
         _protectedLocalStorage = protectedLocalStorage;
+        _lessonState = lessonState;
         _configuration = configuration;
         _httpClient = httpClient;
     }
@@ -48,6 +51,7 @@ public class ServiceLogout
         _userState.ResetUserState();
         _viewDashboardState.ResetViewDashboardState();
         _schedulerState.ResetSchedulerState();
+        _lessonState.ResetLessonState();
         
         //* J'efface le user des identity
         //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
