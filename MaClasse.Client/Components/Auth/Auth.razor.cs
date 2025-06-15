@@ -15,7 +15,6 @@ public partial class Auth : ComponentBase
     private readonly IDialogService _dialogService;
     private readonly IConfiguration _configuration;
     private readonly IJSRuntime _jsRuntime;
-    private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserService _userService;
     private readonly UserState _userState;
@@ -31,7 +30,6 @@ public partial class Auth : ComponentBase
         IDialogService dialogService,
         IConfiguration configuration,
         IJSRuntime jsRuntime,
-        ServiceAuthentication serviceAuthentication,
         IHttpContextAccessor httpContextAccessor,
         UserService userService,
         UserState userState,
@@ -45,7 +43,6 @@ public partial class Auth : ComponentBase
         _dialogService = dialogService;
         _configuration = configuration;
         _jsRuntime = jsRuntime;
-        _serviceAuthentication = serviceAuthentication;
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
         _userState = userState;

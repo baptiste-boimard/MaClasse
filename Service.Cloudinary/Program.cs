@@ -46,3 +46,8 @@ app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
+
+namespace Service.Cloudinary
+{
+    public partial class Program { }
+}

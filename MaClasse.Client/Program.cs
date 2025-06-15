@@ -38,9 +38,6 @@ builder.Services.AddRadzenComponents();
 //* Ajout des services MudBlazor
 builder.Services.AddMudServices();
 
-//* Service de stockage du token
-builder.Services.AddScoped<ServiceAuthentication>();
-
 //* Ajout de l'authentification
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 

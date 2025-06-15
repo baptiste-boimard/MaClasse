@@ -339,16 +339,6 @@ public class LessonState
         IsReadOnly = userId != _schedulerState.IdUser ? true : false;
     }
     
-    public void ResetLessonState()
-    {
-        Lesson = new Lesson();
-        CopyLesson = new Lesson();
-        SelectedAppointment = new Appointment();
-        UserLessonDisplayed = null;
-        
-        NotifyStateChanged();
-    }
-
     public async Task<Document> GetDocument(string idUser, string idDocument)
     {
         var newDocument = new Document
@@ -373,6 +363,15 @@ public class LessonState
         }
 
         return null;
+    }
+    
+    public void ResetLessonState()
+    {
+        Lesson = new Lesson();
+        CopyLesson = new Lesson();
+        SelectedAppointment = new Appointment();
+        UserLessonDisplayed = null;
+        IsReadOnly = false;
     }
     
     public void NotifyStateChanged()

@@ -10,7 +10,6 @@ public class RefreshService
     private readonly HttpClient _httpClient;
     private readonly UserState _userState;
     private readonly NavigationManager _navigationManager;
-    private readonly ServiceAuthentication _serviceAuthentication;
     private readonly IConfiguration _configuration;
     private readonly UserService _userService;
     private readonly SchedulerState _schedulerState;
@@ -19,7 +18,6 @@ public class RefreshService
         HttpClient httpClient,
         UserState userState,
         NavigationManager navigationManager,
-        ServiceAuthentication serviceAuthentication,
         IConfiguration configuration,
         UserService userService,
         SchedulerState schedulerState)
@@ -27,7 +25,6 @@ public class RefreshService
         _httpClient = httpClient;
         _userState = userState;
         _navigationManager = navigationManager;
-        _serviceAuthentication = serviceAuthentication;
         _configuration = configuration;
         _userService = userService;
         _schedulerState = schedulerState;
