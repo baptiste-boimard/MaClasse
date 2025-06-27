@@ -51,7 +51,6 @@ public class AuthController: ControllerBase
     [Route("google-login")]
     public async Task<IActionResult> GoogleLogin(GoogleTokenRequest request)
     {
-        Console.WriteLine("courrrrrcrdddroeeffu");
         var payload = await _validateGoogleTokenService.ValidateGoogleToken(request.Token);
         if (payload == null)
         {
@@ -290,7 +289,7 @@ public class AuthController: ControllerBase
                 //* Je delete le user et ces data
                 var deletedUser = await _authRepository.DeleteUser(user);
                 
-                //! Je delete agalement le scheduler et le lessonBook du user
+                //! Je delete également le scheduler et le lessonBook du user
                 await _deleteUserService.DeleteLessonBook(user.Id);
                 await _deleteUserService.DeleteScheduler(user.Id);
                 

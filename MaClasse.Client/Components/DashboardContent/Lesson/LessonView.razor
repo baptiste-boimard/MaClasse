@@ -24,12 +24,18 @@
                     var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
                 }
                 <p style="font-size: 1.25rem; font-weight: bold; margin: 0; margin-left: 1rem;">
+                    @* Cours du *@
+                    @* @startLocal.ToString("dddd d MMMM", new CultureInfo("fr-FR")) *@
+                    @* de *@
+                    @* @startLocal.ToString("H\\hmm", new CultureInfo("fr-FR")) *@
+                    @* à *@
+                    @* @endLocal.ToString("H\\hmm", new CultureInfo("fr-FR")) *@
                     Cours du
                     @startLocal.ToString("dddd d MMMM", new CultureInfo("fr-FR"))
                     de
-                    @startLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                    @startLocal.ToString("H\\hmm")
                     à
-                    @endLocal.ToString("H\\hmm", new CultureInfo("fr-FR"))
+                    @endLocal.ToString("H\\hmm")
                 </p>
             </div>
 
@@ -45,18 +51,19 @@
 
     <div style="display: flex;
                 flex-direction: row;
-                flex-grow: 1; /* Ce conteneur prend tout l'espace vertical restant */
-                gap: 0.5rem; /* Espace entre vos 3 colonnes */
-                /* overflow: hidden; Pas besoin de hidden ici, car les colonnes internes vont gérer le défilement */
-                padding-bottom: 0.5rem; /* Pour l'espace au bas des colonnes */
-                align-items: stretch; /* Les colonnes internes s'étirent à la même hauteur */
+                flex-grow: 1;
+                gap: 0.5rem;
+                overflow-y: auto;
+                margin-top: -1rem;
+                padding-bottom: 0.5rem; 
+                align-items: stretch; 
     ">
-        <div style="width: 33.33%; /* Utilisez des pourcentages pour la largeur */
-                    padding: 0.5rem; /* Ajustez le padding ici pour un bon espacement */
-                    display: flex; /* Faire de cette div un conteneur flex */
-                    flex-direction: column; /* Empiler les champs verticalement */
-                    gap: 0.5rem; /* Espace entre les MudTextFields */
-                    /* Pas de overflow-y: auto ici, car les champs eux-mêmes vont défiler */
+        <div style="width: 33.33%; 
+                    padding: 0.5rem; 
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem; 
+                 
         ">
             <MudTextField ShrinkLabel
                           @bind-Value="lesson.Class"
