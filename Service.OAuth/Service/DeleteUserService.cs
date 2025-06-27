@@ -1,8 +1,9 @@
 ﻿using MaClasse.Shared.Models;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Service;
 
-public class DeleteUserService
+public class DeleteUserService :IDeleteUserService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;

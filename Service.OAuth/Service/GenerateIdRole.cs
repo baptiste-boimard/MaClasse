@@ -1,9 +1,10 @@
 ﻿using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Service;
 
-public class GenerateIdRole
+public class GenerateIdRole : IGenerateIdRole
 {
     private readonly IAuthRepository _authRepository;
 
@@ -24,7 +25,7 @@ public class GenerateIdRole
         }
     }
 
-    private string Generate(int length)
+    public string Generate(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         var random = new Random();
@@ -32,7 +33,7 @@ public class GenerateIdRole
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    private async Task<bool> VerifyExistingIdRole(string idRole)
+    public async Task<bool> VerifyExistingIdRole(string idRole)
     {
         var existing = await _authRepository.CheckIdRole(idRole);
         

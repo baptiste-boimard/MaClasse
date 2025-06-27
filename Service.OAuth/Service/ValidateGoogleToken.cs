@@ -1,8 +1,9 @@
 ﻿using Google.Apis.Auth;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Service;
 
-public class ValidateGoogleTokenService
+public class ValidateGoogleTokenService : IValidateGoogleTokenService
 {
     private readonly IConfiguration _configuration;
 

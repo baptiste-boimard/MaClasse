@@ -3,10 +3,11 @@ using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Service;
 
-public class UserServiceRattachment
+public class UserServiceRattachment : IUserServiceRattachment
 {
     private readonly IAuthRepository _authRepository;
 

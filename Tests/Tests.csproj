@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.4.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.5.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0" />
@@ -15,5 +16,8 @@
     <ProjectReference Include="..\Service.Cloudinary\Service.Cloudinary.csproj" />
     <ProjectReference Include="..\MaClasse.Shared\MaClasse.Shared.csproj" />
     <ProjectReference Include="..\Service.OAuth\Service.OAuth.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mock\" />
   </ItemGroup>
 </Project>

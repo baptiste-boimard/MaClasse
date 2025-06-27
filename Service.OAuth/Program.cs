@@ -5,6 +5,7 @@ using Service.OAuth.Database;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Repositories;
 using Service.OAuth.Service;
+using Service.OAuth.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +19,11 @@ builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IRattachmentRepository, RattachementRepository>();
 
 //* Ajout des services
-builder.Services.AddScoped<CreateDataService>();
-builder.Services.AddScoped<ValidateGoogleTokenService>();
-builder.Services.AddScoped<GenerateIdRole>();
-builder.Services.AddScoped<UserServiceRattachment>();
-builder.Services.AddScoped<DeleteUserService>();
+builder.Services.AddScoped<ICreateDataService, CreateDataService>();
+builder.Services.AddScoped<IValidateGoogleTokenService, ValidateGoogleTokenService>();
+builder.Services.AddScoped<IGenerateIdRole, GenerateIdRole>();
+builder.Services.AddScoped<IUserServiceRattachment, UserServiceRattachment>();
+builder.Services.AddScoped<IDeleteUserService, DeleteUserService>();
 
 
 //* Gestion des cors

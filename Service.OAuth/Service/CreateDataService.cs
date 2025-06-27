@@ -2,10 +2,11 @@
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Service;
 
-public class CreateDataService
+public class CreateDataService : ICreateDataService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;

@@ -4,6 +4,7 @@ using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Mvc;
 using Service.OAuth.Interfaces;
 using Service.OAuth.Service;
+using Service.OAuth.Service.Interface;
 
 namespace Service.OAuth.Controller;
 
@@ -12,25 +13,23 @@ namespace Service.OAuth.Controller;
 public class AuthController: ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private readonly ValidateGoogleTokenService _validateGoogleTokenService;
+    private readonly IValidateGoogleTokenService _validateGoogleTokenService;
     private readonly IAuthRepository _authRepository;
     private readonly ISessionRepository _sessionRepository;
-    private readonly UserServiceRattachment _userServiceRattachment;
-    private readonly GenerateIdRole _generateIdRole;
-    private readonly CreateDataService _createDataService;
-    private readonly DeleteUserService _deleteUserService;
-    private readonly ILogger<AuthController> _logger;
+    private readonly IUserServiceRattachment _userServiceRattachment;
+    private readonly IGenerateIdRole _generateIdRole;
+    private readonly ICreateDataService _createDataService;
+    private readonly IDeleteUserService _deleteUserService;
 
     public AuthController(
         IConfiguration configuration,
-        ValidateGoogleTokenService validateGoogleTokenService,
+        IValidateGoogleTokenService validateGoogleTokenService,
         IAuthRepository authRepository,
         ISessionRepository sessionRepository,
-        UserServiceRattachment userServiceRattachment,
-        GenerateIdRole generateIdRole,
-        CreateDataService createDataService,
-        DeleteUserService deleteUserService,
-        ILogger<AuthController> logger)
+        IUserServiceRattachment userServiceRattachment,
+        IGenerateIdRole generateIdRole,
+        ICreateDataService createDataService,
+        IDeleteUserService deleteUserService)
     {
         _configuration = configuration;
         _validateGoogleTokenService = validateGoogleTokenService;
@@ -40,7 +39,6 @@ public class AuthController: ControllerBase
         _generateIdRole = generateIdRole;
         _createDataService = createDataService;
         _deleteUserService = deleteUserService;
-        _logger = logger;
     }
 
     private AuthReturn _returnResponse = new();
@@ -144,15 +142,6 @@ public class AuthController: ControllerBase
 
         if (sessionSaveSignup != null)
         {
-            //* On le place dans le cookies renvoyé
-            Response.Cookies.Append("MaClasseAuth", sessionSaveSignup.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
-            });
-
             _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
                 newUser, true, sessionSaveSignup.Token, request.Token, newScheduler);
             
@@ -167,13 +156,11 @@ public class AuthController: ControllerBase
     [Route("finished-signup")]
     public async Task<IActionResult> FinishedSignUp([FromBody] SignupDialogResult result)
     {
-        //* Récupérer la valeur du cookie
-        // var cookieValue = Request.Cookies["MaClasseAuth"];   
-
         //* Avec l'id de session on réucpére le userId
         var userSession = await _sessionRepository.GetUserIdByCookies(result.IdSession);
 
         userSession.Role = result.Role;
+        
         //* Je mets a jour mon cookies de Session avec le Role
         var updateSession = await _sessionRepository.UpdateSession(userSession);
 
@@ -192,10 +179,6 @@ public class AuthController: ControllerBase
         
         //* J'ajoute les vacances scolaire en fonction de la zone et je récupére le scheduler
         newScheduler = await _createDataService.AddHolidayToScheduler(updatedUser);
-        
-        
-        //* Je récupére les données adjacentes
-        // newScheduler = await _createDataService.GetDataScheduler(updatedUser.Id);
 
         if (updatedUser != null && newScheduler != null)
         {
@@ -225,11 +208,11 @@ public class AuthController: ControllerBase
 
         //* Je récupére le user concerné
         var user = await _authRepository.GetOneUserByGoogleId(userSession.UserId);
-
-        newScheduler = await _createDataService.GetDataScheduler(user.Id);
         
         if (user == null) return Unauthorized();
 
+        newScheduler = await _createDataService.GetDataScheduler(user.Id);
+        
         _returnResponse = await _userServiceRattachment.GetUserWithRattachment(
             user, false, userSession.Token, request.Token, newScheduler);
         
