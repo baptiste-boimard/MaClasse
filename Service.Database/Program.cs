@@ -6,6 +6,10 @@ using Service.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//* Active le logging console
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Indique d'utiliser le dossier mappé
     .SetApplicationName("MaClasseSharedProd");

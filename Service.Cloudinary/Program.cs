@@ -5,6 +5,10 @@ using Service.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//* Active le logging console
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 //* Ajout des différents service
 builder.Services.AddScoped<UserCloudService>();
 builder.Services.AddScoped<SlugifyService>();
