@@ -84,7 +84,12 @@ public class SchedulerController :  ControllerBase
     [Route("add-appointment")]
     public async Task<IActionResult> AddAppointment([FromBody] SchedulerRequest request)
     {   
-        _logger.LogInformation("###################################################AddAppointment called with: {@Request}", request);
+        _logger.LogInformation(" ###################################  IdSession: {IdSession}, Start: {Start}, End: {End}, Text: {Text}",
+            request.IdSession,
+            request.Appointment?.Start,
+            request.Appointment?.End,
+            request.Appointment?.Text);
+        
         
         if (request == null)
             return BadRequest("Requête vide");
@@ -107,10 +112,14 @@ public class SchedulerController :  ControllerBase
         var existingAppointment = await _schedulerRepository.GetOneAppointment(
             userSession.UserId, request.Appointment);
         
+        _logger.LogInformation("######################################## Existing appointment: {@Existing}", existingAppointment);
+
+        
         if (existingAppointment != null)
         {
             //! Message d'erreur à faire
-            return BadRequest("L'appointment existe déjà");
+            return BadRequest(new { message = "L'appointment existe déjà" });
+            // return BadRequest("L'appointment existe déjà");
         }
         
         //* Si il n'existe pas on le save
