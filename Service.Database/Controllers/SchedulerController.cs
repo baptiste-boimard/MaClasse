@@ -115,12 +115,12 @@ public class SchedulerController :  ControllerBase
         _logger.LogInformation("######################################## Existing appointment: {@Existing}", existingAppointment);
 
         
-        if (existingAppointment != null)
-        {
-            //! Message d'erreur à faire
-            return BadRequest(new { message = "L'appointment existe déjà" });
-            // return BadRequest("L'appointment existe déjà");
-        }
+        // if (existingAppointment != null)
+        // {
+        //     //! Message d'erreur à faire
+        //     return BadRequest(new { message = "L'appointment existe déjà" });
+        //     // return BadRequest("L'appointment existe déjà");
+        // }
         
         //* Si il n'existe pas on le save
         var newAppointment = new Appointment
