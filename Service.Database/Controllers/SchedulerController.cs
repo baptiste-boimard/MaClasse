@@ -1,10 +1,8 @@
 ﻿using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Scheduler;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Database.Interfaces;
 using Service.Database.Services;
-// ReSharper disable All
 
 namespace Service.Database.Controllers;
 
@@ -16,20 +14,17 @@ public class SchedulerController :  ControllerBase
     private readonly ISchedulerRepository _schedulerRepository;
     private readonly HolidaysService _holidaysService;
     private readonly BlockVacationService _blockVacationService;
-    private readonly ILogger<SchedulerController> _logger;
 
     public SchedulerController(
         UserService userService,
         ISchedulerRepository schedulerRepository,
         HolidaysService holidaysService,
-        BlockVacationService blockVacationService,
-        ILogger<SchedulerController> logger)
+        BlockVacationService blockVacationService)
     {
         _userService = userService;
         _schedulerRepository = schedulerRepository;
         _holidaysService = holidaysService;
         _blockVacationService = blockVacationService;
-        _logger = logger;
     }
     
     [HttpPost]
@@ -84,43 +79,13 @@ public class SchedulerController :  ControllerBase
     [Route("add-appointment")]
     public async Task<IActionResult> AddAppointment([FromBody] SchedulerRequest request)
     {   
-        _logger.LogInformation(" ###################################  IdSession: {IdSession}, Start: {Start}, End: {End}, Text: {Text}",
-            request.IdSession,
-            request.Appointment?.Start,
-            request.Appointment?.End,
-            request.Appointment?.Text);
-        
-        
-        if (request == null)
-            return BadRequest("Requête vide");
-
-        if (string.IsNullOrWhiteSpace(request.IdSession))
-            return BadRequest("IdSession manquant");
-        
-        if (request.Appointment == null)
-            return BadRequest("Appointment vide");
-        
-        
         /* je recupére un id Session et un appointment */
         //* Je cherche un user que je recupére avec mon userServices
         var userSession = await _userService.GetUserByIdSession(request.IdSession);
         
-        if (userSession == null)
-            return BadRequest("Session invalide ou expirée");
-        
         //* verifie si l'appointment existe pour mon userId
         var existingAppointment = await _schedulerRepository.GetOneAppointment(
             userSession.UserId, request.Appointment);
-        
-        _logger.LogInformation("######################################## Existing appointment: {@Existing}", existingAppointment);
-
-        
-        // if (existingAppointment != null)
-        // {
-        //     //! Message d'erreur à faire
-        //     return BadRequest(new { message = "L'appointment existe déjà" });
-        //     // return BadRequest("L'appointment existe déjà");
-        // }
         
         //* Si il n'existe pas on le save
         var newAppointment = new Appointment
