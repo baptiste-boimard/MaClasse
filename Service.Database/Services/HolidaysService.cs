@@ -82,4 +82,53 @@ public class HolidaysService
         }
         return appointments;
     }
+
+    public async Task<List<Appointment>> GetPublicHoliday(UserProfile user)
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var apiUrlList = new List<string>
+        {
+            "https://calendrier.api.gouv.fr/jours-feries/metropole/2024.json",
+            "https://calendrier.api.gouv.fr/jours-feries/metropole/2025.json"
+        };
+        
+        var appointments = new List<Appointment>();
+
+        foreach (var url in apiUrlList)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+        
+            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(options);
+        
+
+
+            foreach (var entry in result)
+            {
+                var date = DateTime.Parse(entry.Key); // clé = "2025-01-01"
+                var description = entry.Value;        // valeur = "Jour de l'an"
+
+                var appointment = new Appointment
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Start = date.Date.AddHours(1),
+                    End = date.Date.AddHours(23),
+                    Text = $"Jour Férié : {description}",
+                    Color = "#b60c0c",
+                    Recurring = false,
+                    IdRecurring = string.Empty
+                };
+
+                appointments.Add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
 }

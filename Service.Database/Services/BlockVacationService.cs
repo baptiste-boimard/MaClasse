@@ -34,6 +34,7 @@ public class BlockVacationService
             .Select(list =>list)
             .FirstOrDefault(a => 
                 a.Text.Contains("Vacances d'Été", StringComparison.OrdinalIgnoreCase) &&
+                a.Text.Contains("Jour Férié", StringComparison.OrdinalIgnoreCase) &&
                 a.Start.Year == terminatedYear);
 
         var blockingList = appointmentList
