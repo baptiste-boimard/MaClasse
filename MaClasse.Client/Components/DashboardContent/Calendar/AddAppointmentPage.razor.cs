@@ -47,6 +47,8 @@ public partial class AddAppointmentPage : ComponentBase
     private string _colorValue;
     private bool _recurring;
     
+    // Test Commentaire
+    
     protected override void OnParametersSet()
     {
         tempStartDate = Start;
