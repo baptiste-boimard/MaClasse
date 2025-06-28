@@ -136,7 +136,7 @@ public class SchedulerController :  ControllerBase
     {
         //* Utilisation de HolidaysService pour aller récupérer les données de vacances auprès de l'api
         var holidaysAppointment = await _holidaysService.GetZoneBVacationsAsync(user);
-
+        
         var holidaysPublic = await _holidaysService.GetPublicHoliday(user);
         
         var allAppointments = holidaysAppointment.Concat(holidaysPublic).OrderBy(a => a.Start).ToList();
