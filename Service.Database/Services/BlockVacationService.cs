@@ -38,9 +38,18 @@ public class BlockVacationService
 
         var blockingList = appointmentList
             .Select(list => list)
-            .Where(a => (a.Text.Contains("Vacance", StringComparison.OrdinalIgnoreCase)
-                         || a.Text.Contains("Pont", StringComparison.OrdinalIgnoreCase)) &&
-                        a.Start < vacationSummer.Start)
+            .Where(a => 
+                a != null &&
+                !string.IsNullOrEmpty(a.Text) &&
+                a.Start != default &&
+                vacationSummer != null &&
+                vacationSummer.Start != default &&
+                (
+                    a.Text.Contains("Vacance", StringComparison.OrdinalIgnoreCase) || 
+                    a.Text.Contains("Pont", StringComparison.OrdinalIgnoreCase) || 
+                    a.Text.Contains("Férié", StringComparison.OrdinalIgnoreCase)
+                ) &&
+                a.Start < vacationSummer.Start)
             .ToList();
 
         var appointmentListFinal = await GenerateWeeklyMondaysAsync(userId, appointment, vacationSummer, blockingList);
@@ -69,8 +78,11 @@ public class BlockVacationService
         {
             // 3) Vérifie le blocage
             bool isBlocked = blockingList.Any(b =>
-                occurrence.Date >= b.Start.Date &&
-                occurrence.Date <  b.End.Date
+                occurrence >= b.Start &&
+                occurrence <=  b.End      
+            // bool isBlocked = blockingList.Any(b =>
+            //     occurrence.Date >= b.Start.Date &&
+            //     occurrence.Date <=  b.End.Date
             );
 
             if (!isBlocked)
@@ -88,7 +100,6 @@ public class BlockVacationService
                 };
 
                 // 5) Enregistre et garde le résultat
-                // await _schedulerRepository.AddAppointment(userId, appt);
                 results.Add(appt);
             }
 
