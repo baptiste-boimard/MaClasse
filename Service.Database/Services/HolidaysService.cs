@@ -111,14 +111,13 @@ public class HolidaysService
 
             foreach (var entry in result)
             {
-                var date = DateTime.Parse(entry.Key); // clé = "2025-01-01"
-                var description = entry.Value;        // valeur = "Jour de l'an"
-
+                var date = DateTime.Parse(entry.Key); 
+                var description = entry.Value;       
                 var appointment = new Appointment
                 {
                     Id = Guid.NewGuid().ToString(),
                     Start = date.Date.AddHours(1),
-                    End = date.Date.AddHours(23),
+                    End = date.Date.AddHours(26),
                     Text = $"Jour Férié : {description}",
                     Color = "#b60c0c",
                     Recurring = false,
