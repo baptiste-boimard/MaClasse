@@ -16,17 +16,20 @@ public class SchedulerController :  ControllerBase
     private readonly ISchedulerRepository _schedulerRepository;
     private readonly HolidaysService _holidaysService;
     private readonly BlockVacationService _blockVacationService;
+    private readonly ILogger<SchedulerController> _logger;
 
     public SchedulerController(
         UserService userService,
         ISchedulerRepository schedulerRepository,
         HolidaysService holidaysService,
-        BlockVacationService blockVacationService)
+        BlockVacationService blockVacationService,
+        ILogger<SchedulerController> logger)
     {
         _userService = userService;
         _schedulerRepository = schedulerRepository;
         _holidaysService = holidaysService;
         _blockVacationService = blockVacationService;
+        _logger = logger;
     }
     
     [HttpPost]
@@ -81,10 +84,24 @@ public class SchedulerController :  ControllerBase
     [Route("add-appointment")]
     public async Task<IActionResult> AddAppointment([FromBody] SchedulerRequest request)
     {   
+        _logger.LogInformation("###################################################AddAppointment called with: {@Request}", request);
+        
+        if (request == null)
+            return BadRequest("Requête vide");
+
+        if (string.IsNullOrWhiteSpace(request.IdSession))
+            return BadRequest("IdSession manquant");
+        
+        if (request.Appointment == null)
+            return BadRequest("Appointment vide");
+        
+        
         /* je recupére un id Session et un appointment */
         //* Je cherche un user que je recupére avec mon userServices
         var userSession = await _userService.GetUserByIdSession(request.IdSession);
         
+        if (userSession == null)
+            return BadRequest("Session invalide ou expirée");
         
         //* verifie si l'appointment existe pour mon userId
         var existingAppointment = await _schedulerRepository.GetOneAppointment(
