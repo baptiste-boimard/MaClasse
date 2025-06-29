@@ -79,6 +79,8 @@ public partial class DocumentView : ComponentBase
       
 // Pour ConcatString
       _logger.LogInformation("################# ConcatString #############: {ConcatStringValue}", ConcatString);
+      Console.WriteLine($"[DEBUG] #################################### ConcatString: {ConcatString}");
+
 
 // Pour decodedString (qui est un tableau de chaînes, nous allons le joindre pour l'affichage)
       _logger.LogInformation("################# decodedString #############: {DecodedStringValue}", decodedString != null ? string.Join("-", decodedString) : "null");

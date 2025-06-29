@@ -12,10 +12,12 @@ namespace Service.Database.Repositories;
 public class LessonRepository : ILessonRepository
 {
     private readonly MongoDbContext _mongoDbContext;
+    private readonly ILogger<LessonRepository> _logger;
 
-    public LessonRepository(MongoDbContext mongoDbContext)
+    public LessonRepository(MongoDbContext mongoDbContext, ILogger<LessonRepository> logger)
     {
         _mongoDbContext = mongoDbContext;
+        _logger = logger;
     }
 
     public async Task<Lesson> GetLesson(string idAppointment, string idUser)
@@ -162,10 +164,26 @@ public class LessonRepository : ILessonRepository
             doc = lesson.Documents
                 .FirstOrDefault(d => d.IdDocument == idDocument);
             
+            foreach (var d in lesson.Documents)
+            {
+                _logger.LogInformation("######################################Checking doc id: {DocId} == {InputId}", d.IdDocument, idDocument);
+
+                if (d.IdDocument == idDocument)
+                {
+                    return d; // dès qu’on trouve, on sort
+                }
+            }
+            
             if (doc != null) continue;
         }
-        
-        if (doc != null) return doc;
+
+        if (doc != null)
+        {
+            _logger.LogInformation("############################🎯 Document trouvé ! ID: {FoundId} == {InputId}", doc.IdDocument, idDocument);
+
+            return doc;
+        }
+
         
         return null;
     }

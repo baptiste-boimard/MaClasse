@@ -88,6 +88,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         var base64EncodedconcatString = Convert.ToBase64String(Encoding.UTF8.GetBytes(concatString));
         
         var viewerUrl = $"/documents/view/{base64EncodedconcatString}";
+        
         await _jsRuntime.InvokeVoidAsync("open", viewerUrl, "_blank");
     }
     

@@ -182,8 +182,6 @@ public class SchedulerController :  ControllerBase
         }
         
         
-        
-        
         //* Cas ou l'on ajoute la récurrence
         if (request.Appointment.Recurring && string.IsNullOrEmpty(request.Appointment.IdRecurring))
         {
@@ -213,9 +211,6 @@ public class SchedulerController :  ControllerBase
 
         }
         
-        
-        
-        
         //* Cas ou l'on supprime la récurrence
         if (!request.Appointment.Recurring && !string.IsNullOrEmpty(request.Appointment.IdRecurring))
         {
@@ -236,8 +231,6 @@ public class SchedulerController :  ControllerBase
         //* Dans tous les cas on update l'appointement et on renvoie la liste des appointments
         var updatedAppointment = await _schedulerRepository.UpdateAppointment(
             userSession.UserId, request.Appointment);
-        
-        // if (updatedAppointment == null) return BadRequest();
         
         return Ok(updatedAppointment);
     }

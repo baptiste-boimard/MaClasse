@@ -118,8 +118,8 @@ public class LessonController : ControllerBase
     [Route("get-document")]
     public async Task<IActionResult> GetDocument([FromBody] FileRequestToDatabase request)
     {
-        _logger.LogInformation("--- Service.Database: GetDocument method HIT! ---");
-        _logger.LogInformation("Received request for Document ID: {DocId}, User ID: {UserId}", request?.Document?.IdDocument, request?.IdUser);
+        _logger.LogInformation("--- ###########################Service.Database: GetDocument method HIT! ---");
+        _logger.LogInformation(" #######################################Received request for Document ID: {DocId}, User ID: {UserId}", request?.Document?.IdDocument, request?.IdUser);
         
         var existingDocument = await _lessonRepository.GetDocument(request.Document.IdDocument, request.IdUser);
         
