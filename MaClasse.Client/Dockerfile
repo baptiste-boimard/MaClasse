@@ -4,7 +4,7 @@ WORKDIR /src
 USER root
 RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
 
-COPY --chown=root:root --chmod=555 --from=build /app/out .
+COPY . .
 
 ARG PROJECT_PATH=MaClasse.Client
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
@@ -16,7 +16,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 
 USER app
 WORKDIR /app
-COPY --chown=app:app --from=build /app/out .
+COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 EXPOSE 7235
 ENTRYPOINT ["dotnet", "MaClasse.Client.dll"]

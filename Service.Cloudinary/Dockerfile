@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-COPY --chown=root:root --chmod=555 --from=build /app/out .
+COPY . .
 
 ARG PROJECT_PATH=Service.Cloudinary
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
@@ -16,7 +16,7 @@ RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
 
 USER app
 WORKDIR /app
-COPY --chown=app:app --from=build /app/out .
+COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 EXPOSE 7013
 ENTRYPOINT ["dotnet", "Service.Cloudinary.dll"]
