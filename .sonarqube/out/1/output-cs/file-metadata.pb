@@ -1,0 +1,11 @@
+w
+lC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\obj\Debug\net9.0\Service.Cloudinary.AssemblyInfo.csutf-8ƒ
+xC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\obj\Debug\net9.0\.NETCoreApp,Version=v9.0.AssemblyAttributes.csutf-8y
+nC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\obj\Debug\net9.0\Service.Cloudinary.GlobalUsings.g.csutf-8a
+XC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Services\VerifyDeleteService.csutf-8^
+UC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Services\UserCloudService.csutf-8\
+SC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Services\SlugifyService.csutf-8a
+XC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Repositories\CloudRepository.csutf-8L
+CC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Program.csutf-8`
+WC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Interfaces\ICloudRepository.csutf-8`
+WC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Controllers\CloudController.csutf-8

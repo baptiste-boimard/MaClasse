@@ -32,6 +32,7 @@ public class CloudController : ControllerBase
   }
 
   [HttpPost]
+  [RequestSizeLimit(8 * 1024 * 1024)]
   [Route("add-file")]
   public async Task<IActionResult> AddFile(
     [FromForm] IFormFile file, [FromForm] string  filerequest)

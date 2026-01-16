@@ -4,6 +4,13 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//* Configuration du Kernel pour ne laisser entrer que des requêtes de 2Mo max
+builder.WebHost.ConfigureKestrel(options =>
+    {
+    // Limite globale à 2 Mo pour protéger l'entrée du réseau
+    options.Limits.MaxRequestBodySize = 8* 1024 * 1024; 
+    });
+
 //* Active le logging console
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

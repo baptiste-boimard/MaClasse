@@ -1,0 +1,40 @@
+﻿C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Controller\AuthController.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Controller\RattachmentController.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Controller\SessionController.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Database\PostgresDBContext.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Interfaces\IAuthRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Interfaces\IRattachmentRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Interfaces\ISessionRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250323142048_Initial.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250323142048_Initial.Designer.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250328172930_Ajout de la table SessionData.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250328172930_Ajout de la table SessionData.Designer.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250328180321_Ajout de Role dans UserProfile.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250328180321_Ajout de Role dans UserProfile.Designer.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250405193247_Ajout de Zone dans UserProfile.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250405193247_Ajout de Zone dans UserProfile.Designer.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250406153619_Ajout IdRole dans UserProfile.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\20250406153619_Ajout IdRole dans UserProfile.Designer.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Migrations\PostgresDbContextModelSnapshot.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Program.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Repositories\AuthRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Repositories\RattachementRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Repositories\SessionRepository.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\CreateDataService.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\DeleteUserService.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\GenerateIdRole.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\Interface\ICreateDataService.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\Interface\IDeleteUserService.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\Interface\IGenerateIdRole.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\Interface\IUserServiceRattachment.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\Interface\IValidateGoogleTokenService.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\UserServiceRattachment.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service\ValidateGoogleToken.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\obj\Debug\net9.0\Service.OAuth.GlobalUsings.g.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\obj\Debug\net9.0\.NETCoreApp,Version=v9.0.AssemblyAttributes.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\obj\Debug\net9.0\Service.OAuth.AssemblyInfo.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\obj\Debug\net9.0\Service.OAuth.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\appsettings.json
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Dockerfile
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\init.sql
+C:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Properties\launchSettings.json

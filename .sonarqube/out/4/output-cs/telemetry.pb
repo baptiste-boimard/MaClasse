@@ -1,0 +1,1 @@
+dRNC:\Users\bapti\RiderProjects\MaClasse\Service.Database\Service.Database.csproj¢net9.0òCSharp13

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Service.OAuth.Database;
 using Service.OAuth.Interfaces;
@@ -8,6 +9,12 @@ using Service.OAuth.Service;
 using Service.OAuth.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//* Limitation de la taille des requêtes à 2Mo dans tous les services autres que Cloudinary
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 2 * 1024 * 1024;
+});
 
 //* Active le logging console
 builder.Logging.ClearProviders();

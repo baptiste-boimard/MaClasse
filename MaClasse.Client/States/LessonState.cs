@@ -1,10 +1,11 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
+
 
 namespace MaClasse.Client.States;
 
@@ -14,20 +15,20 @@ public class LessonState
     private readonly IConfiguration _configuration;
     private readonly UserState _userState;
     private readonly SchedulerState _schedulerState;
-    private readonly ILogger<LessonState> _logger;
+    private readonly ISnackbar _snackbar;
 
     public LessonState(
         HttpClient httpClient,
         IConfiguration configuration,
         UserState userState,
-        SchedulerState schedulerState, 
-        ILogger<LessonState> logger)
+        SchedulerState schedulerState,
+        ISnackbar snackbar)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _userState = userState;
         _schedulerState = schedulerState;
-        _logger = logger;
+        _snackbar = snackbar;
     }
     
     public event Action OnAppointmentSelected;
@@ -203,8 +204,19 @@ public class LessonState
         var content = new MultipartFormDataContent();
     
         //* Ajout du fichier 
-        var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-        content.Add(new StreamContent(stream), "file", file.Name);
+        try
+        {
+            var stream = file.OpenReadStream(maxAllowedSize: 8 * 1024 * 1024);
+            content.Add(new StreamContent(stream), "file", file.Name);
+
+        }
+        catch (IOException ex)
+        {
+            if (ex.Message.Contains("exceeds the maximum"))
+            {
+                _snackbar.Add("Le fichier est trop volumineux (max 8 Mo).", Severity.Error);
+            }
+        }
     
         //* Ajouter les métadonnées (JSON sous forme de StringContent)
         var request = new FileRequest

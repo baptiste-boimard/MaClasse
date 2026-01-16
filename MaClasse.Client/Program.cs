@@ -7,10 +7,30 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
+using MudBlazor;
 using MudBlazor.Services;
 using Radzen;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+//* Configuration de MudBlazor Snackbar
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+    config.SnackbarConfiguration.VisibleStateDuration = 3000;
+    config.SnackbarConfiguration.HideTransitionDuration = 0; 
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+});
+
+//* Limitation de la taille pour la communication WebSocket du SignaIR
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddHubOptions(options =>
+    {
+        // Limite les messages entrants via WebSocket à 2 Mo
+        options.MaximumReceiveMessageSize = 2 * 1024 * 1024; 
+    });
 
 //* Active le logging console
 builder.Logging.ClearProviders();
@@ -103,7 +123,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapStaticAssets();
 
-// app.UseStatusCodePagesWithReExecute("/NotFound", "?statusCode={0}");
 app.UseStatusCodePages(async context =>
 {
     if (context.HttpContext.Response.StatusCode == 404)

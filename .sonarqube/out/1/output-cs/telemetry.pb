@@ -1,0 +1,1 @@
+hRRC:\Users\bapti\RiderProjects\MaClasse\Service.Cloudinary\Service.Cloudinary.csproj¢net9.0òCSharp13
