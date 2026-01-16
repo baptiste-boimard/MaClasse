@@ -65,19 +65,6 @@ builder.Services.AddMudServices();
 //* Ajout de l'authentification
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
-//* Gestion des cors
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-});
-
-
 //* Ajoute l'authentification par cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -99,16 +86,12 @@ builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 
-app.UseCors("AllowAll"); // Applique la politique CORS dans l'app
-
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture("fr-FR"),
     SupportedCultures = new [] { new CultureInfo("fr-FR") },
     SupportedUICultures =  new [] { new CultureInfo("fr-FR") },
 });
-
-app.UseDeveloperExceptionPage();
 
 app.UseWebSockets();
 

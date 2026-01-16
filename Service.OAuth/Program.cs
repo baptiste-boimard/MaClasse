@@ -36,18 +36,6 @@ builder.Services.AddScoped<IGenerateIdRole, GenerateIdRole>();
 builder.Services.AddScoped<IUserServiceRattachment, UserServiceRattachment>();
 builder.Services.AddScoped<IDeleteUserService, DeleteUserService>();
 
-
-//* Gestion des cors
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
 //* Ajout de l'authentification
 builder.Services.AddAuthentication(options =>
     {
@@ -75,7 +63,6 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
 app.UseRouting();
