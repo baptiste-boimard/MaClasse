@@ -1,0 +1,46 @@
+# --- .NET 9 / C# ---
+[Bb]in/
+[Oo]bj/
+# Ne pas ignorer les fichiers de projet mais ignorer les dossiers de build
+out/
+publish/
+
+# --- ARCHIVES & PACKAGES ---
+*.nupkg
+packages/
+# Dossier spécifique au cache NuGet sous Linux/Docker
+.nuget/
+
+# --- SÉCURITÉ & AUDIT (Crucial pour SonarQube) ---
+.sonarqube/
+.sonar/
+# Éviter de copier l'historique Git dans l'image Docker (gain de place énorme)
+.git/
+.github/
+
+# --- CONFIGURATIONS & SECRETS ---
+# On ignore le mode développement mais on GARDE le appsettings.json de base
+**/appsettings.Development.json
+**/appsettings.Local.json
+# Fichiers secrets de l'utilisateur .NET
+**/secrets.json
+.env
+*.pem
+
+# --- IDE (Visual Studio, Rider, VS Code) ---
+.vs/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+.vscode/
+
+# --- DOCKER ---
+docker-compose.override.yml
+# Ignorer les données des volumes locaux
+data/
+db-data/
+
+# --- SYSTÈME ---
+.DS_Store
+Thumbs.db
