@@ -1,1 +1,0 @@
-bRLC:\Users\bapti\RiderProjects\MaClasse\MaClasse.Client\MaClasse.Client.csproj¢net9.0òCSharp13

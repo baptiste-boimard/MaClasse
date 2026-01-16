@@ -1,1 +1,0 @@
-bRLC:\Users\bapti\RiderProjects\MaClasse\MaClasse.Shared\MaClasse.Shared.csproj¢net9.0òCSharp13

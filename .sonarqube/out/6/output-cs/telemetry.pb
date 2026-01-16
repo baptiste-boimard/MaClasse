@@ -1,1 +1,0 @@
-NR8C:\Users\bapti\RiderProjects\MaClasse\Tests\Tests.csproj¢net9.0òCSharp13

@@ -1,1 +1,0 @@
-^RHC:\Users\bapti\RiderProjects\MaClasse\Service.OAuth\Service.OAuth.csproj¢net9.0òCSharp13

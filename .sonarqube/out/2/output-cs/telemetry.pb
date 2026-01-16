@@ -1,1 +1,0 @@
-jRTC:\Users\bapti\RiderProjects\MaClasse\MaClasse.ApiGateway\MaClasse.ApiGateway.csproj¢net9.0òCSharp13

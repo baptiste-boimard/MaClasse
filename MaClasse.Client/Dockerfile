@@ -1,6 +1,8 @@
-# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+
+USER root
+RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
 
 COPY . .
 
@@ -11,9 +13,6 @@ RUN dotnet restore $PROJECT_FILE
 RUN dotnet publish $PROJECT_FILE -c Release -o /app/out --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
-
-USER root
-RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
 
 USER app
 WORKDIR /app
