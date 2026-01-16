@@ -10,31 +10,32 @@ namespace MaClasse.Client.Services;
 
 public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly HttpClient _httpClient;
     private readonly ProtectedLocalStorage _protectedLocalStorage;
-    private readonly IConfiguration _configuration;
-    private readonly IServiceProvider _serviceProvider;
-
-    public CustomAuthenticationStateProvider(
-        IHttpContextAccessor httpContextAccessor,
-        HttpClient httpClient,
-        ProtectedLocalStorage protectedLocalStorage,
-        IConfiguration configuration,
-        IServiceProvider serviceProvider)
-    {
-        _httpContextAccessor = httpContextAccessor;
-        _httpClient = httpClient;
-        _protectedLocalStorage = protectedLocalStorage;
-        _configuration = configuration;
-        _serviceProvider = serviceProvider;
-    }
-
     private ClaimsPrincipal _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-
+    
+    public CustomAuthenticationStateProvider(
+        ProtectedLocalStorage protectedLocalStorage)
+    {
+        _protectedLocalStorage = protectedLocalStorage;
+    }
+    
     public async override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        return await Task.FromResult(new AuthenticationState(_currentUser));
+        try
+        {
+            var result = await _protectedLocalStorage.GetAsync<string>("MaClasseAuth");
+
+            if (result.Success && !string.IsNullOrEmpty(result.Value))
+            {
+                return new AuthenticationState(_currentUser);
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            //* On ne fait, rien cela laisse le temps au render de ce faire pour récup le protectedLocalStorage
+        }
+        
+        return new AuthenticationState(_currentUser);
     }
 
     public Task NotifyUserAuthentication(ClaimsPrincipal user)
