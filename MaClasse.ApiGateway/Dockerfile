@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-COPY . .
+COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 ARG BUILD_ENV=Production
 RUN echo "Using environment: $BUILD_ENV"

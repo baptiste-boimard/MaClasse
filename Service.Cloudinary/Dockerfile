@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-COPY . .
+COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 ARG PROJECT_PATH=Service.Cloudinary
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj

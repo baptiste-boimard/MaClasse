@@ -1,4 +1,5 @@
 using CloudinaryDotNet;
+using Microsoft.AspNetCore.DataProtection;
 using Service.Cloudinary.Interfaces;
 using Service.Cloudinary.Repositories;
 using Service.Database.Services;
@@ -8,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 //* Active le logging console
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+    .SetApplicationName("MaClasseSharedProd");
 
 //* Ajout des différents service
 builder.Services.AddScoped<UserCloudService>();

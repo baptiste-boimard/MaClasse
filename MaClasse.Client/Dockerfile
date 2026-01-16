@@ -4,7 +4,7 @@ WORKDIR /src
 USER root
 RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
 
-COPY . .
+COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 ARG PROJECT_PATH=MaClasse.Client
 ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
