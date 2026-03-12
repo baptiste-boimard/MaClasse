@@ -285,4 +285,27 @@ public partial class Auth : ComponentBase
             await dialog.Result;
             _dialogOpen = false;
     }
+    
+    public async Task OpenDialogAccessibility()
+    {
+        if (_dialogOpen)
+        {
+            return;
+        }
+
+        _dialogOpen = true;
+            
+        //* Options de la boîte de dialogue : fermeture sur Esc ou clic en dehors
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,         
+            MaxWidth = MaxWidth.Small,
+        };
+        //* Affichage de la boîte de dialogue
+        var dialog = await _dialogService.ShowAsync<AccessibilityDialog>("", options);
+        await dialog.Result;
+        _dialogOpen = false;
+    }
 }

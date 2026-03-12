@@ -1,0 +1,40 @@
+﻿<div style="border: #1E88E5 solid 1px;
+            border-radius: 0.8rem;
+            margin: 0.5rem;
+            margin-top: 2rem;">
+    <MudDialog>
+        <DialogContent>
+            <h4 style="margin-bottom: 1rem;">
+                Conformité aux critères d'accessibilité : MaClasse
+            </h4>
+            <p>Afin d’évaluer l’accessibilité du site, un audit a été réalisé à l’aide de l’outil en ligne du gouvernement français :</p>
+
+            <a href="https://ara.numerique.gouv.fr" Style="color:#1976d2; text-decoration:underline;">
+                Outil d'audit d'accessibilité ARA du gouvernement
+            </a>
+            
+            <p></p>
+            
+            <p>Cet outil permet d’analyser la conformité d’un site web aux exigences du Référentiel Général d’Amélioration de l’Accessibilité (RGAA), lui-même basé sur les standards internationaux WCAG.</p>
+            
+            <p>Dans le cadre de ce projet, un audit partiel portant sur 25 critères a été réalisé. Ce type d’audit permet d’identifier rapidement les principales erreurs d’accessibilité d’un site web, bien qu’il ne constitue pas un audit complet et n’ait pas de valeur légale.</p>
+
+            <p>Cet audit a permis de vérifier plusieurs aspects importants de l’accessibilité, notamment :
+
+                <span>la structure et la hiérarchie des titres,</span>
+                <span>la présence de textes alternatifs pour les images,</span>
+                <span>la navigation au clavier,</span>
+                <span>l’accessibilité des liens et des boutons,</span>
+                <span>la lisibilité et la structure du contenu,</span>
+            </p>
+            
+            <p>
+                Les résultats obtenus permettent d’identifier les points conformes ainsi que les éventuelles améliorations à apporter afin de rendre le site plus accessible aux utilisateurs, notamment aux personnes en situation de handicap.
+            </p>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="CloseAccessibility" Color="Color.Primary" Variant="MudBlazor.Variant.Filled">Fermer</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
