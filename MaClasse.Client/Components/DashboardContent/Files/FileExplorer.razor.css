@@ -1,0 +1,75 @@
+.file-explorer {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-explorer-header {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0.45rem 0.4rem 1rem;
+    flex-wrap: wrap;
+}
+
+.file-explorer-upload {
+    display: inline-block;
+    position: relative;
+}
+
+.file-explorer-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #123156;
+}
+
+.file-explorer-list-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    margin-left: 0.9rem;
+    margin-top: 0.45rem;
+}
+
+.file-explorer-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding-bottom: 0.35rem;
+}
+
+.file-explorer-card {
+    border: 1px solid #ced8ea;
+    border-radius: 0.9rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+}
+
+.file-explorer-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    width: 7.2rem;
+}
+
+.file-explorer-thumb {
+    width: 100%;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.file-explorer-thumb-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.file-explorer-file-name {
+    font-size: 0.72rem;
+    margin: 0.3rem 0 0;
+    word-break: break-word;
+    text-align: center;
+    color: #213f66;
+}

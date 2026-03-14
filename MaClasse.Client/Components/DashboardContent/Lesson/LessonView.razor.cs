@@ -1,6 +1,7 @@
 ﻿using MaClasse.Client.States;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 namespace MaClasse.Client.Components.DashboardContent.Lesson;
@@ -32,6 +33,26 @@ public partial class LessonView : ComponentBase
         return activeLessonTabIndex == tabIndex
             ? "lesson-tab-button is-active"
             : "lesson-tab-button";
+    }
+
+    private void HandleTabKeyDown(KeyboardEventArgs e, int currentIndex)
+    {
+        if (e.Key == "ArrowRight")
+        {
+            activeLessonTabIndex = (currentIndex + 1) % 4;
+        }
+        else if (e.Key == "ArrowLeft")
+        {
+            activeLessonTabIndex = (currentIndex + 3) % 4;
+        }
+        else if (e.Key == "Home")
+        {
+            activeLessonTabIndex = 0;
+        }
+        else if (e.Key == "End")
+        {
+            activeLessonTabIndex = 3;
+        }
     }
     
     protected override void OnInitialized()

@@ -1,4 +1,5 @@
 @using System.Globalization
+@using MaClasse.Client.Components.Utils
 
 <div class="lesson-view">
 
@@ -39,7 +40,10 @@
     </div>
 
     <MudPaper Class="lesson-card" Elevation="0">
-        <MudText Typo="Typo.h4" Class="lesson-card-title">Démonstration interactive</MudText>
+        <MudText Typo="Typo.h4" Class="lesson-card-title">
+            <IllustrationBadge Kind="book" />
+            Démonstration interactive
+        </MudText>
         <MudText Typo="Typo.subtitle1" Class="lesson-card-subtitle">
             Testez la navigation au clavier avec Tab, Shift+Tab et les flèches
         </MudText>
@@ -50,44 +54,52 @@
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(0)"
                        OnClick="() => activeLessonTabIndex = 0"
+                       @onkeydown="(e) => HandleTabKeyDown(e, 0)"
                        role="tab"
                        aria-selected="@(activeLessonTabIndex == 0)"
                        aria-controls="lesson-panel-general"
                        id="lesson-tab-general">
+                <IllustrationBadge Kind="star" />
                 Général
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(1)"
                        OnClick="() => activeLessonTabIndex = 1"
+                       @onkeydown="(e) => HandleTabKeyDown(e, 1)"
                        role="tab"
                        aria-selected="@(activeLessonTabIndex == 1)"
                        aria-controls="lesson-panel-pedagogie"
                        id="lesson-tab-pedagogie">
+                <IllustrationBadge Kind="orbit" />
                 Pédagogie
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(2)"
                        OnClick="() => activeLessonTabIndex = 2"
+                       @onkeydown="(e) => HandleTabKeyDown(e, 2)"
                        role="tab"
                        aria-selected="@(activeLessonTabIndex == 2)"
                        aria-controls="lesson-panel-eleves"
                        id="lesson-tab-eleves">
+                <IllustrationBadge Kind="folder" />
                 Élèves
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(3)"
                        OnClick="() => activeLessonTabIndex = 3"
+                       @onkeydown="(e) => HandleTabKeyDown(e, 3)"
                        role="tab"
                        aria-selected="@(activeLessonTabIndex == 3)"
                        aria-controls="lesson-panel-succes"
                        id="lesson-tab-succes">
+                <IllustrationBadge Kind="calendar" />
                 Succès
             </MudButton>
         </div>
 
         @if (activeLessonTabIndex == 0)
         {
-            <section class="lesson-tab-content"
+            <section class="lesson-tab-panel"
                      role="tabpanel"
                      id="lesson-panel-general"
                      aria-labelledby="lesson-tab-general">
@@ -119,7 +131,7 @@
 
         @if (activeLessonTabIndex == 1)
         {
-            <section class="lesson-tab-content"
+            <section class="lesson-tab-panel"
                      role="tabpanel"
                      id="lesson-panel-pedagogie"
                      aria-labelledby="lesson-tab-pedagogie">
@@ -150,7 +162,7 @@
 
         @if (activeLessonTabIndex == 2)
         {
-            <section class="lesson-tab-content"
+            <section class="lesson-tab-panel"
                      role="tabpanel"
                      id="lesson-panel-eleves"
                      aria-labelledby="lesson-tab-eleves">
@@ -174,7 +186,7 @@
 
         @if (activeLessonTabIndex == 3)
         {
-            <section class="lesson-tab-content"
+            <section class="lesson-tab-panel"
                      role="tabpanel"
                      id="lesson-panel-succes"
                      aria-labelledby="lesson-tab-succes">

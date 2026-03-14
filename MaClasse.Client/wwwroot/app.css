@@ -4,9 +4,15 @@ html, body {
     height: 100%;
 }
 
+:root {
+    --wcag-focus-ring: #005fcc;
+}
+
 .page {
     width: 100% !important;
     height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 
@@ -27,7 +33,9 @@ a, .btn-link {
 .content {
     overflow: hidden;
     width: 100%;
-    height: 100%;    
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 h1:focus {
@@ -72,4 +80,24 @@ h1:focus {
 div.mud-popover[data-ticks*="63849588"] {
     background: rgba(255, 0, 0, 0.2);
     left: 600px !important;
+}
+
+/* WCAG: focus visible cohérent sur les composants interactifs. */
+:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus-visible {
+    outline: 3px solid var(--wcag-focus-ring);
+    outline-offset: 2px;
+}
+
+/* WCAG: cible minimale confortable pour interactions tactiles/souris. */
+:where(button, .mud-button-root, [role="button"], [role="tab"]) {
+    min-height: 40px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

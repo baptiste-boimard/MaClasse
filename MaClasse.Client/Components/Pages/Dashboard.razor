@@ -4,90 +4,82 @@
 @using Microsoft.AspNetCore.Authorization
 @using MaClasse.Client.Components.DashboardContent.Files
 @using MaClasse.Client.Components.DashboardContent.Lesson
+@using MaClasse.Client.Components.Utils
 
 @attribute [Authorize]
 
 <PageTitle>Tableau de bord</PageTitle>
 
-<div style="display: grid;
-            grid-template-rows: auto 1fr auto; /* TopMenu, Contenu principal (remplir le reste), Mes Documents */
-            grid-template-columns: 1fr;
-            height: 100vh; /* La page prend toute la hauteur du viewport */
-            overflow: hidden; /* Empêche le défilement de la page principale */">
-    
-    <div style="grid-row: 1;
-                background-color: #fff;
-                /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
-                padding-top: 0.5rem;
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-                /*padding: 0.5rem 1rem;*/
-                z-index: 10;
-                /*display: flex;*/
-                /*justify-content: space-between;*/
-                /*align-items: center;*/
-    ">
-        <TopMenu/>
+<a class="dashboard-skip-link" href="#dashboard-main">Aller au contenu principal</a>
+
+<div class="dashboard-page">
+    <div class="dashboard-shell">
+        <header class="dashboard-topbar">
+            <TopMenu/>
+        </header>
+
+        <main id="dashboard-main" class="dashboard-content" tabindex="-1">
+            <aside class="dashboard-left-panel" aria-label="Panneau ressources">
+                <section class="dashboard-card dashboard-hero-card">
+                    <p class="dashboard-eyebrow">MaClasse</p>
+                    <h2><IllustrationBadge Kind="orbit" />Série pédagogique de la semaine</h2>
+                    <p>Préparez vos séances, vos documents et votre suivi élèves depuis un seul espace.</p>
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.PlayArrow">
+                        Commencer
+                    </MudButton>
+                </section>
+
+                <section class="dashboard-card dashboard-stats-card" aria-label="Indicateurs rapides">
+                    <article>
+                        <span>Leçons</span>
+                        <strong>78</strong>
+                    </article>
+                    <article>
+                        <span>Heures</span>
+                        <strong>43</strong>
+                    </article>
+                </section>
+
+                <section class="dashboard-card dashboard-topics-card" aria-label="Catégories">
+                    <MudChip T="string" Color="Color.Success" Variant="MudBlazor.Variant.Outlined">Littérature</MudChip>
+                    <MudChip T="string" Color="Color.Warning" Variant="MudBlazor.Variant.Outlined">Maths</MudChip>
+                    <MudChip T="string" Color="Color.Info" Variant="MudBlazor.Variant.Outlined">Sciences</MudChip>
+                </section>
+
+                <section class="dashboard-card dashboard-files-card" aria-label="Documents">
+                    <FileExplorer/>
+                </section>
+            </aside>
+
+            <section class="dashboard-center-panel" aria-label="Panneau cours">
+                <section class="dashboard-card dashboard-center-main-card">
+                    <LessonView/>
+                </section>
+            </section>
+
+            <aside class="dashboard-right-panel" aria-label="Panneau agenda">
+                <section class="dashboard-card dashboard-scheduler-card">
+                    <Scheduler/>
+                </section>
+
+                <section class="dashboard-card dashboard-reading-card" aria-label="Suivi">
+                    <h3><IllustrationBadge Kind="book" />Lecture prête aujourd'hui</h3>
+                    <p>Rappel des objectifs et créneaux disponibles pour vos classes.</p>
+                    <MudButton Variant="MudBlazor.Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Bolt">
+                        Voir les priorités
+                    </MudButton>
+                </section>
+
+                <section class="dashboard-card dashboard-reco-card" aria-label="Recommandations">
+                    <h3><IllustrationBadge Kind="star" />Recommandé pour vous</h3>
+                    <div>
+                        <MudButton Variant="MudBlazor.Variant.Text" Color="Color.Primary">Découvrir sciences</MudButton>
+                        <MudButton Variant="MudBlazor.Variant.Text" Color="Color.Secondary">Accueil de rentrée</MudButton>
+                    </div>
+                </section>
+            </aside>
+        </main>
     </div>
-
-
-    <div style="
-        grid-row: 2; /* S'assure qu'il prend l'espace central défini par grid-template-rows */
-        display: flex; /* Utilise Flexbox pour aligner les colonnes côte à côte */
-        gap: 0.5rem; /* Espace entre la colonne gauche et la colonne droite */
-        padding: 0.5rem; /* Padding autour de l'ensemble du contenu principal */
-        overflow: hidden; /* Empêche ce conteneur de déborder */
-        align-items: stretch; /* TRÈS IMPORTANT: Fait en sorte que les éléments enfants s'étirent sur toute la hauteur */
-    ">
-        
-        <div style="
-            display: flex; /* Flexbox pour les éléments internes (haut et bas) */
-            flex-direction: column; /* Pour les empiler verticalement */
-            flex-grow: 1; /* Prend tout l'espace horizontal restant */
-            gap: 0.5rem; /* Espace entre LessonView et FileExplorer */
-            overflow: hidden; /* Empêche cette colonne de déborder verticalement */
-        ">
-
-            <div style="
-                border: #1E88E5 solid 1px;
-                border-radius: 0.8rem;
-                padding: 0.5rem;
-                flex-grow: 1; /* TRÈS IMPORTANT: Prend tout l'espace vertical restant dans .left-column */
-                /* flex-basis: 0;  Bonne pratique avec flex-grow */
-                overflow-y: hidden; /* Permet le défilement si le contenu dépasse sa hauteur allouée */
-                min-height: 100px; /* Hauteur minimale si vous le souhaitez */
-            ">
-                <LessonView/>
-            </div>
-
-            <div style="
-                border: #1E88E5 solid 1px;
-                border-radius: 0.8rem;
-                padding: 0.5rem;
-                flex-shrink: 0; /* Empêche ce conteneur de se réduire si l'espace est limité */
-                /* height: auto; */ /* Par défaut, il prendra la hauteur de son contenu */
-                min-height: 15.75rem; /* Fixe la hauteur minimale à 15.75rem */
-                /* Si vous voulez une hauteur fixe et non minimale : height: 15.75rem; */
-                overflow-y: auto; /* Permet le défilement si le contenu dépasse cette hauteur */
-            ">
-                <FileExplorer/>
-            </div>
-
-        </div>
-
-        <div style="
-            border: #1E88E5 solid 1px;
-            border-radius: 0.8rem;
-            /*padding: 0.5rem;*/
-            /* La largeur du Scheduler peut être fixe ou relative */
-            /*width: 300px; !* Exemple: largeur fixe pour le calendrier *!*/
-            /* flex-shrink: 0; */ /* Empêche de rétrécir, si width est flexible */
-            /*overflow-y: auto; !* Le Scheduler peut défiler si son contenu dépasse *!*/
-            /*flex-grow: 0; !* Important pour ne pas qu'il s'étire en largeur si l'espace est très grand *!*/
-            /*flex-shrink: 0; !* Empêche de rétrécir si l'espace est limité *!*/
-        ">
-            <Scheduler/>
-        </div>
-    </div>
-
 </div>

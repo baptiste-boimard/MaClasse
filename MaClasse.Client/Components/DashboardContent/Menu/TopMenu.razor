@@ -1,73 +1,54 @@
-﻿@using MaClasse.Client.Components.Utils
+@using MaClasse.Client.Components.Utils
 
-<div style="display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            border: #1E88E5 solid 1px;
-            border-radius: 0.8rem;
-            /*margin-top: -0.5rem;*/
-            /*padding: 0.3rem*/
-">
-    <img style="padding-left: 1rem;
-                max-width: 8rem"
-         src="Images/IconMaClasse.png" alt="Logo_MaClasse"/>
-    
-    <div>
-        @if (_userState.AsDirecteur.Count > 0)
-        {
-            <ViewDashBoard/>
-        }
+<div class="top-menu">
+    <div class="top-menu-brand">
+        <img class="top-menu-logo"
+             src="Images/IconMaClasse.png" alt="Logo MaClasse"/>
     </div>
 
-    <div style="display: flex;
-                flex-direction: row;
-                color: #7C4DFF">
-        <div>
-            <Date/>
-        </div>
+    <div class="top-menu-center">
+        <nav class="top-menu-nav" aria-label="Navigation principale">
+            <MudButton Variant="MudBlazor.Variant.Filled" Size="Size.Small" Color="Color.Primary">Dashboard</MudButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Description" aria-label="Documents" />
+            <MudIconButton Icon="@Icons.Material.Filled.School" aria-label="Cours" />
+            <MudIconButton Icon="@Icons.Material.Filled.CalendarMonth" aria-label="Agenda" />
+        </nav>
 
-        <div style="margin-left: 2rem">
-            <Hour />
+        <div class="top-menu-dashboard-switch">
+            @if (_userState.AsDirecteur.Count > 0)
+            {
+                <ViewDashBoard/>
+            }
         </div>
-
     </div>
-    
-    
-    <div style="padding-right: 1rem;
-                display: flex;
-                align-items: center;
-                gap: 2rem">
-        <img 
-            src="@Picture" 
-            title="Mon profil"
-            style="width: 1.9rem; 
-                   height: 1.9rem; 
-                   border-radius: 50%;
-                   cursor: pointer"
-            alt="avatar google"
-            referrerpolicy="no-referrer"
-            @onclick="@OpenProfileDialog" />
-        
-        <div>
-            <a href="https://mail.google.com"
-               title="Se rendre sur votre Gmail"
-               target="_blank"
-               rel="noopener noreferrer"
-               style="margin-left: 0.5rem">
-                <strong>@Email</strong>
-            </a>
-        </div>
-        
-        <div style="margin-left: 0.5rem">
-            <MudButton
-                title="Se déconnecter"
-                Variant="MudBlazor.Variant.Filled"
-                Size="Size.Small"
-                Color="Color.Primary"
-                OnClick="@Logout">
-                    Se déconnecter
-            </MudButton>
-        </div>
+
+    <div class="top-menu-date-time">
+        <Date/>
+        <Hour/>
+    </div>
+
+    <div class="top-menu-actions">
+        <button class="top-menu-avatar-button" title="Mon profil" @onclick="@OpenProfileDialog">
+            <img src="@Picture"
+                 class="top-menu-avatar"
+                 alt="Avatar Google"
+                 referrerpolicy="no-referrer" />
+        </button>
+
+        <a class="top-menu-mail-link"
+           href="https://mail.google.com"
+           title="Se rendre sur votre Gmail"
+           target="_blank"
+           rel="noopener noreferrer">
+            <strong>@Email</strong>
+        </a>
+
+        <MudButton title="Se déconnecter"
+                   Variant="MudBlazor.Variant.Filled"
+                   Size="Size.Small"
+                   Color="Color.Warning"
+                   OnClick="@Logout">
+            Se déconnecter
+        </MudButton>
     </div>
 </div>
