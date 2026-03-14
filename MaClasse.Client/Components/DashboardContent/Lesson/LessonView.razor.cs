@@ -25,6 +25,14 @@ public partial class LessonView : ComponentBase
     private Shared.Models.Lesson.Lesson lesson = new Shared.Models.Lesson.Lesson();
     private bool isPasteDisabled = true;
     private bool isReadOnly;
+    private int activeLessonTabIndex;
+
+    private string GetTabButtonClass(int tabIndex)
+    {
+        return activeLessonTabIndex == tabIndex
+            ? "lesson-tab-button is-active"
+            : "lesson-tab-button";
+    }
     
     protected override void OnInitialized()
     {

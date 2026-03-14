@@ -1,0 +1,112 @@
+.lesson-view {
+    display: flex;
+    flex-direction: column;
+    height: 98%;
+    gap: 0.75rem;
+}
+
+.lesson-header {
+    display: flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0 1rem;
+    gap: 1rem;
+}
+
+.lesson-header-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.lesson-header-chip {
+    margin-left: 1rem;
+}
+
+.lesson-card {
+    border: 1px solid #c5d1de;
+    border-radius: 14px;
+    background: #f6f8fb;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow: auto;
+}
+
+.lesson-card-title {
+    color: #0f2643;
+    font-weight: 700;
+}
+
+.lesson-card-subtitle {
+    color: #3e5d80;
+    margin-bottom: 0.25rem;
+}
+
+.lesson-tab-buttons {
+    background: #d4dde8;
+    border-radius: 12px;
+    padding: 4px;
+    display: grid;
+    gap: 0.3rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.lesson-tab-content {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+.lesson-tab-button {
+    text-transform: none;
+    min-height: 40px;
+    border-radius: 10px;
+    color: #3e5d80;
+    font-weight: 600;
+}
+
+.lesson-tab-button.is-active {
+    background: #ffffff;
+    color: #0f2643;
+}
+
+.lesson-actions {
+    border-top: 1px solid #c5d1de;
+    margin-top: 0.25rem;
+    padding-top: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.lesson-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Focus visible à contraste élevé pour navigation clavier (WCAG). */
+.lesson-card :is(.mud-button-root, .mud-tab, input, textarea):focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+@media (max-width: 960px) {
+    .lesson-card-title {
+        font-size: 1.7rem;
+    }
+
+    .lesson-tab-buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .lesson-actions {
+        justify-content: flex-start;
+    }
+}

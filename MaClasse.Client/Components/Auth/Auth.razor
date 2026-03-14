@@ -1,4 +1,12 @@
-﻿<div style="width: 30%;">
+﻿<style>
+    button:focus-visible {
+        outline: 2px solid #1A73E8;
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+</style>
+
+<div style="width: 42%;">
     <MudCard>
         <img src="Images/LogoMaClasse.png" alt="Logo de l'application MaClasse"/>
         <MudCardContent>
@@ -19,11 +27,26 @@
                                 flex-direction: row;
                                 justify-content: center !important;
                                 gap: 1rem;">
-                        <MudLink OnClick="@OpenDialogTherms">Conditions d'utilisations</MudLink>
+                        <MudButton
+                            OnClick="@OpenDialogTherms"
+                            aria-label="Conditions d'utilisations de l'application"
+                            Style="text-transform: none; color: #1976d2; text-decoration: underline">
+                            Conditions d'utilisations
+                        </MudButton>
                         <MudText>|</MudText>
-                        <MudLink OnClick="@OpenDialogPolicy">Politique de confidentialité</MudLink>
+                        <MudButton
+                            OnClick="@OpenDialogPolicy"
+                            aria-label="Politique de confidentialité de l'application"
+                            Style="text-transform: none; color: #1976d2; text-decoration: underline">
+                            Politique de confidentialité
+                        </MudButton>
                         <MudText>|</MudText>
-                        <MudLink OnClick="@OpenDialogAccessibility">Conformité aux critères d'accessibilité</MudLink>
+                        <MudButton
+                            OnClick="@OpenDialogAccessibility"
+                            aria-label="Conformité aux critères d'accessibilité de l'application"
+                            Style="text-transform: none; color: #1976d2; text-decoration: underline">
+                            Conformité aux critères d'accessibilité
+                        </MudButton>
                     </span>
                 </MudText>
             </div>
