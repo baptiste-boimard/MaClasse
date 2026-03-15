@@ -1,0 +1,52 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "oauth",
+          "Port": 7011
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToUpstream": {"Set-Cookie": ""},
+      "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "database",
+          "Port": 7012
+        }
+      ],
+      "UpstreamPathTemplate": "/api/database/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToUpstream": {"Set-Cookie": ""},
+      "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cloudinary",
+          "Port": 7013
+        }
+      ],
+      "UpstreamPathTemplate": "/api/cloud/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToUpstream": {"Set-Cookie": ""},
+      "UpstreamHeaderTransform": {"Set-Cookie": "Set-Cookie"}
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://apigateway:7261"
+  }
+}

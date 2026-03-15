@@ -2,24 +2,21 @@
 
 <div class="file-explorer">
     <div class="file-explorer-header">
-        @if (appointement.Id != null)
-        {
-            <div class="file-explorer-upload">
-                <MudFileUpload T="IBrowserFile"
-                               FilesChanged="UploadFiles"
-                               Style="display: inline-block;"
-                               Disabled="isReadOnly">
-                    <ActivatorContent>
-                        <MudButton Variant="MudBlazor.Variant.Filled"
-                                   Color="Color.Primary"
-                                   Disabled="@isReadOnly"
-                                   StartIcon="@Icons.Material.Filled.CloudUpload">
-                            Upload Files
-                        </MudButton>
-                    </ActivatorContent>
-                </MudFileUpload>
-            </div>
-        }
+        <div class="file-explorer-upload">
+            <MudFileUpload T="IBrowserFile"
+                           FilesChanged="UploadFiles"
+                           Style="display: inline-block;"
+                           Disabled="@(!CanUploadFiles)">
+                <ActivatorContent>
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@(!CanUploadFiles)"
+                               StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Files
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+        </div>
 
         <MudText Typo="Typo.h6" Class="file-explorer-title">
             <IllustrationBadge Kind="folder" />
@@ -70,8 +67,6 @@
                         <MudItem>
                             <MudCard Class="file-explorer-card" @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
                                 <div class="file-explorer-card-body">
-                                    <IllustrationBadge Kind="star" />
-
                                     <div class="file-explorer-thumb">
                                         <img src="@doc.ThumbnailUrl"
                                              alt="@doc.Name"

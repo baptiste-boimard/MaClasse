@@ -44,6 +44,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string menuXpx => $"{menuX}px";
     private string menuYpx => $"{menuY}px";
     private bool isReadOnly;
+    private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
     
     
     protected override void OnInitialized()

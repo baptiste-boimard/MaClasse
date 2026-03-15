@@ -1,20 +1,19 @@
 @using MaClasse.Client.Components.Utils
 
 <div class="top-menu">
-    <div class="top-menu-brand">
+    <div class="top-menu-left" role="toolbar" aria-label="Navigation dashboard">
         <img class="top-menu-logo"
-             src="Images/IconMaClasse.png" alt="Logo MaClasse"/>
-    </div>
+             src="Images/IconMaClasse.png"
+             alt="Logo MaClasse" />
 
-    <div class="top-menu-center">
-        <nav class="top-menu-nav" aria-label="Navigation principale">
-            <MudButton Variant="MudBlazor.Variant.Filled" Size="Size.Small" Color="Color.Primary">Dashboard</MudButton>
-            <MudIconButton Icon="@Icons.Material.Filled.Description" aria-label="Documents" />
-            <MudIconButton Icon="@Icons.Material.Filled.School" aria-label="Cours" />
-            <MudIconButton Icon="@Icons.Material.Filled.CalendarMonth" aria-label="Agenda" />
-        </nav>
+        <div class="top-menu-dashboard-cluster" role="group" aria-label="Sélecteur de dashboard">
+            <span class="top-menu-dashboard-label"
+                  tabindex="0"
+                  role="note"
+                  aria-label="Section Dashboard">
+                Dashboard
+            </span>
 
-        <div class="top-menu-dashboard-switch">
             @if (_userState.AsDirecteur.Count > 0)
             {
                 <ViewDashBoard/>
@@ -22,7 +21,7 @@
         </div>
     </div>
 
-    <div class="top-menu-date-time">
+    <div class="top-menu-date-time" role="status" aria-live="polite" aria-atomic="true">
         <Date/>
         <Hour/>
     </div>

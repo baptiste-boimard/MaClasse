@@ -1,22 +1,39 @@
 <div class="view-dashboard-switch">
-    <MudButtonGroup Color="Color.Primary"
-                    Variant="MudBlazor.Variant.Outlined"
-                    Size="Size.Small"
-                    Class="view-dashboard-switch-group">
-        <MudIconButton Icon="@Icons.Material.Filled.SpaceDashboard"></MudIconButton>
+    <div class="view-dashboard-switch-group"
+         role="group"
+         aria-label="Dashboard actif et liste de sélection">
+        <span class="view-dashboard-current"
+              tabindex="0"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              aria-label="Dashboard actuel @_buttonText">
+            @_buttonText
+        </span>
 
-        <MudButton>@_buttonText</MudButton>
-        <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+        <MudMenu Class="view-dashboard-menu"
+                 Style="align-self: auto;"
+                 title="Ouvrir la liste des dashboards"
+                 aria-label="Ouvrir la liste des dashboards">
+            <ActivatorContent>
+                <button type="button"
+                        class="view-dashboard-activator"
+                        aria-label="Ouvrir la liste des dashboards"
+                        aria-haspopup="menu">
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown"
+                             Class="view-dashboard-activator-icon" />
+                </button>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem OnClick="() => SetButtonText(_buttonTextOwner, _userState.Id)">Vous</MudMenuItem>
 
-            <MudMenuItem OnClick="() => SetButtonText(_buttonTextOwner, _userState.Id)">Vous</MudMenuItem>
-
-            @foreach (var dashboard in Dashboards)
-            {
-                <MudMenuItem OnClick="() => SetButtonText(dashboard.UserName, dashboard.UserId)">
-                    @dashboard.UserEmail
-                </MudMenuItem>
-            }
-
+                @foreach (var dashboard in Dashboards)
+                {
+                    <MudMenuItem OnClick="() => SetButtonText(dashboard.UserName, dashboard.UserId)">
+                        @dashboard.UserEmail
+                    </MudMenuItem>
+                }
+            </ChildContent>
         </MudMenu>
-    </MudButtonGroup>
+    </div>
 </div>
