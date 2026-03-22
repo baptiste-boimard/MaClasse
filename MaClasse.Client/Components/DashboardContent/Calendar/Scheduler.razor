@@ -6,7 +6,9 @@
     <div class="scheduler-toolbar">
 
         <div class="scheduler-toolbar-row">
-            <MudButton StartIcon="@Icons.Material.Filled.Autorenew"
+            <MudButton StartIcon="@Icons.Material.Filled.Today"
+                       AriaLabel="Revenir à la date d'aujourd'hui"
+                       Title="Aujourd'hui"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        OnClick="@GoToToday">
@@ -14,12 +16,20 @@
             </MudButton>
 
             <div class="scheduler-view-switch">
-                <MudButtonGroup Color="Color.Info" Variant="Variant.Outlined">
-                    <MudIconButton Icon="@Icons.Material.Filled.CalendarViewDay"
+                <MudButtonGroup Color="Color.Info"
+                                Variant="Variant.Outlined"
+                                aria-label="Choix de la vue du calendrier">
+                    <MudIconButton Icon="@Icons.Material.Filled.Today"
+                                   AriaLabel="Afficher la vue jour"
+                                   aria-pressed="@(selectedViewIndex == 0)"
+                                   title="Vue jour"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerView(0))" />
 
-                    <MudIconButton Icon="@Icons.Material.Filled.CalendarViewWeek"
+                    <MudIconButton Icon="@Icons.Material.Filled.ViewWeek"
+                                   AriaLabel="Afficher la vue semaine"
+                                   aria-pressed="@(selectedViewIndex == 1)"
+                                   title="Vue semaine"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerView(1))" />
                 </MudButtonGroup>
@@ -27,24 +37,31 @@
         </div>
 
         <div class="scheduler-toolbar-row">
-            <MudIconButton Icon="@Icons.Material.Filled.CalendarToday"
+            <MudIconButton Icon="@Icons.Material.Filled.DateRange"
+                           AriaLabel="Ouvrir le sélecteur de date"
+                           title="Choisir une date"
                            Color="Color.Primary"
                            OnClick="@(() => datePickerOpen = true)" />
 
-            <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIosNew"
+                           AriaLabel="Aller à la période précédente"
+                           title="Période précédente"
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
 
-            <MudText Typo="Typo.h6" Class="scheduler-date-label">
-                <IllustrationBadge Kind="calendar" />
+            <MudText Typo="Typo.body1" Class="scheduler-date-label">
                 @DisplayedDateLabel
             </MudText>
 
-            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos"
+                           AriaLabel="Aller à la période suivante"
+                           title="Période suivante"
                            Color="Color.Info"
                            OnClick="@GoToNext" />
 
-            <MudIconButton Icon="@Icons.Material.Filled.AddCircle"
+            <MudIconButton Icon="@Icons.Material.Filled.PostAdd"
+                           AriaLabel="Ajouter un rendez-vous"
+                           title="Ajouter un rendez-vous"
                            Disabled="_schedulerState.isReadOnly"
                            Color="Color.Success"
                            OnClick="() => OpenNewAppointment()" />

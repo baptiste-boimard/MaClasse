@@ -49,7 +49,7 @@ public partial class Scheduler : ComponentBase
     private bool showAppointmentPanel = false;
     private DateTime _currentMonth = DateTime.Today;
     private DateTime currentDate = DateTime.Today;
-    private int selectedViewIndex = 0;
+    private int selectedViewIndex = 1;
     DateTime selectedStart;
     DateTime selectedEnd;
     private bool isEditMode = false;
@@ -91,6 +91,20 @@ public partial class Scheduler : ComponentBase
                 IdRecurring = a.IdRecurring
         
             }).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await _jsRuntime.InvokeVoidAsync(
+            "appointments.scrollSchedulerToCurrentTime",
+            (int)startTime.TotalMinutes,
+            (int)endTime.TotalMinutes
+        );
     }
     
     private void RefreshAppointments()

@@ -101,3 +101,41 @@ div.mud-popover[data-ticks*="63849588"] {
         scroll-behavior: auto !important;
     }
 }
+
+/* Scheduler: force le centrage vertical des heures dans leur cellule */
+.rz-scheduler .rz-slot-title,
+.scheduler-canvas .rz-slot-title {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+    height: 100% !important;
+    padding: 0 0.25rem 0 0 !important;
+    line-height: 1 !important;
+    box-sizing: border-box !important;
+}
+
+.rz-scheduler .rz-slot-hours .rz-slot-title {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+    height: 100% !important;
+    padding-right: 0.25rem !important;
+}
+
+/* Override Radzen: aligne le libellé d'heure exactement sur la ligne du quadrillage */
+.rz-scheduler .rz-slot-hours .rz-slot-header,
+.scheduler-canvas .rz-slot-hours .rz-slot-header {
+    margin-top: -0.025rem !important;
+}
+
+/* Override ciblé du header semaine Radzen pour masquer la scrollbar */
+.rz-week-view .rz-view-header {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.rz-week-view .rz-view-header::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+}

@@ -76,43 +76,48 @@
                 </section>
 
                 <section class="dashboard-card dashboard-tools-card" aria-label="Outils de classe">
-                    <h3>
-                        <MudIcon Icon="@Icons.Material.Filled.Timer" Class="dashboard-title-icon" aria-hidden="true" />
-                        Outils de classe
-                    </h3>
+                    <div class="dashboard-tools-header">
+                        <h3>
+                            <MudIcon Icon="@Icons.Material.Filled.Timer" Class="dashboard-title-icon" aria-hidden="true" />
+                            Outils de classe
+                        </h3>
 
-                    <div class="dashboard-tools-switch" role="tablist" aria-label="Sélection d'outil">
-                        <MudButton Variant="@(_activeTool == DashboardTool.Timer ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
-                                   Color="Color.Primary"
-                                   Size="Size.Small"
-                                   role="tab"
-                                   aria-selected="@(_activeTool == DashboardTool.Timer)"
-                                   OnClick="@(() => SelectTool(DashboardTool.Timer))">
-                            Minuteur
-                        </MudButton>
-                        <MudButton Variant="@(_activeTool == DashboardTool.Stopwatch ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
-                                   Color="Color.Primary"
-                                   Size="Size.Small"
-                                   role="tab"
-                                   aria-selected="@(_activeTool == DashboardTool.Stopwatch)"
-                                   OnClick="@(() => SelectTool(DashboardTool.Stopwatch))">
-                            Chronomètre
-                        </MudButton>
+                        <div class="dashboard-tools-switch" role="tablist" aria-label="Sélection d'outil">
+                            <MudButton Variant="@(_activeTool == DashboardTool.Timer ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
+                                       Color="Color.Primary"
+                                       Size="Size.Small"
+                                       Class="dashboard-tool-compact-btn"
+                                       role="tab"
+                                       aria-selected="@(_activeTool == DashboardTool.Timer)"
+                                       OnClick="@(() => SelectTool(DashboardTool.Timer))">
+                                Minuteur
+                            </MudButton>
+                            <MudButton Variant="@(_activeTool == DashboardTool.Stopwatch ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
+                                       Color="Color.Primary"
+                                       Size="Size.Small"
+                                       Class="dashboard-tool-compact-btn"
+                                       role="tab"
+                                       aria-selected="@(_activeTool == DashboardTool.Stopwatch)"
+                                       OnClick="@(() => SelectTool(DashboardTool.Stopwatch))">
+                                Chronomètre
+                            </MudButton>
+                        </div>
                     </div>
 
                     @if (_activeTool == DashboardTool.Timer)
                     {
-                        <div class="dashboard-tool-panel" role="tabpanel" aria-label="Panneau minuteur">
-                            <div class="dashboard-tool-time" aria-live="polite">@GetTimerDisplay()</div>
-                            <div class="dashboard-tool-chip-row">
-                                <MudChip T="string" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(1))">+1 min</MudChip>
-                                <MudChip T="string" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(5))">+5 min</MudChip>
-                                <MudChip T="string" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(10))">+10 min</MudChip>
+                        <div class="dashboard-tool-panel dashboard-tools-mode-panel dashboard-tools-mode-panel-timer" role="tabpanel" aria-label="Panneau minuteur">
+                            <div class="dashboard-tool-time dashboard-tool-time-chrono" aria-live="polite">@GetTimerDisplay()</div>
+                            <div class="dashboard-tool-chip-row dashboard-tool-chip-row-timer">
+                                <MudChip T="string" Class="dashboard-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(1))">+1m</MudChip>
+                                <MudChip T="string" Class="dashboard-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(5))">+5m</MudChip>
+                                <MudChip T="string" Class="dashboard-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(10))">+10m</MudChip>
                             </div>
                             <div class="dashboard-tool-actions">
                                 <MudButton Variant="MudBlazor.Variant.Filled"
                                            Color="Color.Success"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            Disabled="@(_timerRemaining <= TimeSpan.Zero || _isTimerRunning)"
                                            OnClick="@StartTimer">
                                     Démarrer
@@ -120,6 +125,7 @@
                                 <MudButton Variant="MudBlazor.Variant.Outlined"
                                            Color="Color.Error"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            Disabled="@(!_isTimerRunning)"
                                            OnClick="@StopTimer">
                                     Arrêter
@@ -127,6 +133,7 @@
                                 <MudButton Variant="MudBlazor.Variant.Text"
                                            Color="Color.Primary"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            OnClick="@ResetTimer">
                                     Reset
                                 </MudButton>
@@ -135,12 +142,13 @@
                     }
                     else if (_activeTool == DashboardTool.Stopwatch)
                     {
-                        <div class="dashboard-tool-panel" role="tabpanel" aria-label="Panneau chronomètre">
-                            <div class="dashboard-tool-time" aria-live="polite">@GetStopwatchDisplay()</div>
+                        <div class="dashboard-tool-panel dashboard-tools-mode-panel" role="tabpanel" aria-label="Panneau chronomètre">
+                            <div class="dashboard-tool-time dashboard-tool-time-chrono" aria-live="polite">@GetStopwatchDisplay()</div>
                             <div class="dashboard-tool-actions">
                                 <MudButton Variant="MudBlazor.Variant.Filled"
                                            Color="Color.Success"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            Disabled="@_isStopwatchRunning"
                                            OnClick="@StartStopwatch">
                                     Démarrer
@@ -148,6 +156,7 @@
                                 <MudButton Variant="MudBlazor.Variant.Outlined"
                                            Color="Color.Error"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            Disabled="@(!_isStopwatchRunning)"
                                            OnClick="@StopStopwatch">
                                     Arrêter
@@ -155,12 +164,12 @@
                                 <MudButton Variant="MudBlazor.Variant.Text"
                                            Color="Color.Primary"
                                            Size="Size.Small"
+                                           Class="dashboard-tool-compact-btn"
                                            OnClick="@ResetStopwatch">
                                     Reset
                                 </MudButton>
                             </div>
                         </div>
-                    }
                     }
                 </section>
 

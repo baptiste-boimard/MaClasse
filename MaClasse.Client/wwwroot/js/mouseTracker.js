@@ -27,3 +27,41 @@ window.appointments.registerOutsideClick = function () {
         }
     });
 };
+
+window.appointments.scrollSchedulerToCurrentTime = function (startMinutes, endMinutes) {
+    const canvas = document.querySelector(".scheduler-canvas");
+    if (!canvas || endMinutes <= startMinutes) {
+        return;
+    }
+
+    const findScrollableContainer = () => {
+        const preferred = canvas.querySelector(
+            ".rz-scheduler-content, .rz-scheduler-view-content, .rz-scheduler-view"
+        );
+        if (preferred && preferred.scrollHeight > preferred.clientHeight) {
+            return preferred;
+        }
+
+        const candidates = Array.from(canvas.querySelectorAll("div"));
+        return candidates.find(el => el.scrollHeight > el.clientHeight + 10) || null;
+    };
+
+    const scrollable = findScrollableContainer();
+    if (!scrollable) {
+        return;
+    }
+
+    const now = new Date();
+    const nowPlusOneHourMinutes = now.getHours() * 60 + now.getMinutes() + 60;
+    const clampedMinutes = Math.min(endMinutes, Math.max(startMinutes, nowPlusOneHourMinutes));
+    const ratio = (clampedMinutes - startMinutes) / (endMinutes - startMinutes);
+    const target = Math.max(
+        0,
+        ratio * scrollable.scrollHeight - (scrollable.clientHeight / 2)
+    );
+
+    // Run after layout to make sure Radzen has rendered time slots.
+    window.requestAnimationFrame(() => {
+        scrollable.scrollTop = target;
+    });
+};

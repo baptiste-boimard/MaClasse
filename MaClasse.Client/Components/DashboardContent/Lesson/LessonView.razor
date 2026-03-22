@@ -39,15 +39,7 @@
         }
     </div>
 
-    <MudPaper Class="lesson-card" Elevation="0">
-        <MudText Typo="Typo.h4" Class="lesson-card-title">
-            <IllustrationBadge Kind="book" />
-            Démonstration interactive
-        </MudText>
-        <MudText Typo="Typo.subtitle1" Class="lesson-card-subtitle">
-            Testez la navigation au clavier avec Tab, Shift+Tab et les flèches
-        </MudText>
-
+    <MudPaper Class="lesson-card" Elevation="0" Style="display:flex;flex-direction:column;">
         <div class="lesson-tab-buttons"
              role="tablist"
              aria-label="Sections du cours">
@@ -59,7 +51,9 @@
                        aria-selected="@(activeLessonTabIndex == 0)"
                        aria-controls="lesson-panel-general"
                        id="lesson-tab-general">
-                <IllustrationBadge Kind="star" />
+                <MudIcon Icon="@Icons.Material.Filled.Tune"
+                         Class="lesson-tab-icon"
+                         aria-hidden="true" />
                 Général
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
@@ -70,7 +64,9 @@
                        aria-selected="@(activeLessonTabIndex == 1)"
                        aria-controls="lesson-panel-pedagogie"
                        id="lesson-tab-pedagogie">
-                <IllustrationBadge Kind="orbit" />
+                <MudIcon Icon="@Icons.Material.Filled.School"
+                         Class="lesson-tab-icon"
+                         aria-hidden="true" />
                 Pédagogie
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
@@ -81,7 +77,9 @@
                        aria-selected="@(activeLessonTabIndex == 2)"
                        aria-controls="lesson-panel-eleves"
                        id="lesson-tab-eleves">
-                <IllustrationBadge Kind="folder" />
+                <MudIcon Icon="@Icons.Material.Filled.Groups"
+                         Class="lesson-tab-icon"
+                         aria-hidden="true" />
                 Élèves
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
@@ -92,7 +90,9 @@
                        aria-selected="@(activeLessonTabIndex == 3)"
                        aria-controls="lesson-panel-succes"
                        id="lesson-tab-succes">
-                <IllustrationBadge Kind="calendar" />
+                <MudIcon Icon="@Icons.Material.Filled.EmojiEvents"
+                         Class="lesson-tab-icon"
+                         aria-hidden="true" />
                 Succès
             </MudButton>
         </div>

@@ -36,6 +36,7 @@
     align-items: center;
     gap: 0.3rem;
     color: #15365f;
+    white-space: nowrap;
 }
 
 .scheduler-floating-panel {
@@ -51,8 +52,36 @@
 
 .scheduler-canvas {
     flex-grow: 1;
-    overflow-y: auto;
+    overflow: hidden;
     width: 100%;
+}
+
+/* Cache la scrollbar des conteneurs internes Radzen tout en gardant le scroll (roulette/tactile). */
+::deep .rz-scheduler-content,
+::deep .rz-scheduler-view-content,
+::deep .rz-scheduler-view {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+::deep .rz-scheduler-content::-webkit-scrollbar,
+::deep .rz-scheduler-view-content::-webkit-scrollbar,
+::deep .rz-scheduler-view::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+}
+
+/* Override ciblé demandé: header semaine Radzen */
+::deep .rz-week-view .rz-view-header {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+::deep .rz-week-view .rz-view-header::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
 }
 
 /* Accentuation WCAG des icônes de contrôle calendrier */
