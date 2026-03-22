@@ -39,7 +39,7 @@
         }
     </div>
 
-    <MudPaper Class="lesson-card" Elevation="0" Style="display:flex;flex-direction:column;">
+    <MudPaper Class="lesson-card" Elevation="0" Style="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;">
         <div class="lesson-tab-buttons"
              role="tablist"
              aria-label="Sections du cours">
@@ -103,7 +103,7 @@
                      role="tabpanel"
                      id="lesson-panel-general"
                      aria-labelledby="lesson-tab-general">
-                <div class="lesson-tab-content">
+                <div class="lesson-tab-content lesson-tab-content-general">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Class"
                                   Label="Classe"
@@ -120,6 +120,7 @@
 
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Material"
+                                  Class="lesson-field-material"
                                   Label="Matériel"
                                   Placeholder="Liste du matériel nécessaire..."
                                   Variant="MudBlazor.Variant.Outlined"
@@ -135,24 +136,30 @@
                      role="tabpanel"
                      id="lesson-panel-pedagogie"
                      aria-labelledby="lesson-tab-pedagogie">
-                <div class="lesson-tab-content">
+                <div class="lesson-tab-content lesson-tab-content-pedagogie">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Objective"
+                                  Class="lesson-field-pedagogie"
                                   Label="Objectifs"
+                                  Placeholder="Ex: Comprendre et utiliser la notion étudiée..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="5"
                                   ReadOnly="@isReadOnly" />
 
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Process"
+                                  Class="lesson-field-pedagogie"
                                   Label="Déroulement"
+                                  Placeholder="Décrivez les étapes de la séance..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="6"
                                   ReadOnly="@isReadOnly" />
 
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.TeacherTask"
+                                  Class="lesson-field-pedagogie"
                                   Label="Tâches de l'enseignant"
+                                  Placeholder="Précisez les consignes et interventions prévues..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="5"
                                   ReadOnly="@isReadOnly" />
@@ -166,17 +173,21 @@
                      role="tabpanel"
                      id="lesson-panel-eleves"
                      aria-labelledby="lesson-tab-eleves">
-                <div class="lesson-tab-content">
+                <div class="lesson-tab-content lesson-tab-content-eleves">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.StudentTask"
+                                  Class="lesson-field-eleves"
                                   Label="Tâches des élèves"
+                                  Placeholder="Ex: Répondre aux questions, réaliser l'activité..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="6"
                                   ReadOnly="@isReadOnly" />
 
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Behavior"
+                                  Class="lesson-field-eleves"
                                   Label="Comportement attendu"
+                                  Placeholder="Ex: Écoute active, participation et respect des règles..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="6"
                                   ReadOnly="@isReadOnly" />
@@ -190,17 +201,21 @@
                      role="tabpanel"
                      id="lesson-panel-succes"
                      aria-labelledby="lesson-tab-succes">
-                <div class="lesson-tab-content">
+                <div class="lesson-tab-content lesson-tab-content-succes">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.SuccessCriteria"
+                                  Class="lesson-field-succes"
                                   Label="Critères de succès"
+                                  Placeholder="Définissez les indicateurs de réussite de la séance..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="8"
                                   ReadOnly="@isReadOnly" />
 
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Skills"
+                                  Class="lesson-field-succes"
                                   Label="Compétences"
+                                  Placeholder="Listez les compétences travaillées..."
                                   Variant="MudBlazor.Variant.Outlined"
                                   Lines="6"
                                   ReadOnly="@isReadOnly" />

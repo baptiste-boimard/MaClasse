@@ -91,6 +91,8 @@ public partial class Scheduler : ComponentBase
                 IdRecurring = a.IdRecurring
         
             }).ToList();
+
+        _schedulerState.SetCurrentDisplayedDate(currentDate);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -257,6 +259,7 @@ public partial class Scheduler : ComponentBase
         if (date.HasValue)
         {
             currentDate = date.Value;
+            _schedulerState.SetCurrentDisplayedDate(currentDate);
         }
 
         datePickerOpen = false;
@@ -291,18 +294,21 @@ public partial class Scheduler : ComponentBase
     private void GoToToday()
     {
         currentDate = DateTime.Today;
+        _schedulerState.SetCurrentDisplayedDate(currentDate);
         StateHasChanged();
     }
 
     private void GoToPrevious()
     {
         currentDate = selectedViewIndex == 0 ? currentDate.AddDays(-1) : currentDate.AddDays(-7);
+        _schedulerState.SetCurrentDisplayedDate(currentDate);
         StateHasChanged();
     }
 
     private void GoToNext()
     {
         currentDate = selectedViewIndex == 0 ? currentDate.AddDays(1) : currentDate.AddDays(7);
+        _schedulerState.SetCurrentDisplayedDate(currentDate);
         StateHasChanged();
     }
     

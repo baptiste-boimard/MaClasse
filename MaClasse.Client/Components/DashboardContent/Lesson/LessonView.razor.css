@@ -2,6 +2,7 @@
     display: flex; 
     flex-direction: column;
     height: 100%;
+    flex: 1 1 auto;
     gap: 0.5rem;
     min-height: 0;
 }
@@ -30,12 +31,13 @@
     border-radius: 14px;
     background: linear-gradient(180deg, #f8f9fe 0%, #f2f5fb 100%);
     padding: 1rem;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 0.55rem;
     overflow: hidden;
-    flex: 1 1 0;
+    flex: 1 1 0 !important;
     min-height: 0;
+    height: 100%;
     align-self: stretch;
 }
 
@@ -75,14 +77,144 @@
     gap: 0.75rem;
     padding-top: 0.5rem;
     align-content: start;
+    min-height: 100%;
 }
 
 .lesson-tab-panel {
     min-height: 0;
     overflow: auto;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.lesson-tab-panel > .lesson-tab-content {
     flex: 1 1 auto;
+    min-height: 0;
+}
+
+.lesson-tab-content-general {
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto !important;
+    gap: 0.75rem;
+    min-height: 0;
+    height: 100%;
+}
+
+.lesson-tab-content-general > :not(.lesson-field-material) {
+    flex: 0 0 auto;
+}
+
+::deep .lesson-tab-content-general .lesson-field-material {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+::deep .lesson-tab-content-general .lesson-field-material.mud-input-control {
+    flex: 1 1 auto !important;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .lesson-tab-content-general .lesson-field-material .mud-input-control-input-container,
+::deep .lesson-tab-content-general .lesson-field-material .mud-input {
+    flex: 1 1 auto !important;
+    height: 100%;
+}
+
+::deep .lesson-tab-panel .mud-input-control:not(.lesson-field-material) {
+    flex: none !important;
+}
+
+::deep .lesson-tab-content-general .lesson-field-material textarea.mud-input-slot {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.lesson-tab-content-pedagogie {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    gap: 0.75rem;
+}
+
+::deep .lesson-tab-content-pedagogie .lesson-field-pedagogie.mud-input-control {
+    flex: 1 1 0 !important;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .lesson-tab-content-pedagogie .lesson-field-pedagogie .mud-input-control-input-container,
+::deep .lesson-tab-content-pedagogie .lesson-field-pedagogie .mud-input {
+    flex: 1 1 auto !important;
+    min-height: 0;
+    height: 100%;
+}
+
+::deep .lesson-tab-content-pedagogie .lesson-field-pedagogie textarea.mud-input-slot {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.lesson-tab-content-eleves {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    gap: 0.75rem;
+}
+
+::deep .lesson-tab-content-eleves .lesson-field-eleves.mud-input-control {
+    flex: 1 1 0 !important;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .lesson-tab-content-eleves .lesson-field-eleves .mud-input-control-input-container,
+::deep .lesson-tab-content-eleves .lesson-field-eleves .mud-input {
+    flex: 1 1 auto !important;
+    min-height: 0;
+    height: 100%;
+}
+
+::deep .lesson-tab-content-eleves .lesson-field-eleves textarea.mud-input-slot {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.lesson-tab-content-succes {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    gap: 0.75rem;
+}
+
+::deep .lesson-tab-content-succes .lesson-field-succes.mud-input-control {
+    flex: 1 1 0 !important;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .lesson-tab-content-succes .lesson-field-succes .mud-input-control-input-container,
+::deep .lesson-tab-content-succes .lesson-field-succes .mud-input {
+    flex: 1 1 auto !important;
+    min-height: 0;
+    height: 100%;
+}
+
+::deep .lesson-tab-content-succes .lesson-field-succes textarea.mud-input-slot {
+    height: 100% !important;
+    min-height: 100% !important;
 }
 
 .lesson-tab-button {
@@ -117,15 +249,27 @@
 }
 
 .lesson-actions {
-    border-top: 1px solid #c3d1e6;
-    margin-top: auto;
-    padding-top: 0.9rem;
-    display: flex;
+    border-top: 0;
+    margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+}
+
+.lesson-card > .lesson-tab-buttons {
+    flex: 0 0 auto !important;
+}
+
+.lesson-card > .lesson-tab-panel {
+    flex: 1 1 auto !important;
+    min-height: 0;
+}
+
+.lesson-card > .lesson-actions {
+    flex: 0 0 auto !important;
 }
 
 .lesson-actions-left {

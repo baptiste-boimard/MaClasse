@@ -153,9 +153,9 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     private void RefreshWeeklyStats()
     {
-        var now = DateTime.Now;
-        var daysSinceMonday = ((int)now.DayOfWeek + 6) % 7;
-        var weekStart = now.Date.AddDays(-daysSinceMonday);
+        var referenceDate = _schedulerState.CurrentDisplayedDate;
+        var daysSinceMonday = ((int)referenceDate.DayOfWeek + 6) % 7;
+        var weekStart = referenceDate.Date.AddDays(-daysSinceMonday);
         var weekEnd = weekStart.AddDays(7);
 
         var normalizedAppointments = (_schedulerState.Appointments ?? new List<Appointment>())

@@ -15,6 +15,7 @@ public class SchedulerState
     public DateTime? UpdatedAt { get; set; }
     public string SchedulerDisplayed { get; set; }
     public bool isReadOnly { get; set; } = false;
+    public DateTime CurrentDisplayedDate { get; set; } = DateTime.Today;
     
     
     public void SetScheduler(SchedulerState schedulerState)
@@ -25,6 +26,7 @@ public class SchedulerState
         CreatedAt = schedulerState.CreatedAt;
         UpdatedAt = schedulerState.UpdatedAt;
         SchedulerDisplayed = schedulerState.SchedulerDisplayed;
+        CurrentDisplayedDate = schedulerState.CurrentDisplayedDate;
         
         NotifyStateChanged();
 
@@ -42,6 +44,7 @@ public class SchedulerState
         Appointments = new List<Appointment>();
         CreatedAt = null;
         UpdatedAt = null;
+        CurrentDisplayedDate = DateTime.Today;
         
         NotifyStateChanged();
 
@@ -58,6 +61,12 @@ public class SchedulerState
     {
         SchedulerDisplayed = userId;
         isReadOnly = userId != IdUser ? true : false;
+        NotifyStateChanged();
+    }
+
+    public void SetCurrentDisplayedDate(DateTime date)
+    {
+        CurrentDisplayedDate = date;
         NotifyStateChanged();
     }
 
