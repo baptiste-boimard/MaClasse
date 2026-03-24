@@ -10,14 +10,15 @@
     
     @if(document != null)
     {
-        <section class="document-view-toolbar-row" style="--toolbar-offset:@(isFullscreen ? "2rem" : "0.35rem");">
+        <section class="document-view-toolbar-row"
+                 style="--toolbar-offset:@(isFullscreen ? "2rem" : "0.35rem");">
             <ClassToolsPanel Class="document-view-toolbar-panel document-view-toolbar-panel-left"
                              ShowToolsCard="false"
                              ShowSoundCard="true" />
 
             <div class="document-view-topbar">
                 <div class="document-view-hour">
-                    <Hour />
+                    <Hour FontSizeRem="2.5" />
                 </div>
 
                 <MudStack Row="true" Spacing="1" Class="document-view-actions">

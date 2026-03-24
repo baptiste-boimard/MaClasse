@@ -21,10 +21,11 @@
 .document-view-toolbar-row {
     width: min(1600px, calc(100% - 1rem));
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-wrap: nowrap;
-    gap: 0.5rem;
+    gap: 3rem;
     z-index: 20;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
@@ -47,7 +48,7 @@
     align-items: center;
     min-height: 2.5rem;
     flex: 0 0 auto;
-    margin: 0 3rem;
+    margin: 0;
 }
 
 .document-view-actions {
@@ -60,6 +61,8 @@
     color: #673ab7;
     font-weight: 700;
     white-space: nowrap;
+    font-size: 3rem;
+    margin-top: -1rem;
 }
 
 ::deep .document-view-toolbar-panel .class-tools-card,
@@ -72,22 +75,24 @@
 
 ::deep .document-view-toolbar-panel-left,
 ::deep .document-view-toolbar-panel-left .class-sound-card {
-    width: min(100%, 640px);
+    width: 30rem;
+    max-width: 30rem;
 }
 
 ::deep .document-view-toolbar-panel-left {
-    flex: 1 1 0;
+    flex: 0 0 auto;
     display: flex;
     justify-content: flex-start;
     min-width: 0;
 }
 
 ::deep .document-view-toolbar-panel-right {
-    flex: 1 1 0;
+    flex: 0 0 auto;
     display: flex;
     justify-content: flex-end;
     min-width: 0;
-    width: min(100%, 640px);
+    width: 30rem;
+    max-width: 30rem;
 }
 
 ::deep .document-view-toolbar-panel .class-tool-panel {
@@ -165,50 +170,4 @@
 
 ::deep .document-view-toolbar-panel .class-sound-progress {
     margin-top: 0.05rem;
-}
-
-@media (max-width: 640px) {
-    .document-view-toolbar-row {
-        flex-direction: column;
-        width: min(100%, 560px);
-        align-items: stretch;
-    }
-
-    .document-view-topbar {
-        order: 1;
-        margin: 0;
-    }
-
-    ::deep .document-view-toolbar-panel-left {
-        order: 2;
-    }
-
-    ::deep .document-view-toolbar-panel-right {
-        order: 3;
-    }
-
-    ::deep .document-view-toolbar-panel-right .class-tool-panel {
-        margin-left: 0;
-        width: 100%;
-        flex-direction: column;
-    }
-
-    ::deep .document-view-toolbar-panel-right .class-tools-mode-panel .class-tool-time-chrono {
-        transform: none;
-    }
-
-    ::deep .document-view-toolbar-panel-right .class-tool-chip-row-timer {
-        position: static;
-        flex-direction: row;
-    }
-
-    .document-view-actions {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .document-view-hour {
-        margin-left: 0;
-        margin-top: 0.35rem;
-    }
 }

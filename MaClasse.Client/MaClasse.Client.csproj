@@ -10,7 +10,6 @@
 
   <ItemGroup>
         <None Update="Data\app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
-        <None Remove="Components\Pages\DocumentView.razor.css" />
     </ItemGroup>
 
     <ItemGroup>
