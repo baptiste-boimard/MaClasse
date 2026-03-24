@@ -51,6 +51,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string _uploadFileName = string.Empty;
     private string _deleteFileName = string.Empty;
     private string _operationFileName => _isDeleting ? _deleteFileName : _uploadFileName;
+
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public bool ShowUploadButton { get; set; } = true;
+    [Parameter] public bool ShowFileList { get; set; } = true;
     
     
     protected override void OnInitialized()
@@ -72,7 +76,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && ShowFileList)
         {
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("documents.setInstance", _dotNetRef);

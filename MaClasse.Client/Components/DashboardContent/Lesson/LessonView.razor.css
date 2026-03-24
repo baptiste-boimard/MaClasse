@@ -102,35 +102,76 @@
     height: 100%;
 }
 
-.lesson-tab-content-general > :not(.lesson-field-material) {
+.lesson-tab-content-general > :not(.lesson-general-split) {
     flex: 0 0 auto;
 }
 
-::deep .lesson-tab-content-general .lesson-field-material {
+.lesson-general-split {
     flex: 1 1 auto;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-::deep .lesson-tab-content-general .lesson-field-material.mud-input-control {
+.lesson-general-material-panel,
+.lesson-general-documents-panel {
+    flex: 1 1 50%;
+    min-height: 0;
+    border: 1px solid #d1ddf0;
+    border-radius: 0.8rem;
+    background: #ffffff;
+    padding: 0.45rem;
+}
+
+.lesson-general-material-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .lesson-general-material-panel .lesson-field-material.mud-input-control {
     flex: 1 1 auto !important;
     min-height: 0;
     display: flex;
     flex-direction: column;
 }
 
-::deep .lesson-tab-content-general .lesson-field-material .mud-input-control-input-container,
-::deep .lesson-tab-content-general .lesson-field-material .mud-input {
+::deep .lesson-general-material-panel .lesson-field-material .mud-input-control-input-container,
+::deep .lesson-general-material-panel .lesson-field-material .mud-input {
     flex: 1 1 auto !important;
+    min-height: 0;
     height: 100%;
+}
+
+::deep .lesson-general-material-panel .lesson-field-material textarea.mud-input-slot {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.lesson-general-documents-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+::deep .lesson-general-documents-panel .file-explorer {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+::deep .lesson-general-documents-panel .file-explorer-list-wrapper {
+    margin-left: 0;
+    margin-top: 0;
+    padding-right: 0.25rem;
+    height: 100%;
+}
+
+::deep .lesson-general-documents-panel .file-explorer-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 ::deep .lesson-tab-panel .mud-input-control:not(.lesson-field-material) {
     flex: none !important;
-}
-
-::deep .lesson-tab-content-general .lesson-field-material textarea.mud-input-slot {
-    height: 100% !important;
-    min-height: 100% !important;
 }
 
 .lesson-tab-content-pedagogie {

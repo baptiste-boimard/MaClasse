@@ -1,4 +1,5 @@
 @using System.Globalization
+@using MaClasse.Client.Components.DashboardContent.Files
 @using MaClasse.Client.Components.Utils
 
 <div class="lesson-view">
@@ -118,14 +119,22 @@
                                   Variant="MudBlazor.Variant.Outlined"
                                   ReadOnly="@isReadOnly" />
 
-                    <MudTextField ShrinkLabel
-                                  @bind-Value="lesson.Material"
-                                  Class="lesson-field-material"
-                                  Label="Matériel"
-                                  Placeholder="Liste du matériel nécessaire..."
-                                  Variant="MudBlazor.Variant.Outlined"
-                                  Lines="4"
-                                  ReadOnly="@isReadOnly" />
+                    <div class="lesson-general-split">
+                        <section class="lesson-general-material-panel">
+                            <MudTextField ShrinkLabel
+                                          @bind-Value="lesson.Material"
+                                          Class="lesson-field-material"
+                                          Label="Matériel"
+                                          Placeholder="Liste du matériel nécessaire..."
+                                          Variant="MudBlazor.Variant.Outlined"
+                                          Lines="4"
+                                          ReadOnly="@isReadOnly" />
+                        </section>
+
+                        <section class="lesson-general-documents-panel" aria-label="Mes documents du cours">
+                            <FileExplorer />
+                        </section>
+                    </div>
                 </div>
             </section>
         }

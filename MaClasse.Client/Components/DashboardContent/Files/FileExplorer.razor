@@ -1,28 +1,37 @@
 @using MaClasse.Client.Components.Utils
 
 <div class="file-explorer">
-    <div class="file-explorer-header">
-        <MudText Typo="Typo.h6" Class="file-explorer-title">
-            <MudIcon Icon="@Icons.Material.Filled.FolderOpen" />
-            Mes Documents
-        </MudText>
+    @if (ShowHeader || ShowUploadButton)
+    {
+        <div class="file-explorer-header">
+            @if (ShowHeader)
+            {
+                <MudText Typo="Typo.h6" Class="file-explorer-title">
+                    <MudIcon Icon="@Icons.Material.Filled.FolderOpen" />
+                    Mes Documents
+                </MudText>
+            }
 
-        <div class="file-explorer-upload">
-            <MudFileUpload T="IBrowserFile"
-                           FilesChanged="UploadFiles"
-                           Style="display: inline-block;"
-                           Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)">
-                <ActivatorContent>
-                    <MudButton Variant="MudBlazor.Variant.Filled"
-                               Color="Color.Primary"
-                               Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)"
-                               StartIcon="@Icons.Material.Filled.CloudUpload">
-                        @(_isUploading ? "Upload en cours..." : "Upload Files")
-                    </MudButton>
-                </ActivatorContent>
-            </MudFileUpload>
+            @if (ShowUploadButton)
+            {
+                <div class="file-explorer-upload">
+                    <MudFileUpload T="IBrowserFile"
+                                   FilesChanged="UploadFiles"
+                                   Style="display: inline-block;"
+                                   Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)">
+                        <ActivatorContent>
+                            <MudButton Variant="MudBlazor.Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                                @(_isUploading ? "Upload en cours..." : "Upload Files")
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </div>
+            }
         </div>
-    </div>
+    }
 
     @if (_isUploading || _isDeleting)
     {
@@ -37,68 +46,71 @@
         </div>
     }
 
-    <MudGrid>
-        @if (files is not null && files.Any())
-        {
-            @if (showContextMenu)
+    @if (ShowFileList)
+    {
+        <MudGrid>
+            @if (files is not null && files.Any())
             {
-                <MudPaper id="custom-context-menu"
-                          Class="mud-elevation-8"
-                          Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
-                          @onmousedown:stopPropagation>
-                    <MudList T="object">
-                        <MudListItem T="object" OnClick="@(async () =>
-                                                         {
-                                                             await OpenFileInNewTab();
-                                                             await CloseDocumentMenu();
-                                                         })">
-                            <MudText>Ouvrir</MudText>
-                        </MudListItem>
-                        <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
-                                                         {
-                                                             await DeleteFile();
-                                                             await CloseDocumentMenu();
-                                                         })">
-                            <MudText>Supprimer</MudText>
-                        </MudListItem>
-                        <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
-                                                         {
-                                                             await RenameFile();
-                                                             await CloseDocumentMenu();
-                                                         })">
-                            <MudText>Renommer</MudText>
-                        </MudListItem>
+                @if (showContextMenu)
+                {
+                    <MudPaper id="custom-context-menu"
+                              Class="mud-elevation-8"
+                              Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
+                              @onmousedown:stopPropagation>
+                        <MudList T="object">
+                            <MudListItem T="object" OnClick="@(async () =>
+                                                             {
+                                                                 await OpenFileInNewTab();
+                                                                 await CloseDocumentMenu();
+                                                             })">
+                                <MudText>Ouvrir</MudText>
+                            </MudListItem>
+                            <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
+                                                             {
+                                                                 await DeleteFile();
+                                                                 await CloseDocumentMenu();
+                                                             })">
+                                <MudText>Supprimer</MudText>
+                            </MudListItem>
+                            <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
+                                                             {
+                                                                 await RenameFile();
+                                                                 await CloseDocumentMenu();
+                                                             })">
+                                <MudText>Renommer</MudText>
+                            </MudListItem>
 
-                    </MudList>
-                </MudPaper>
-            }
+                        </MudList>
+                    </MudPaper>
+                }
 
-            <div class="file-explorer-list-wrapper">
-                <div class="file-explorer-list">
-                    @foreach (var doc in files)
-                    {
-                        <MudItem>
-                            <MudCard Class="file-explorer-card" @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
-                                <div class="file-explorer-card-body">
-                                    <div class="file-explorer-thumb">
-                                        <img src="@doc.ThumbnailUrl"
-                                             alt="@doc.Name"
-                                             class="file-explorer-thumb-image" />
+                <div class="file-explorer-list-wrapper">
+                    <div class="file-explorer-list">
+                        @foreach (var doc in files)
+                        {
+                            <MudItem>
+                                <MudCard Class="file-explorer-card" @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
+                                    <div class="file-explorer-card-body">
+                                        <div class="file-explorer-thumb">
+                                            <img src="@doc.ThumbnailUrl"
+                                                 alt="@doc.Name"
+                                                 class="file-explorer-thumb-image" />
+                                        </div>
+
+                                        <p class="file-explorer-file-name">@doc.Name</p>
                                     </div>
-
-                                    <p class="file-explorer-file-name">@doc.Name</p>
-                                </div>
-                            </MudCard>
-                        </MudItem>
-                    }
+                                </MudCard>
+                            </MudItem>
+                        }
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <MudItem xs="12">
-                <MudText Typo="Typo.body1" Color="Color.Secondary" Style="margin-left: 1rem">Aucun document disponible.</MudText>
-            </MudItem>
-        }
-    </MudGrid>
+            }
+            else
+            {
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body1" Color="Color.Secondary" Style="margin-left: 1rem">Aucun document disponible.</MudText>
+                </MudItem>
+            }
+        </MudGrid>
+    }
 </div>
