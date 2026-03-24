@@ -8,8 +8,16 @@
     handleAppointmentClick: function (e, appointmentId) {
         e.preventDefault();
 
-        const x = e.clientX + window.scrollX;
-        const y = e.clientY + window.scrollY;
+        const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
+        const margin = 8;
+        const menu = document.getElementById("custom-context-menu");
+        const menuRect = menu ? menu.getBoundingClientRect() : null;
+        const menuWidth = Math.ceil(menuRect?.width ?? 180);
+        const menuHeight = Math.ceil(menuRect?.height ?? 120);
+        const maxX = Math.max(margin, window.innerWidth - menuWidth - margin);
+        const maxY = Math.max(margin, window.innerHeight - menuHeight - margin);
+        const x = Math.round(clamp(e.clientX, margin, maxX));
+        const y = Math.round(clamp(e.clientY, margin, maxY));
 
         if (window.appointments.dotNetInstance) {
             window.appointments.dotNetInstance.invokeMethodAsync('ShowCustomMenu', appointmentId, x, y);

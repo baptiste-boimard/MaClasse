@@ -24,14 +24,14 @@
                                    aria-pressed="@(selectedViewIndex == 0)"
                                    title="Vue jour"
                                    Color="Color.Info"
-                                   OnClick="@(() => SetSchedulerView(0))" />
+                                   OnClick="@(() => SetSchedulerViewAsync(0))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.ViewWeek"
                                    AriaLabel="Afficher la vue semaine"
                                    aria-pressed="@(selectedViewIndex == 1)"
                                    title="Vue semaine"
                                    Color="Color.Info"
-                                   OnClick="@(() => SetSchedulerView(1))" />
+                                   OnClick="@(() => SetSchedulerViewAsync(1))" />
                 </MudButtonGroup>
             </div>
         </div>
@@ -49,7 +49,8 @@
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
 
-            <MudText Typo="Typo.body1" Class="scheduler-date-label">
+            <MudText Typo="Typo.body1"
+                     Class="@($"scheduler-date-label{(selectedViewIndex == 1 ? " scheduler-date-label--week" : string.Empty)}")">
                 @DisplayedDateLabel
             </MudText>
 

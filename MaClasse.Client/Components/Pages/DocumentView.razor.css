@@ -1,0 +1,214 @@
+.document-view-container {
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.document-view-container:fullscreen,
+.document-view-container:-webkit-full-screen,
+.document-view-container:-moz-full-screen,
+.document-view-container:-ms-fullscreen {
+    background-color: #ffffff;
+}
+
+.document-view-container:fullscreen::backdrop {
+    background-color: #ffffff;
+}
+
+.document-view-container:-webkit-full-screen::backdrop {
+    background-color: #ffffff;
+}
+
+.document-view-toolbar-row {
+    width: min(1600px, calc(100% - 1rem));
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    z-index: 20;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.document-view-scroll-area {
+    width: 100%;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.document-view-topbar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 2.5rem;
+    flex: 0 0 auto;
+    margin: 0 3rem;
+}
+
+.document-view-actions {
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+}
+
+.document-view-hour {
+    margin: 0 0 0.25rem 0;
+    color: #673ab7;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+::deep .document-view-toolbar-panel .class-tools-card,
+::deep .document-view-toolbar-panel .class-sound-card {
+    border-radius: 0.75rem;
+    padding: 0.28rem 0.35rem;
+    min-height: 98px;
+    gap: 0.2rem !important;
+}
+
+::deep .document-view-toolbar-panel-left,
+::deep .document-view-toolbar-panel-left .class-sound-card {
+    width: min(100%, 640px);
+}
+
+::deep .document-view-toolbar-panel-left {
+    flex: 1 1 0;
+    display: flex;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+::deep .document-view-toolbar-panel-right {
+    flex: 1 1 0;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+    width: min(100%, 640px);
+}
+
+::deep .document-view-toolbar-panel .class-tool-panel {
+    padding: 0.28rem 0.35rem;
+    gap: 0.22rem;
+    min-height: 58px;
+}
+
+::deep .document-view-toolbar-panel-right .class-tools-header h3 {
+    font-size: 0.86rem;
+}
+
+::deep .document-view-toolbar-panel-right .class-tools-switch {
+    gap: 0.2rem;
+}
+
+::deep .document-view-toolbar-panel-right .class-tool-compact-btn {
+    font-size: 0.52rem;
+    padding: 0 0.2rem;
+    height: 1.05rem;
+    min-height: 1.05rem;
+}
+
+/* Vue document uniquement: contenu du class-tools-card en ligne */
+::deep .document-view-toolbar-panel-right .class-tools-mode-panel {
+    height: auto;
+    min-height: 58px;
+}
+
+::deep .document-view-toolbar-panel-right .class-tool-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+}
+
+::deep .document-view-toolbar-panel-right .class-tools-mode-panel .class-tool-time-chrono {
+    margin: 0;
+    transform: none;
+    font-size: 1.65rem;
+    line-height: 1;
+}
+
+::deep .document-view-toolbar-panel-right .class-tool-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+}
+
+::deep .document-view-toolbar-panel-right .class-tool-chip-row-timer {
+    position: static;
+    flex-direction: row;
+    gap: 0.2rem;
+}
+
+::deep .document-view-toolbar-panel .class-sound-head {
+    font-size: 0.74rem;
+    gap: 0.25rem;
+}
+
+::deep .document-view-toolbar-panel .class-sound-head strong {
+    font-size: 0.86rem;
+}
+
+::deep .document-view-toolbar-panel .class-sound-action-btn {
+    height: 1rem;
+    min-height: 1rem;
+    padding: 0 0.2rem;
+    font-size: 0.52rem;
+}
+
+::deep .document-view-toolbar-panel .class-sound-progress {
+    margin-top: 0.05rem;
+}
+
+@media (max-width: 640px) {
+    .document-view-toolbar-row {
+        flex-direction: column;
+        width: min(100%, 560px);
+        align-items: stretch;
+    }
+
+    .document-view-topbar {
+        order: 1;
+        margin: 0;
+    }
+
+    ::deep .document-view-toolbar-panel-left {
+        order: 2;
+    }
+
+    ::deep .document-view-toolbar-panel-right {
+        order: 3;
+    }
+
+    ::deep .document-view-toolbar-panel-right .class-tool-panel {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    ::deep .document-view-toolbar-panel-right .class-tools-mode-panel .class-tool-time-chrono {
+        transform: none;
+    }
+
+    ::deep .document-view-toolbar-panel-right .class-tool-chip-row-timer {
+        position: static;
+        flex-direction: row;
+    }
+
+    .document-view-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .document-view-hour {
+        margin-left: 0;
+        margin-top: 0.35rem;
+    }
+}

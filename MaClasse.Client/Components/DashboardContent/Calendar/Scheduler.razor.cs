@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using MaClasse.Client.States;
 using Radzen;
@@ -64,6 +64,7 @@ public partial class Scheduler : ComponentBase
     private int menuY = 0;
     private bool isClosingContextMenu = false;
     private bool isReadOnly;
+    private bool _pendingScrollToCurrentTime;
 
 
     
@@ -97,16 +98,13 @@ public partial class Scheduler : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender && !_pendingScrollToCurrentTime)
         {
             return;
         }
 
-        await _jsRuntime.InvokeVoidAsync(
-            "appointments.scrollSchedulerToCurrentTime",
-            (int)startTime.TotalMinutes,
-            (int)endTime.TotalMinutes
-        );
+        _pendingScrollToCurrentTime = false;
+        await ScrollToCurrentTimeAsync();
     }
     
     private void RefreshAppointments()
@@ -285,16 +283,23 @@ public partial class Scheduler : ComponentBase
         isEditMode = false;
     }
     
-    private void SetSchedulerView(int index)
+    private async Task SetSchedulerViewAsync(int index)
     {
+        if (selectedViewIndex == index)
+        {
+            return;
+        }
+
         selectedViewIndex = index;
-        StateHasChanged(); 
+        _pendingScrollToCurrentTime = true;
+        await InvokeAsync(StateHasChanged);
     }
     
     private void GoToToday()
     {
         currentDate = DateTime.Today;
         _schedulerState.SetCurrentDisplayedDate(currentDate);
+        _pendingScrollToCurrentTime = true;
         StateHasChanged();
     }
 
@@ -302,6 +307,7 @@ public partial class Scheduler : ComponentBase
     {
         currentDate = selectedViewIndex == 0 ? currentDate.AddDays(-1) : currentDate.AddDays(-7);
         _schedulerState.SetCurrentDisplayedDate(currentDate);
+        _pendingScrollToCurrentTime = true;
         StateHasChanged();
     }
 
@@ -309,6 +315,7 @@ public partial class Scheduler : ComponentBase
     {
         currentDate = selectedViewIndex == 0 ? currentDate.AddDays(1) : currentDate.AddDays(7);
         _schedulerState.SetCurrentDisplayedDate(currentDate);
+        _pendingScrollToCurrentTime = true;
         StateHasChanged();
     }
     
@@ -351,5 +358,14 @@ public partial class Scheduler : ComponentBase
         isClosingContextMenu = false;
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ScrollToCurrentTimeAsync()
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "appointments.scrollSchedulerToCurrentTime",
+            (int)startTime.TotalMinutes,
+            (int)endTime.TotalMinutes
+        );
     }
 }

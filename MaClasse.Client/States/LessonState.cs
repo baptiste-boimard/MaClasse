@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Net;
+using System.Net.Http.Headers;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
@@ -192,23 +194,21 @@ public class LessonState
         return Lesson;
     }
     
-    public async void UploadFile(IBrowserFile file)
+    public async Task<bool> UploadFileAsync(IBrowserFile file, IProgress<int>? progress = null)
     {
-        //* Si demande d'ajout de fichiers mais que IdLesson n'est pas encore définit
         if (Lesson.IdLesson == null)
         {
-            //* Il faut sauvegarder la Lesson pour avoir son id
-            await AddLesson(Lesson, SelectedAppointment);
+            var lessonSaved = await AddLesson(Lesson, SelectedAppointment);
+            if (!lessonSaved)
+            {
+                return false;
+            }
         }
-    
-        var content = new MultipartFormDataContent();
-    
-        //* Ajout du fichier 
+
+        Stream? stream = null;
         try
         {
-            var stream = file.OpenReadStream(maxAllowedSize: 8 * 1024 * 1024);
-            content.Add(new StreamContent(stream), "file", file.Name);
-
+            stream = file.OpenReadStream(maxAllowedSize: 8 * 1024 * 1024);
         }
         catch (IOException ex)
         {
@@ -216,50 +216,66 @@ public class LessonState
             {
                 _snackbar.Add("Le fichier est trop volumineux (max 8 Mo).", Severity.Error);
             }
+
+            return false;
         }
-    
-        //* Ajouter les métadonnées (JSON sous forme de StringContent)
+
+        using var content = new MultipartFormDataContent();
+        var fileContent = new UploadProgressStreamContent(stream!, file.Size, progress);
+        if (!string.IsNullOrWhiteSpace(file.ContentType))
+        {
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+        }
+
+        content.Add(fileContent, "file", file.Name);
+
         var request = new FileRequest
         {
             IdSession = _userState.IdSession,
         };
         var json = JsonSerializer.Serialize(request);
         content.Add(new StringContent(json, Encoding.UTF8, "application/json"), "filerequest");
-    
-        var response =
-            await _httpClient.PostAsync(
-                $"{_configuration["Url:ApiGateway"]}/api/cloud/add-file", content);
 
-        if (response.IsSuccessStatusCode)
+        var response = await _httpClient.PostAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/cloud/add-file", content);
+
+        if (!response.IsSuccessStatusCode)
         {
-            var newDocument = await response.Content.ReadFromJsonAsync<Document>();
-            
-            // 🔍 LOG COMPLET de newDocument
-            var logjson = JsonSerializer.Serialize(newDocument, new JsonSerializerOptions
-            {
-              WriteIndented = true, // joli format
-              IgnoreNullValues = false // montre les nulls
-            });
-            Console.WriteLine("🔍 Contenu de newDocument :\n" + logjson);
-            
-            //* Mise a jour de la Lesson avec le nouveau documents
-            Lesson.Documents.Add(newDocument);
-            
-            // 🔍 Log de toute la liste des documents
-            var logList = JsonSerializer.Serialize(Lesson.Documents, new JsonSerializerOptions
-            {
-              WriteIndented = true,
-              IgnoreNullValues = false
-            });
-            Console.WriteLine("📚 Liste complète des documents dans Lesson :\n" + logList);
-
-            await AddLesson(Lesson, SelectedAppointment);
-            
-            NotifyStateChanged();
+            return false;
         }
+
+        var newDocument = await response.Content.ReadFromJsonAsync<Document>();
+        if (newDocument is null)
+        {
+            return false;
+        }
+
+        // 🔍 LOG COMPLET de newDocument
+        var logjson = JsonSerializer.Serialize(newDocument, new JsonSerializerOptions
+        {
+          WriteIndented = true, // joli format
+          IgnoreNullValues = false // montre les nulls
+        });
+        Console.WriteLine("🔍 Contenu de newDocument :\n" + logjson);
+
+        //* Mise a jour de la Lesson avec le nouveau documents
+        Lesson.Documents.Add(newDocument);
+
+        // 🔍 Log de toute la liste des documents
+        var logList = JsonSerializer.Serialize(Lesson.Documents, new JsonSerializerOptions
+        {
+          WriteIndented = true,
+          IgnoreNullValues = false
+        });
+        Console.WriteLine("📚 Liste complète des documents dans Lesson :\n" + logList);
+
+        await AddLesson(Lesson, SelectedAppointment);
+        progress?.Report(100);
+        NotifyStateChanged();
+        return true;
     }
 
-    public async void DeleteFile(Document document)
+    public async Task<bool> DeleteFileAsync(Document document)
     {
         var newRequestLesson = new RequestLesson
         {
@@ -272,13 +288,15 @@ public class LessonState
             await _httpClient.PostAsJsonAsync(
                 $"{_configuration["Url:ApiGateway"]}/api/cloud/delete-file", newRequestLesson);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            //* Confirmation du delete du fichier, BDD à mettre à jour
-            DeleteDocumentInLesson(document);
+            return false;
         }
-        
+
+        //* Confirmation du delete du fichier, BDD à mettre à jour
+        var deleted = await DeleteDocumentInLessonAsync(document);
         NotifyStateChanged();
+        return deleted;
     }
 
     public async void RenameFile(Document document)
@@ -295,7 +313,7 @@ public class LessonState
         }
     }
 
-    public async void DeleteDocumentInLesson(Document document)
+    public async Task<bool> DeleteDocumentInLessonAsync(Document document)
     {
         var newRequestLesson = new RequestLesson
         {
@@ -308,14 +326,20 @@ public class LessonState
             await _httpClient.PostAsJsonAsync(
                 $"{_configuration["Url:ApiGateway"]}/api/database/delete-document-in-lesson", newRequestLesson);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            var deletedDocument = await response.Content.ReadFromJsonAsync<Document>();
-
-            Lesson.Documents.RemoveAll(d => d.IdDocument == deletedDocument.IdDocument);
-            
-            NotifyStateChanged();
+            return false;
         }
+
+        var deletedDocument = await response.Content.ReadFromJsonAsync<Document>();
+        if (deletedDocument is null)
+        {
+            return false;
+        }
+
+        Lesson.Documents.RemoveAll(d => d.IdDocument == deletedDocument.IdDocument);
+        NotifyStateChanged();
+        return true;
     }
 
     public async void UploadDocumentInLesson(Document document)
@@ -389,5 +413,54 @@ public class LessonState
     public void NotifyStateChanged()
     {
         OnChange?.Invoke();
+    }
+
+    private sealed class UploadProgressStreamContent : HttpContent
+    {
+        private readonly Stream _stream;
+        private readonly long _size;
+        private readonly IProgress<int>? _progress;
+        private readonly int _bufferSize;
+
+        public UploadProgressStreamContent(Stream stream, long size, IProgress<int>? progress, int bufferSize = 81920)
+        {
+            _stream = stream;
+            _size = Math.Max(1, size);
+            _progress = progress;
+            _bufferSize = bufferSize;
+        }
+
+        protected override async Task SerializeToStreamAsync(Stream target, TransportContext? context)
+        {
+            var buffer = new byte[_bufferSize];
+            long uploaded = 0;
+            _progress?.Report(0);
+
+            int read;
+            while ((read = await _stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await target.WriteAsync(buffer, 0, read);
+                uploaded += read;
+
+                var percent = (int)Math.Round(uploaded * 100d / _size);
+                _progress?.Report(Math.Clamp(percent, 0, 99));
+            }
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = _size;
+            return true;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _stream.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

@@ -60,7 +60,7 @@
 .dashboard-right-panel {
     min-height: 0;
     display: grid;
-    grid-template-rows: minmax(14rem, 1fr) auto auto;
+    grid-template-rows: minmax(14rem, 1fr) auto;
     gap: 0.5rem;
     overflow: hidden;
 }

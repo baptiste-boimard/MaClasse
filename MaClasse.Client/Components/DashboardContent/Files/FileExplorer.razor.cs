@@ -45,6 +45,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string menuYpx => $"{menuY}px";
     private bool isReadOnly;
     private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
+    private bool _isUploading;
+    private bool _isDeleting;
+    private int _uploadProgress;
+    private string _uploadFileName = string.Empty;
+    private string _deleteFileName = string.Empty;
+    private string _operationFileName => _isDeleting ? _deleteFileName : _uploadFileName;
     
     
     protected override void OnInitialized()
@@ -76,7 +82,35 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     private async Task UploadFiles(IBrowserFile file)
     {
-        _lessonState.UploadFile(file);
+        if (file is null || _isUploading)
+        {
+            return;
+        }
+
+        _isUploading = true;
+        _uploadProgress = 0;
+        _uploadFileName = file.Name;
+        await InvokeAsync(StateHasChanged);
+
+        var progress = new Progress<int>(value =>
+        {
+            _uploadProgress = Math.Clamp(value, 0, 100);
+            _ = InvokeAsync(StateHasChanged);
+        });
+
+        try
+        {
+            await _lessonState.UploadFileAsync(file, progress);
+            _uploadProgress = 100;
+        }
+        finally
+        {
+            await Task.Delay(350);
+            _isUploading = false;
+            _uploadProgress = 0;
+            _uploadFileName = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task OpenFileInNewTab()
@@ -95,7 +129,26 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     private async Task DeleteFile()
     {
-        _lessonState.DeleteFile(selectedDoc);
+        if (selectedDoc is null || _isDeleting || _isUploading)
+        {
+            return;
+        }
+
+        _isDeleting = true;
+        _deleteFileName = selectedDoc.Name ?? "Fichier";
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            await _lessonState.DeleteFileAsync(selectedDoc);
+        }
+        finally
+        {
+            await Task.Delay(250);
+            _isDeleting = false;
+            _deleteFileName = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task RenameFile()

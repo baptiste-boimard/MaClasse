@@ -2,9 +2,6 @@ using MaClasse.Client.States;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
-using MudBlazor;
-using System.Diagnostics;
 
 namespace MaClasse.Client.Components.Pages;
 
@@ -14,22 +11,17 @@ public partial class Dashboard : ComponentBase, IDisposable
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly SchedulerState _schedulerState;
     private readonly LessonState _lessonState;
-    private readonly IJSRuntime _jsRuntime;
-    private readonly Stopwatch _stopwatch = new();
-    private CancellationTokenSource? _toolsLoopCts;
 
     public Dashboard(
         UserState userState,
         AuthenticationStateProvider authenticationStateProvider,
         SchedulerState schedulerState,
-        LessonState lessonState,
-        IJSRuntime jsRuntime)
+        LessonState lessonState)
     {
         _userState = userState;
         _authenticationStateProvider = authenticationStateProvider;
         _schedulerState = schedulerState;
         _lessonState = lessonState;
-        _jsRuntime = jsRuntime;
     }
 
     private UserState? userInformation;
@@ -39,16 +31,6 @@ public partial class Dashboard : ComponentBase, IDisposable
     private int _weeklyLessonCount;
     private string _weeklyHoursLabel = "0h00";
     private System.Timers.Timer? _courseRefreshTimer;
-    private DashboardTool _activeTool = DashboardTool.Timer;
-    private bool _isInteractiveReady;
-    private bool _isTimerRunning;
-    private DateTime _timerEndUtc;
-    private TimeSpan _timerRemaining = TimeSpan.FromMinutes(5);
-    private bool _isStopwatchRunning;
-    private bool _isSoundMeterActive;
-    private int _soundLevel;
-    private double _soundDbFs = -60d;
-    private string _soundMeterError = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,17 +47,6 @@ public partial class Dashboard : ComponentBase, IDisposable
 
         RefreshDashboardMetrics();
         StartCourseRefreshTimer();
-        StartToolsLoop();
-    }
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _isInteractiveReady = true;
-        }
-
-        return Task.CompletedTask;
     }
 
     private void HandleUserStateChanged()
@@ -270,234 +241,6 @@ public partial class Dashboard : ComponentBase, IDisposable
         return false;
     }
 
-    private void SelectTool(DashboardTool tool)
-    {
-        _activeTool = tool;
-    }
-
-    private void AddMinutesToTimer(int minutes)
-    {
-        if (minutes <= 0)
-        {
-            return;
-        }
-
-        _timerRemaining += TimeSpan.FromMinutes(minutes);
-        if (_isTimerRunning)
-        {
-            _timerEndUtc = _timerEndUtc.AddMinutes(minutes);
-        }
-    }
-
-    private void StartTimer()
-    {
-        if (_timerRemaining <= TimeSpan.Zero || _isTimerRunning)
-        {
-            return;
-        }
-
-        _timerEndUtc = DateTime.UtcNow.Add(_timerRemaining);
-        _isTimerRunning = true;
-    }
-
-    private void StopTimer()
-    {
-        _isTimerRunning = false;
-    }
-
-    private void ResetTimer()
-    {
-        _isTimerRunning = false;
-        _timerRemaining = TimeSpan.Zero;
-    }
-
-    private void StartStopwatch()
-    {
-        if (_isStopwatchRunning)
-        {
-            return;
-        }
-
-        _stopwatch.Start();
-        _isStopwatchRunning = true;
-    }
-
-    private void StopStopwatch()
-    {
-        if (!_isStopwatchRunning)
-        {
-            return;
-        }
-
-        _stopwatch.Stop();
-        _isStopwatchRunning = false;
-    }
-
-    private void ResetStopwatch()
-    {
-        _stopwatch.Reset();
-        _isStopwatchRunning = false;
-    }
-
-    private async Task StartSoundMeterAsync()
-    {
-        _soundMeterError = string.Empty;
-
-        if (!_isInteractiveReady)
-        {
-            _soundMeterError = "Initialisation en cours, réessayez dans un instant.";
-            return;
-        }
-
-        try
-        {
-            var started = await _jsRuntime.InvokeAsync<bool>("soundMeter.start");
-            _isSoundMeterActive = started;
-            if (!started)
-            {
-                _soundMeterError = "Accès micro refusé ou indisponible.";
-            }
-        }
-        catch
-        {
-            _isSoundMeterActive = false;
-            _soundMeterError = "Impossible d'activer le micro.";
-        }
-    }
-
-    private async Task StopSoundMeterAsync()
-    {
-        _isSoundMeterActive = false;
-        _soundLevel = 0;
-        _soundDbFs = -60d;
-        _soundMeterError = string.Empty;
-
-        if (!_isInteractiveReady)
-        {
-            return;
-        }
-
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("soundMeter.stop");
-        }
-        catch
-        {
-            // Ignoré pour éviter de bloquer l'UI en cas de déconnexion JS.
-        }
-    }
-
-    private string GetTimerDisplay()
-    {
-        var hours = (int)_timerRemaining.TotalHours;
-        var minutes = _timerRemaining.Minutes;
-        var seconds = _timerRemaining.Seconds;
-        return $"{hours:00}:{minutes:00}:{seconds:00}";
-    }
-
-    private string GetStopwatchDisplay()
-    {
-        var elapsed = _stopwatch.Elapsed;
-        return $"{(int)elapsed.TotalHours:00}:{elapsed.Minutes:00}:{elapsed.Seconds:00}";
-    }
-
-    private Color GetSoundColor()
-    {
-        var displayDb = GetSoundDisplayDb();
-        return displayDb switch
-        {
-            <= 15 => Color.Success,
-            <= 30 => Color.Warning,
-            <= 42 => Color.Secondary,
-            _ => Color.Error
-        };
-    }
-
-    private string GetSoundDbLabel()
-    {
-        return $"{GetSoundDisplayDb():0.0} dB";
-    }
-
-    private double GetSoundDisplayDb()
-    {
-        return Math.Clamp(_soundDbFs + 60d, 0d, 60d);
-    }
-
-    private void StartToolsLoop()
-    {
-        _toolsLoopCts = new CancellationTokenSource();
-        _ = RunToolsLoopAsync(_toolsLoopCts.Token);
-    }
-
-    private async Task RunToolsLoopAsync(CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            var shouldRender = false;
-
-            if (_isTimerRunning)
-            {
-                var remaining = _timerEndUtc - DateTime.UtcNow;
-                if (remaining <= TimeSpan.Zero)
-                {
-                    _timerRemaining = TimeSpan.Zero;
-                    _isTimerRunning = false;
-                }
-                else
-                {
-                    _timerRemaining = remaining;
-                }
-
-                shouldRender = true;
-            }
-
-            if (_isStopwatchRunning)
-            {
-                shouldRender = true;
-            }
-
-            if (_isSoundMeterActive && _isInteractiveReady)
-            {
-                try
-                {
-                    var dbFs = await _jsRuntime.InvokeAsync<double>("soundMeter.getDbfs");
-                    dbFs = Math.Clamp(dbFs, -60d, 0d);
-                    var normalizedLevel = (int)Math.Round(((dbFs + 60d) / 60d) * 100d);
-                    normalizedLevel = Math.Clamp(normalizedLevel, 0, 100);
-
-                    if (_soundLevel != normalizedLevel || Math.Abs(_soundDbFs - dbFs) > 0.05d)
-                    {
-                        _soundDbFs = dbFs;
-                        _soundLevel = normalizedLevel;
-                        shouldRender = true;
-                    }
-                }
-                catch
-                {
-                    _isSoundMeterActive = false;
-                    _soundLevel = 0;
-                    _soundDbFs = -60d;
-                    _soundMeterError = "Mesure sonore interrompue.";
-                    shouldRender = true;
-                }
-            }
-
-            if (shouldRender)
-            {
-                await InvokeAsync(StateHasChanged);
-            }
-
-            try
-            {
-                await Task.Delay(250, token);
-            }
-            catch (TaskCanceledException)
-            {
-                break;
-            }
-        }
-    }
-
     public void Dispose()
     {
         _userState.OnChange -= HandleUserStateChanged;
@@ -509,15 +252,5 @@ public partial class Dashboard : ComponentBase, IDisposable
             _courseRefreshTimer.Dispose();
             _courseRefreshTimer = null;
         }
-
-        _toolsLoopCts?.Cancel();
-        _toolsLoopCts?.Dispose();
-        _toolsLoopCts = null;
-    }
-    
-    private enum DashboardTool
-    {
-        Timer,
-        Stopwatch
     }
 }

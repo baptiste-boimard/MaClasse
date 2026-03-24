@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using MaClasse.Client.States;
 using MaClasse.Shared.Models.Files;
 using Microsoft.AspNetCore.Components;
@@ -21,78 +21,51 @@ public partial class DocumentView : ComponentBase
     _jsRuntime = jsRuntime;
     _logger = logger;
   }
-  
-  // essais 10
+
   private static readonly string[] ImageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "webp", "image/png", "image/jpeg" };
 
-  private bool IsImage(string format)
-    => !string.IsNullOrEmpty(format) && ImageFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
-  
-  private bool IsPdf(string format) =>
-    !string.IsNullOrEmpty(format) && 
-    (format.Equals("pdf", StringComparison.OrdinalIgnoreCase) ||
-     format.Equals("application/pdf", StringComparison.OrdinalIgnoreCase));
-  
-  [Parameter] public string ConcatString { get; set; }
+  [Parameter] public string ConcatString { get; set; } = string.Empty;
 
-  private Document document;
+  private Document? document;
   private bool isLoading = true;
 
-  private string PdfViewUrl 
-  {
-    get
-    {
-      if (document?.Url == null) return null;
-            
-      //? Info
-      //? On ajoute #toolbar=0 pour cacher la barre d'outils
-      //? et #navpanes=0 pour cacher le panneau latéral (pour la compatibilité)
-      //? return $"{document.Url}#toolbar=0&navpanes=0";
-      
-      return $"{document.Url}";
-    }
-  }
-  
-  //* Propriétés pour le zoom
+  private bool IsImage(string? format)
+    => !string.IsNullOrEmpty(format) && ImageFormats.Any(f => f.Equals(format, StringComparison.OrdinalIgnoreCase));
+
+  private bool IsPdf(string? format) =>
+    !string.IsNullOrEmpty(format) &&
+    (format.Equals("pdf", StringComparison.OrdinalIgnoreCase) ||
+     format.Equals("application/pdf", StringComparison.OrdinalIgnoreCase));
+
+  private string? PdfViewUrl => document?.Url;
+
   private double currentZoom = 1.0;
-  private const double ZOOM_STEP = 0.1; 
-  private const double MAX_ZOOM = 2.0; 
-  private const double MIN_ZOOM = 0.5; 
-  
-  //* Propriétés pour le plein écran
+  private const double ZOOM_STEP = 0.1;
+  private const double MAX_ZOOM = 2.0;
+  private const double MIN_ZOOM = 0.5;
+
   private ElementReference documentContainerRef;
-  private bool isFullscreen = false; 
+  private bool isFullscreen;
 
   protected override async Task OnInitializedAsync()
   {
     await LoadDocumentAsync();
   }
-  
+
   private async Task LoadDocumentAsync()
   {
     isLoading = true;
     document = null;
-    
+
     try
     {
       var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(ConcatString)).Split("-");
-      
-// Pour ConcatString
-      _logger.LogInformation("################# ConcatString #############: {ConcatStringValue}", ConcatString);
-      Console.WriteLine($"[DEBUG] #################################### ConcatString: {ConcatString}");
-
-
-// Pour decodedString (qui est un tableau de chaînes, nous allons le joindre pour l'affichage)
-      _logger.LogInformation("################# decodedString #############: {DecodedStringValue}", decodedString != null ? string.Join("-", decodedString) : "null");
-
-      
       document = await _lessonState.GetDocument(decodedString[0], decodedString[1]);
-
-      _logger.LogInformation("####################################### Name: {DocumentName}, ID: {DocumentId}, URL: {DocumentUrl}", document.Name, document.IdDocument, document.Url);
+      _logger.LogInformation("Document chargé: {DocumentName}, ID: {DocumentId}", document?.Name, document?.IdDocument);
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"Exception loading document: {ex.Message}");
+      _logger.LogError(ex, "Erreur de chargement du document.");
     }
     finally
     {
@@ -100,7 +73,7 @@ public partial class DocumentView : ComponentBase
       await InvokeAsync(StateHasChanged);
     }
   }
-  
+
   private async Task ToggleFullscreen()
   {
     if (documentContainerRef.Id == null) return;
@@ -116,33 +89,29 @@ public partial class DocumentView : ComponentBase
       isFullscreen = false;
     }
   }
-  
+
   private void ZoomIn()
   {
     double newZoom = Math.Min(currentZoom + ZOOM_STEP, MAX_ZOOM);
-    currentZoom = Math.Round(newZoom, 2); 
+    currentZoom = Math.Round(newZoom, 2);
     StateHasChanged();
-    
   }
 
   private void ZoomOut()
   {
     double newZoom = Math.Max(currentZoom - ZOOM_STEP, MIN_ZOOM);
-    currentZoom = Math.Round(newZoom, 2); 
+    currentZoom = Math.Round(newZoom, 2);
     StateHasChanged();
-    
   }
 
   private void ResetZoom()
   {
     currentZoom = 1.0;
     StateHasChanged();
-
   }
 
-  private async void CloseDocumentView()
+  private async Task CloseDocumentView()
   {
     await _jsRuntime.InvokeVoidAsync("closeCurrentTab");
-
   }
 }

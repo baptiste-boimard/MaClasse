@@ -37,6 +37,15 @@
     gap: 0.3rem;
     color: #15365f;
     white-space: nowrap;
+    min-width: 0;
+}
+
+.scheduler-date-label--week {
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    line-height: 1.15;
+    max-width: min(50vw, 24rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .scheduler-floating-panel {

@@ -4,6 +4,8 @@ namespace MaClasse.Client.Components.Utils;
 
 public partial class Hour : ComponentBase
 {
+    [Parameter] public double FontSizeRem { get; set; } = 1.5;
+
     private string heure = "";
 
     private System.Timers.Timer? timer;
