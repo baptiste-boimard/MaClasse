@@ -4,7 +4,7 @@
 <RadzenComponents @rendermode="InteractiveServer" />
 
 @* Required *@
-<MudThemeProvider />
+<MudThemeProvider Theme="@_appTheme" />
 <MudPopoverProvider />
 
 @* Needed for dialogs *@
@@ -27,3 +27,30 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private readonly MudTheme _appTheme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#7A74C8",
+            Secondary = "#58B7B2",
+            Info = "#6A8FD1",
+            Success = "#45B36F",
+            Warning = "#E7933D",
+            Error = "#D7686F",
+            AppbarBackground = "#1E2A45",
+            AppbarText = "#F5F7FF",
+            Background = "#EFF3FA",
+            Surface = "#F8FAFF",
+            DrawerBackground = "#F3F6FD",
+            DrawerText = "#23304D",
+            TextPrimary = "#1E2A45",
+            TextSecondary = "#54627D",
+            ActionDefault = "#6679A8",
+            ActionDisabled = "#B5C1D9",
+            LinesDefault = "#C9D5EA",
+            LinesInputs = "#C4D0E5"
+        }
+    };
+}

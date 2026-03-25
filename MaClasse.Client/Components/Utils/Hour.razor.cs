@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+using System.Globalization;
+using Microsoft.AspNetCore.Components;
 
 namespace MaClasse.Client.Components.Utils;
 
@@ -6,15 +7,15 @@ public partial class Hour : ComponentBase
 {
     [Parameter] public double FontSizeRem { get; set; } = 1.5;
 
-    private string heure = "";
-
+    private string HourStyle => $"margin: 0; font-size: {FontSizeRem.ToString(CultureInfo.InvariantCulture)}rem";
+    private string heure = string.Empty;
     private System.Timers.Timer? timer;
 
     protected override void OnInitialized()
     {
         MettreAJourHeure();
 
-        timer = new System.Timers.Timer(1000); // mise à jour chaque seconde
+        timer = new System.Timers.Timer(1000);
         timer.Elapsed += (sender, args) =>
         {
             MettreAJourHeure();

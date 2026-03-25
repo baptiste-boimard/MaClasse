@@ -38,7 +38,7 @@
     min-height: 2rem;
     padding: 0 0.85rem;
     border-radius: 999px;
-    background: #2f74db;
+    background: #6a8fd1;
     color: #ffffff;
     font-size: 0.875rem;
     font-weight: 700;
@@ -54,7 +54,7 @@
     display: inline-flex;
     align-items: center;
     gap: 1rem;
-    color: #d5defe;
+    color: #e2e8ff;
     font-weight: 600;
     white-space: nowrap;
     margin: 0 auto;
@@ -87,7 +87,7 @@
 
 .top-menu-avatar-button:focus-visible,
 .top-menu-mail-link:focus-visible {
-    outline: 3px solid #ffcc66;
+    outline: 3px solid #9cb7e9;
     outline-offset: 2px;
     border-radius: 0.35rem;
 }
@@ -96,7 +96,7 @@
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
-    border: 2px solid #c7d7ff;
+    border: 2px solid #d7e3ff;
 }
 
 .top-menu-mail-link {

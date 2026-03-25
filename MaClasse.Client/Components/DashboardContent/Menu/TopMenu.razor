@@ -1,17 +1,17 @@
 @using MaClasse.Client.Components.Utils
 
 <div class="top-menu">
-    <div class="top-menu-left" role="toolbar" aria-label="Navigation dashboard">
+    <div class="top-menu-left" role="toolbar" aria-label="Navigation tableau de bord">
         <img class="top-menu-logo"
              src="Images/IconMaClasse.png"
              alt="Logo MaClasse" />
 
-        <div class="top-menu-dashboard-cluster" role="group" aria-label="Sélecteur de dashboard">
+        <div class="top-menu-dashboard-cluster" role="group" aria-label="Sélecteur de tableau de bord">
             <span class="top-menu-dashboard-label"
                   tabindex="0"
                   role="note"
-                  aria-label="Section Dashboard">
-                Dashboard
+                  aria-label="Section Tableau de bord">
+                Tableau de bord
             </span>
 
             @if (_userState.AsDirecteur.Count > 0)
