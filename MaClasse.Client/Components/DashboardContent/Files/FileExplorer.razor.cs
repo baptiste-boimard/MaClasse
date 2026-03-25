@@ -51,6 +51,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string _uploadFileName = string.Empty;
     private string _deleteFileName = string.Empty;
     private string _operationFileName => _isDeleting ? _deleteFileName : _uploadFileName;
+    private bool _horizontalWheelEnabled;
 
     [Parameter] public bool ShowHeader { get; set; } = true;
     [Parameter] public bool ShowUploadButton { get; set; } = true;
@@ -60,17 +61,20 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
-        
+        SyncFromState();
+    }
+
+    private void SyncFromState()
+    {
+        appointement = _lessonState.SelectedAppointment ?? new Appointment();
+        var currentLesson = _lessonState.Lesson;
+        files = currentLesson?.Documents ?? new List<Document>();
         isReadOnly = _lessonState.IsReadOnly;
     }
 
     private void RefreshState()
     {
-        appointement = _lessonState.SelectedAppointment;
-        files = _lessonState.Lesson.Documents;
-        isReadOnly = _lessonState.IsReadOnly;
-
-        
+        SyncFromState();
         InvokeAsync(() => { StateHasChanged(); });
     }
     
@@ -81,6 +85,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("documents.setInstance", _dotNetRef);
             await _jsRuntime.InvokeVoidAsync("documents.registerOutsideClick");
+        }
+
+        if (ShowFileList && !_horizontalWheelEnabled)
+        {
+            await _jsRuntime.InvokeVoidAsync("documents.enableHorizontalWheel");
+            _horizontalWheelEnabled = true;
         }
     }
     
@@ -222,6 +232,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     public async ValueTask DisposeAsync()
     {
+        _lessonState.OnChange -= RefreshState;
+
+        if (_horizontalWheelEnabled)
+        {
+            await _jsRuntime.InvokeVoidAsync("documents.disableHorizontalWheel");
+            _horizontalWheelEnabled = false;
+        }
+
         if (_dotNetRef != null)
         {
             _dotNetRef.Dispose();

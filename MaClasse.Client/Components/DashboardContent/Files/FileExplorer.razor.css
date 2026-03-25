@@ -1,14 +1,22 @@
 .file-explorer {
     display: flex;
     flex-direction: column;
+    gap: 0.35rem;
 }
 
 .file-explorer-header {
     display: flex;
     align-items: center;
+    --file-explorer-control-height: 2.2rem;
     gap: 0.9rem;
-    margin: 0.45rem 0.4rem 1rem;
+    margin: 0.45rem 0.4rem 0.35rem;
     flex-wrap: wrap;
+    flex: 0 0 auto;
+    margin-top: 1rem;   
+}
+
+.file-explorer-grid {
+    margin-top: 0.15rem;
 }
 
 .file-explorer-upload {
@@ -19,8 +27,16 @@
 .file-explorer-title {
     display: inline-flex;
     align-items: center;
+    min-height: var(--file-explorer-control-height);
     gap: 0.35rem;
     color: #123156;
+}
+
+.file-explorer-upload ::deep .mud-button-root {
+    min-height: var(--file-explorer-control-height);
+    height: var(--file-explorer-control-height);
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .file-explorer-upload-modal-backdrop {
@@ -60,22 +76,22 @@
 
 
 .file-explorer-list-wrapper {
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: hidden;
+    overflow-x: auto;
     width: 100%;
     margin-left: 0.35rem;
-    margin-top: 0.45rem;
+    margin-top: 0;
     padding-right: 0.35rem;
 }
 
 .file-explorer-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6.8rem, 6.8rem));
-    align-items: stretch;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
     gap: 0.5rem;
     padding-bottom: 0.35rem;
-    width: 100%;
-    justify-content: start;
+    width: max-content;
+    justify-content: flex-start;
 }
 
 .file-explorer-card {
@@ -84,8 +100,10 @@
     background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
     box-shadow: 0 6px 16px rgba(18, 52, 102, 0.12);
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-    height: 100%;
-    width: 6.8rem;
+    display: inline-block;
+    height: auto;
+    width: fit-content;
+    flex: 0 0 auto;
 }
 
 .file-explorer-card:hover {
@@ -103,15 +121,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.6rem;
-    width: 100%;
-    min-height: 9.4rem;
+    padding: 0.35rem;
+    width: auto;
+    min-height: 0;
     gap: 0.35rem;
 }
 
 .file-explorer-thumb {
-    width: 100%;
-    height: 6rem;
+    width: 5.2rem;
+    height: 5.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,6 +149,7 @@
     text-align: center;
     color: #213f66;
     line-height: 1.2;
+    width: 5.2rem;
     min-height: 1.72rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -141,6 +160,6 @@
 
 @media (max-width: 420px) {
     .file-explorer-list {
-        grid-template-columns: 1fr;
+        gap: 0.35rem;
     }
 }

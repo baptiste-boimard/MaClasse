@@ -5,8 +5,7 @@
 
 <div
     @ref="documentContainerRef"
-    class="document-view-container d-flex flex-column align-items-center justify-content-start"
-    style="overflow: hidden; max-height: 100vh;">
+    class="document-view-container d-flex flex-column align-items-center justify-content-start">
     
     @if(document != null)
     {
@@ -84,7 +83,7 @@
                 <div
                     style="
                         width: 100%; 
-                        height: 95vh; 
+                        height: 100%;
                         flex-grow: 1; 
                         display: flex; 
                         justify-content: center;
@@ -98,7 +97,7 @@
 
                     @if (IsPdf(document.Format))
                     {
-                        <div style=" width: 100%; height: 95vh;">
+                        <div style=" width: 100%; height: 100%;">
                             <iframe src="@PdfViewUrl" style="width: 100%;height: 100%;border: none;">
                                 <p>
                                     Votre navigateur ne supporte pas l'affichage de ce type de documents intégrés.

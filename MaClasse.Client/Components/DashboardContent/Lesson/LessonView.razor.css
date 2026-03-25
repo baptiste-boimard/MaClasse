@@ -149,14 +149,19 @@
 }
 
 .lesson-general-documents-panel {
+    --lesson-documents-panel-height: 14rem;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex: 0 0 var(--lesson-documents-panel-height);
+    height: var(--lesson-documents-panel-height);
+    min-height: var(--lesson-documents-panel-height);
 }
 
 ::deep .lesson-general-documents-panel .file-explorer {
     flex: 1 1 auto;
     min-height: 0;
+    height: 100%;
 }
 
 ::deep .lesson-general-documents-panel .file-explorer-list-wrapper {

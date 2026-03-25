@@ -1,4 +1,4 @@
-﻿using MaClasse.Client.States;
+﻿﻿using MaClasse.Client.States;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

@@ -24,7 +24,7 @@
                                        Color="Color.Primary"
                                        Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)"
                                        StartIcon="@Icons.Material.Filled.CloudUpload">
-                                @(_isUploading ? "Upload en cours..." : "Upload Files")
+                                @(_isUploading ? "Upload en cours..." : "Charger un fichier")
                             </MudButton>
                         </ActivatorContent>
                     </MudFileUpload>
@@ -48,7 +48,7 @@
 
     @if (ShowFileList)
     {
-        <MudGrid>
+        <MudGrid Class="file-explorer-grid">
             @if (files is not null && files.Any())
             {
                 @if (showContextMenu)
@@ -84,11 +84,11 @@
                     </MudPaper>
                 }
 
-                <div class="file-explorer-list-wrapper">
-                    <div class="file-explorer-list">
-                        @foreach (var doc in files)
-                        {
-                            <MudItem>
+                <MudItem xs="12">
+                    <div class="file-explorer-list-wrapper">
+                        <div class="file-explorer-list">
+                            @foreach (var doc in files)
+                            {
                                 <MudCard Class="file-explorer-card" @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))">
                                     <div class="file-explorer-card-body">
                                         <div class="file-explorer-thumb">
@@ -100,10 +100,10 @@
                                         <p class="file-explorer-file-name">@doc.Name</p>
                                     </div>
                                 </MudCard>
-                            </MudItem>
-                        }
+                            }
+                        </div>
                     </div>
-                </div>
+                </MudItem>
             }
             else
             {

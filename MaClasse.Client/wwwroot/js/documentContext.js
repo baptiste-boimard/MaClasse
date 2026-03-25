@@ -5,6 +5,43 @@
         window.documents.dotNetInstance = instance;
     },
 
+    enableHorizontalWheel: function () {
+        if (window.documents.__horizontalWheelHandler) {
+            return;
+        }
+
+        window.documents.__horizontalWheelHandler = function (e) {
+            const scroller = e.target.closest(".file-explorer-list-wrapper");
+            if (!scroller) {
+                return;
+            }
+
+            const canScrollHorizontally = scroller.scrollWidth > scroller.clientWidth;
+            if (!canScrollHorizontally) {
+                return;
+            }
+
+            const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+            if (delta === 0) {
+                return;
+            }
+
+            scroller.scrollLeft += delta;
+            e.preventDefault();
+        };
+
+        document.addEventListener("wheel", window.documents.__horizontalWheelHandler, { passive: false, capture: true });
+    },
+
+    disableHorizontalWheel: function () {
+        if (!window.documents.__horizontalWheelHandler) {
+            return;
+        }
+
+        document.removeEventListener("wheel", window.documents.__horizontalWheelHandler, { capture: true });
+        delete window.documents.__horizontalWheelHandler;
+    },
+
     handleDocumentClickFromBlazor : function (documentId, x, y) {
         const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
         const margin = 8;
