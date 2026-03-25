@@ -1,6 +1,7 @@
 @using System.Globalization
 @using MaClasse.Client.Components.DashboardContent.Files
 @using MaClasse.Client.Components.Utils
+@using Microsoft.AspNetCore.Components.Forms
 
 <div class="lesson-view">
 
@@ -132,7 +133,28 @@
                         </section>
 
                         <section class="lesson-general-documents-panel" aria-label="Mes documents du cours">
-                            <FileExplorer />
+                            <div class="lesson-documents-header">
+                                <MudText Typo="Typo.h6" Class="lesson-documents-title">
+                                    <MudIcon Icon="@Icons.Material.Filled.FolderOpen" />
+                                    Mes documents
+                                </MudText>
+                                <div class="lesson-documents-upload">
+                                    <MudFileUpload T="IBrowserFile"
+                                                   FilesChanged="UploadFiles"
+                                                   Style="display: inline-block;"
+                                                   Disabled="@(!CanUploadFiles || _isUploading)">
+                                        <ActivatorContent>
+                                            <MudButton Variant="MudBlazor.Variant.Filled"
+                                                       Color="Color.Primary"
+                                                       Disabled="@(!CanUploadFiles || _isUploading)"
+                                                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                                                @(_isUploading ? "Upload en cours..." : "Charger un fichier")
+                                            </MudButton>
+                                        </ActivatorContent>
+                                    </MudFileUpload>
+                                </div>
+                            </div>
+                            <FileExplorer ShowHeader="false" IsBusy="@_isUploading" />
                         </section>
                     </div>
                 </div>

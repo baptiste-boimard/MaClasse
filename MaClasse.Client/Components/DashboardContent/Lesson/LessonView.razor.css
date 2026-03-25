@@ -158,6 +158,27 @@
     min-height: var(--lesson-documents-panel-height);
 }
 
+.lesson-documents-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    flex: 0 0 auto;
+    padding: 0.2rem 0.2rem 0.35rem;
+}
+
+.lesson-documents-upload {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.lesson-documents-title {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
 ::deep .lesson-general-documents-panel .file-explorer {
     flex: 1 1 auto;
     min-height: 0;
@@ -267,6 +288,7 @@
     text-transform: none;
     min-height: 40px;
     border-radius: 10px;
+    border: 1px solid transparent;
     color: #2f527d;
     font-weight: 600;
     display: inline-flex;
@@ -279,6 +301,8 @@
 .lesson-tab-button.is-active {
     background: #ffffff;
     color: #123156;
+    border-color: #88a8dc;
+    box-shadow: inset 0 0 0 2px #3f6fbf, 0 2px 8px rgba(24, 57, 112, 0.12);
 }
 
 .lesson-tab-icon {
@@ -288,6 +312,37 @@
 
 .lesson-tab-button.is-active .lesson-tab-icon {
     color: #0f4ea3;
+}
+
+.lesson-tab-button[aria-selected="true"] {
+    background: #ffffff;
+    color: #123156;
+    border-color: #88a8dc;
+    box-shadow: inset 0 0 0 2px #3f6fbf, 0 2px 8px rgba(24, 57, 112, 0.12);
+}
+
+.lesson-tab-button:focus-visible {
+    outline: 3px solid #005fcc !important;
+    outline-offset: 2px;
+}
+
+::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button {
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active,
+::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"] {
+    background-color: #f4f8ff !important;
+    color: #35557f !important;
+    border-color: #c6d8f3 !important;
+    box-shadow: inset 0 -3px 0 #9bbce9, 0 2px 8px rgba(64, 94, 138, 0.12) !important;
+    font-weight: 700;
+}
+
+::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active .lesson-tab-icon,
+::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"] .lesson-tab-icon {
+    color: #5f84b8 !important;
 }
 
 ::deep .lesson-tab-buttons .mud-button-root .mud-icon-root.mud-svg-icon {

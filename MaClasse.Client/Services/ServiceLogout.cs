@@ -36,33 +36,32 @@ public class ServiceLogout
         _navigationManager = navigationManager;
         _protectedLocalStorage = protectedLocalStorage;
         _lessonState = lessonState;
-        _configuration = configuration;
         _httpClient = httpClient;
     }
 
-    public async void Logout(string idSession)
+    public async Task Logout(string idSession)
     {
-        //* J'efface la session avec un appel api
-        var payload = JsonContent.Create(new { IdSession = idSession });
-
-        var response = await _httpClient.PostAsync($"{_configuration["Url:ApiGateway"]}/api/auth/logout-session", payload);
-        
-        //* J'efface les States
-        _userState.ResetUserState();
-        _viewDashboardState.ResetViewDashboardState();
-        _schedulerState.ResetSchedulerState();
-        _lessonState.ResetLessonState();
-        
-        //* J'efface le user des identity
-        //* 🔥 Forcer Blazor à mettre à jour l'état d'authentification
-        var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
-        await authStateProvider.NotifyUserLogout();
-        
-        //* J'efface le token du localstorage
-        await _protectedLocalStorage.DeleteAsync("MaClasseAuth");
-        
-        if (response.IsSuccessStatusCode)
+        try
         {
+            //* J'efface la session avec un appel api
+            var payload = JsonContent.Create(new { IdSession = idSession });
+            await _httpClient.PostAsync($"{_configuration["Url:ApiGateway"]}/api/auth/logout-session", payload);
+        }
+        finally
+        {
+            //* J'efface les States client
+            _userState.ResetUserState();
+            _viewDashboardState.ResetViewDashboardState();
+            _schedulerState.ResetSchedulerState();
+            _lessonState.ResetLessonState();
+
+            //* J'efface l'utilisateur des identity
+            var authStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+            await authStateProvider.NotifyUserLogout();
+
+            //* J'efface le token du localstorage
+            await _protectedLocalStorage.DeleteAsync("MaClasseAuth");
+
             _navigationManager.NavigateTo("/");
         }
     }

@@ -98,6 +98,7 @@ public class ViewDashboardState
     public void ResetViewDashboardState()
     {
         DashBoards = new List<UserDashboard>();
+        NotifyStateChanged();
     }
     
     public async void GetUserAppointments(string userId)

@@ -45,6 +45,7 @@ public class UserState
         UpdatedAt = userState.UpdatedAt;
         AsDirecteur = userState.AsDirecteur;
         AsProfesseur = userState.AsProfesseur;
+        NotifyStateChanged();
     }
 
     public UserState GetUser()
@@ -69,6 +70,7 @@ public class UserState
         UpdatedAt = null;
         AsDirecteur = new List<Rattachment>();
         AsProfesseur = new List<Rattachment>();
+        NotifyStateChanged();
     }
 
     public List<Rattachment> SetAsDirecteur(List<Rattachment> rattachments)

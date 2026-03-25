@@ -1,6 +1,7 @@
-﻿﻿using MaClasse.Client.States;
+using MaClasse.Client.States;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
@@ -21,12 +22,14 @@ public partial class LessonView : ComponentBase
         _httpClient = httpClient;
         _dialogService = dialogService;
     }
-    
+
     private Appointment appointement = new Appointment();
     private Shared.Models.Lesson.Lesson lesson = new Shared.Models.Lesson.Lesson();
     private bool isPasteDisabled = true;
     private bool isReadOnly;
     private int activeLessonTabIndex;
+    private bool _isUploading;
+    private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
 
     private string GetTabButtonClass(int tabIndex)
     {
@@ -54,22 +57,43 @@ public partial class LessonView : ComponentBase
             activeLessonTabIndex = 3;
         }
     }
-    
+
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
-        
+
         isReadOnly = _lessonState.IsReadOnly;
     }
 
     private async void RefreshState()
     {
-        appointement = _lessonState.SelectedAppointment;
-        lesson =_lessonState.Lesson;
+        appointement = _lessonState.SelectedAppointment ?? new Appointment();
+        lesson = _lessonState.Lesson ?? new Shared.Models.Lesson.Lesson();
         isReadOnly = _lessonState.IsReadOnly;
 
-        
         InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        if (file is null || _isUploading)
+        {
+            return;
+        }
+
+        _isUploading = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            await _lessonState.UploadFileAsync(file);
+        }
+        finally
+        {
+            await Task.Delay(350);
+            _isUploading = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async void SaveLesson()
@@ -85,7 +109,7 @@ public partial class LessonView : ComponentBase
                 {
                     ["Message"] = "Votre cours a été sauvegardé avec succès !!",
                 };
-        
+
                 var options = new DialogOptions
                 {
                     CloseOnEscapeKey = true,
@@ -93,10 +117,10 @@ public partial class LessonView : ComponentBase
                     MaxWidth = MaxWidth.ExtraSmall,
                     FullWidth = true
                 };
-        
+
                 var dialog = await _dialogService.ShowAsync<ConfirmSaveLessonDialog>(
                     "Confirmation de Sauvegarde", parameters, options);
-        
+
                 var result = await dialog.Result;
             }
         }
@@ -111,7 +135,7 @@ public partial class LessonView : ComponentBase
             {
                 ["Message"] = "Êtes-vous sûr de vouloir supprimer ce cour ?",
             };
-        
+
             var options = new DialogOptions
             {
                 CloseOnEscapeKey = true,
@@ -119,10 +143,10 @@ public partial class LessonView : ComponentBase
                 MaxWidth = MaxWidth.ExtraSmall,
                 FullWidth = true
             };
-        
+
             var dialog = await _dialogService.ShowAsync<ConfirmDeleteLessonDialog>(
                 "Confirmation de suppression", parameters, options);
-        
+
             var result = await dialog.Result;
 
             if (!result.Canceled)
@@ -137,7 +161,7 @@ public partial class LessonView : ComponentBase
         _lessonState.SetCopyLesson(lesson);
         isPasteDisabled = false;
     }
-    
+
     public void PasteLesson()
     {
         lesson = _lessonState.GetCopyLesson();

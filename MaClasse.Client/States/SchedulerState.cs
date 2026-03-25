@@ -44,6 +44,8 @@ public class SchedulerState
         Appointments = new List<Appointment>();
         CreatedAt = null;
         UpdatedAt = null;
+        SchedulerDisplayed = "";
+        isReadOnly = false;
         CurrentDisplayedDate = DateTime.Today;
         
         NotifyStateChanged();

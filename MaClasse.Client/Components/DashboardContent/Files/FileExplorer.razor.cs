@@ -3,7 +3,6 @@ using MaClasse.Client.States;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -13,7 +12,6 @@ namespace MaClasse.Client.Components.DashboardContent.Files;
 public partial class FileExplorer : ComponentBase, IAsyncDisposable
 {
     private readonly LessonState _lessonState;
-    private readonly UserState _userState;
     private readonly IDialogService _dialogService;
     private readonly IJSRuntime _jsRuntime;
     private readonly SchedulerState _schedulerState;
@@ -21,13 +19,11 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     public FileExplorer(
         LessonState lessonState,
-        UserState userState,
         IDialogService dialogService,
         IJSRuntime jsRuntime,
         SchedulerState schedulerState)
     {
         _lessonState = lessonState;
-        _userState = userState;
         _dialogService = dialogService;
         _jsRuntime = jsRuntime;
         _schedulerState = schedulerState;
@@ -44,18 +40,20 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string menuXpx => $"{menuX}px";
     private string menuYpx => $"{menuY}px";
     private bool isReadOnly;
-    private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
-    private bool _isUploading;
     private bool _isDeleting;
-    private int _uploadProgress;
-    private string _uploadFileName = string.Empty;
     private string _deleteFileName = string.Empty;
-    private string _operationFileName => _isDeleting ? _deleteFileName : _uploadFileName;
     private bool _horizontalWheelEnabled;
+    private string _advancedSearchQuery = string.Empty;
+    private const string AdvancedSearchPlaceholder =
+        "Décriver le document que vous recherchez,\nex : Trouve les documents traitant de musiques africaines";
 
     [Parameter] public bool ShowHeader { get; set; } = true;
-    [Parameter] public bool ShowUploadButton { get; set; } = true;
     [Parameter] public bool ShowFileList { get; set; } = true;
+    [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
+    [Parameter] public string HeaderIcon { get; set; } = Icons.Material.Filled.FolderOpen;
+    [Parameter] public bool ShowAdvancedSearch { get; set; }
+    [Parameter] public EventCallback<string> OnAdvancedSearch { get; set; }
+    [Parameter] public bool IsBusy { get; set; }
     
     
     protected override void OnInitialized()
@@ -94,39 +92,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
     
-    private async Task UploadFiles(IBrowserFile file)
-    {
-        if (file is null || _isUploading)
-        {
-            return;
-        }
-
-        _isUploading = true;
-        _uploadProgress = 0;
-        _uploadFileName = file.Name;
-        await InvokeAsync(StateHasChanged);
-
-        var progress = new Progress<int>(value =>
-        {
-            _uploadProgress = Math.Clamp(value, 0, 100);
-            _ = InvokeAsync(StateHasChanged);
-        });
-
-        try
-        {
-            await _lessonState.UploadFileAsync(file, progress);
-            _uploadProgress = 100;
-        }
-        finally
-        {
-            await Task.Delay(350);
-            _isUploading = false;
-            _uploadProgress = 0;
-            _uploadFileName = string.Empty;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
     private async Task OpenFileInNewTab()
     {
         if (selectedDoc is null)
@@ -143,7 +108,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     private async Task DeleteFile()
     {
-        if (selectedDoc is null || _isDeleting || _isUploading)
+        if (selectedDoc is null || _isDeleting || IsBusy)
         {
             return;
         }
@@ -228,6 +193,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     {
         showContextMenu = false;
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task TriggerAdvancedSearch()
+    {
+        if (OnAdvancedSearch.HasDelegate)
+        {
+            await OnAdvancedSearch.InvokeAsync(_advancedSearchQuery);
+        }
     }
     
     public async ValueTask DisposeAsync()

@@ -1,46 +1,43 @@
 @using MaClasse.Client.Components.Utils
 
 <div class="file-explorer">
-    @if (ShowHeader || ShowUploadButton)
+    @if (ShowHeader)
     {
         <div class="file-explorer-header">
-            @if (ShowHeader)
-            {
-                <MudText Typo="Typo.h6" Class="file-explorer-title">
-                    <MudIcon Icon="@Icons.Material.Filled.FolderOpen" />
-                    Mes Documents
-                </MudText>
-            }
+            <MudText Typo="Typo.h6" Class="file-explorer-title">
+                <MudIcon Icon="@HeaderIcon" />
+                @HeaderTitle
+            </MudText>
 
-            @if (ShowUploadButton)
+            @if (ShowAdvancedSearch)
             {
-                <div class="file-explorer-upload">
-                    <MudFileUpload T="IBrowserFile"
-                                   FilesChanged="UploadFiles"
-                                   Style="display: inline-block;"
-                                   Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)">
-                        <ActivatorContent>
-                            <MudButton Variant="MudBlazor.Variant.Filled"
-                                       Color="Color.Primary"
-                                       Disabled="@(!CanUploadFiles || _isUploading || _isDeleting)"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload">
-                                @(_isUploading ? "Upload en cours..." : "Charger un fichier")
-                            </MudButton>
-                        </ActivatorContent>
-                    </MudFileUpload>
+                <div class="file-explorer-advanced-search">
+                    <MudTextField T="string"
+                                  Class="file-explorer-advanced-search-input"
+                                  Placeholder="@AdvancedSearchPlaceholder"
+                                  @bind-Value="_advancedSearchQuery"
+                                  Lines="2"
+                                  Variant="MudBlazor.Variant.Outlined" />
+
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Search"
+                               OnClick="TriggerAdvancedSearch">
+                        Rechercher
+                    </MudButton>
                 </div>
             }
         </div>
     }
 
-    @if (_isUploading || _isDeleting)
+    @if (_isDeleting)
     {
         <div class="file-explorer-upload-modal-backdrop">
             <div class="file-explorer-upload-modal">
                 <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="file-explorer-upload-spinner" />
-                <MudText Typo="Typo.h6" Class="file-explorer-upload-modal-title">@(_isDeleting ? "Suppression en cours" : "Upload en cours")</MudText>
+                <MudText Typo="Typo.h6" Class="file-explorer-upload-modal-title">Suppression en cours</MudText>
                 <MudText Typo="Typo.body2" Class="file-explorer-upload-modal-text">
-                    <strong>@_operationFileName</strong>
+                    <strong>@_deleteFileName</strong>
                 </MudText>
             </div>
         </div>
@@ -65,14 +62,14 @@
                                                              })">
                                 <MudText>Ouvrir</MudText>
                             </MudListItem>
-                            <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
+                            <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
                                                              {
                                                                  await DeleteFile();
                                                                  await CloseDocumentMenu();
                                                              })">
                                 <MudText>Supprimer</MudText>
                             </MudListItem>
-                            <MudListItem T="object" Disabled="@(isReadOnly || _isUploading || _isDeleting)" OnClick="@(async () =>
+                            <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
                                                              {
                                                                  await RenameFile();
                                                                  await CloseDocumentMenu();

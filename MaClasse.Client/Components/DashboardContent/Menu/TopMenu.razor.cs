@@ -44,6 +44,6 @@ public partial class TopMenu : ComponentBase
 
     public async Task Logout()
     {
-        _serviceLogout.Logout(_userState.IdSession);
+        await _serviceLogout.Logout(_userState.IdSession);
     } 
 }

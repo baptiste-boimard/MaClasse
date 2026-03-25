@@ -16,6 +16,7 @@
     align-items: center;
     justify-content: center;
     min-width: 6rem;
+    max-width: 10rem;
     min-height: 2rem;
     padding: 0 0.75rem;
     border-radius: 999px;
@@ -23,6 +24,9 @@
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .view-dashboard-current:focus-visible {

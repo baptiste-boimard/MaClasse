@@ -275,7 +275,7 @@ public partial class ProfileDialog : ComponentBase
             if (response.IsSuccessStatusCode)
             {
                 //* Avec reset des données user
-                _serviceLogout.Logout(_userState.IdSession);
+                await _serviceLogout.Logout(_userState.IdSession);
             
                 //* ouverture d'une popup de succès et redirection vers la page de login
                 var  dialogParameters= new DialogParameters

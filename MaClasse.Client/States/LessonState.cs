@@ -408,6 +408,7 @@ public class LessonState
         SelectedAppointment = new Appointment();
         UserLessonDisplayed = null;
         IsReadOnly = false;
+        NotifyStateChanged();
     }
     
     public void NotifyStateChanged()
