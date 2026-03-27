@@ -52,7 +52,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
     [Parameter] public string HeaderIcon { get; set; } = Icons.Material.Filled.FolderOpen;
     [Parameter] public bool ShowAdvancedSearch { get; set; }
-    [Parameter] public EventCallback<string> OnAdvancedSearch { get; set; }
     [Parameter] public bool IsBusy { get; set; }
     
     
@@ -197,10 +196,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task TriggerAdvancedSearch()
     {
-        if (OnAdvancedSearch.HasDelegate)
-        {
-            await OnAdvancedSearch.InvokeAsync(_advancedSearchQuery);
-        }
+        _lessonState.SearchAdvancedDocumentsAsync(_advancedSearchQuery);
     }
     
     public async ValueTask DisposeAsync()

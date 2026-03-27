@@ -1,8 +1,9 @@
+using MaClasse.Shared.Models.Files;
+
 namespace Service.MCPServer.Interfaces;
 
 public interface IOpenAIService
 {
-  Task<string> GenerateSummaryAsync(string prompt);
-  Task<string> GetDocFromSummaryAsync(string prompt);
   Task<string> AnalyzeWithGptAsync(McpAnalysisRequest args);
+  // Task<List<string>> FindMatchingDocumentsAsync(string userQuery, List<Document> allDocuments);
 }

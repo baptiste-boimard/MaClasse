@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -264,6 +265,22 @@ public class LessonRepository : ILessonRepository
         }
         
         return result;
+    }
+
+    public async Task<List<Document>> GetAllDocumentsForIdUser(string idUser)
+    {
+        var userLessons = await _mongoDbContext.LessonBooks
+            .Find(lb => lb.IdUser == idUser)
+            .FirstOrDefaultAsync();
+        
+        if (userLessons == null) return new List<Document>();;
+
+        var allDocuments = userLessons.Lessons
+            .Where(lesson => lesson.Documents != null)
+            .SelectMany(lesson => lesson.Documents)
+            .ToList();
+        
+        return allDocuments;
     }
 }
 

@@ -3,10 +3,12 @@ using System.Text.Json;
 public class McpClientService 
 {
   private readonly HttpClient _httpClient;
+  private readonly IConfiguration _configuration;
 
-  public McpClientService(HttpClient httpClient)
+  public McpClientService(HttpClient httpClient, IConfiguration configuration)
   {
     _httpClient = httpClient;
+    _configuration = configuration;
   }
 
   public async Task<string?> AnalyzeFileAsync(McpAnalysisRequest request)
@@ -21,7 +23,8 @@ public class McpClientService
     };
 
     // Envoi au projet Serveur MCP (en supposant qu'il expose un endpoint HTTP)
-    var response = await _httpClient.PostAsJsonAsync("https://localhost:7231/mcp", mcpMessage);
+    var response = await _httpClient.PostAsJsonAsync(
+      $"{_configuration["Url:Mcp"]}/api/mcp/create_summary", mcpMessage);
     var content = await response.Content.ReadFromJsonAsync<JsonElement>();
 
     // Extraction du texte du résumé

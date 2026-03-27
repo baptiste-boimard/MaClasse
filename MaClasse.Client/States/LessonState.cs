@@ -341,6 +341,28 @@ public class LessonState
         NotifyStateChanged();
         return true;
     }
+    
+    public async Task<List<Document>> SearchAdvancedDocumentsAsync(string query)
+    {
+        var request = new RequestDocuments
+        {
+            IdSession = _userState.IdSession,
+            AdvancedSearch = query
+        };
+        
+        if (string.IsNullOrWhiteSpace(query)) return new List<Document>();
+
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/mcp/advanced_search", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var results = await response.Content.ReadFromJsonAsync<List<Document>>();
+            return results ?? new List<Document>();
+        }
+
+        return new List<Document>();
+    }
 
     public async void UploadDocumentInLesson(Document document)
     {

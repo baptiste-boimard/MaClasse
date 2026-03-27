@@ -3,10 +3,13 @@ using Service.MCPServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Enregistrement des services nécessaires
-builder.Services.AddControllers(); // INDISPENSABLE pour utiliser les Controllers
+builder.Services.AddControllers(); 
+builder.Services.AddHttpClient();
+
+// Enregistrement des services nécessaires
 builder.Services.AddSingleton<McpDispatcher>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+builder.Services.AddScoped<GetAllDocumentsSummaryService>();
 
 var app = builder.Build();
 

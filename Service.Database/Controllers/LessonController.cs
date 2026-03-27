@@ -1,4 +1,5 @@
-﻿using MaClasse.Shared.Models;
+﻿using System.Text.Json;
+using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Files;
 using MaClasse.Shared.Models.Lesson;
 using MaClasse.Shared.Models.Scheduler;
@@ -25,8 +26,6 @@ public class LessonController : ControllerBase
         _userService = userService;
         _logger = logger;
     }
-
-    // essai 1
     
     [HttpPost]
     [Route("get-lessonbook")]
@@ -201,5 +200,21 @@ public class LessonController : ControllerBase
         if(lessonsWithDocument == null) return NotFound();
         
         return Ok(lessonsWithDocument);
+    }
+    
+    [HttpPost]
+    [Route("get_all_documents")]
+    public async Task<IActionResult> GetAllSummary([FromBody] RequestDocuments request)
+    {
+        // var idSession = JsonSerializer.Deserialize<RequestDocuments>(request.IdSession);
+     
+        var idSession = request.IdSession;
+        
+        var idUser =
+            _userService.GetUserByIdSession(idSession).Result.UserId;
+
+        var allDocuments = await _lessonRepository.GetAllDocumentsForIdUser(idUser);
+        
+        return Ok(allDocuments);
     }
 }

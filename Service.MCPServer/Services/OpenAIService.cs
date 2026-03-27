@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using OpenAI.Chat;
 using Service.MCPServer.Interfaces;
 using UglyToad.PdfPig;
@@ -17,17 +18,6 @@ public class OpenAIService : IOpenAIService
         
         // Initialisation unique du client pour toute la durée de vie du service
         _client = new ChatClient(model: "gpt-4o", apiKey: _apiKey);
-    }
-
-    public async Task<string> GenerateSummaryAsync(string prompt)
-    {
-        ChatCompletion completion = await _client.CompleteChatAsync(prompt);
-        return completion.Content[0].Text;
-    }
-
-    public Task<string> GetDocFromSummaryAsync(string prompt)
-    {
-        throw new NotImplementedException();
     }
     
     public async Task<string> AnalyzeWithGptAsync(McpAnalysisRequest args)
@@ -61,7 +51,7 @@ public class OpenAIService : IOpenAIService
 
         return "Type de fichier non supporté.";
     }
-
+    
     private string ExtractTextFromBase64(string base64Content)
     {
         try 
@@ -83,4 +73,62 @@ public class OpenAIService : IOpenAIService
             return $"Erreur lors de l'extraction du texte PDF : {ex.Message}";
         }
     }
+    
+    // public async Task<List<string>> FindMatchingDocumentsAsync(string userQuery, List<Document> allDocuments)
+    // {
+    //     // 1. On prépare une liste ultra-légère pour l'IA (ID + Résumé uniquement)
+    //     var documentListForAi = allDocuments
+    //         .Where(d => !string.IsNullOrWhiteSpace(d.Summary)) // Sécurité : on ignore les docs sans résumé
+    //         .Select(d => new { d.IdDocument, d.Summary })
+    //         .ToList();
+    //
+    //     if (!documentListForAi.Any()) return new List<string>();
+    //
+    //     // On convertit cette liste en une chaîne JSON compacte pour le prompt
+    //     var jsonDocuments = JsonSerializer.Serialize(documentListForAi);
+    //
+    //     // 2. Construction du System Prompt pour "cadrer" l'IA
+    //     string systemPrompt = @"Tu es un expert en recherche sémantique.
+    //     Je vais te donner une requête utilisateur en langage naturel et une liste JSON de documents avec leurs résumés.
+    //     Ton but est d'identifier les documents dont le résumé correspond le mieux au sens de la requête.
+    //     Tu dois retourner UNIQUEMENT un tableau JSON contenant les IdDocument correspondants.
+    //     Si aucun document ne correspond, retourne un tableau vide [].
+    //     Ne réponds JAMAIS avec du texte d'explication, UNIQUEMENT le JSON : [""id1"", ""id2""]";
+    //
+    //     // 3. Construction du User Prompt avec les données
+    //     string userPrompt = $"Requête de l'utilisateur : {userQuery} \n\n Liste des documents : {jsonDocuments}";
+    //
+    //     // 4. Appel de l'API OpenAI
+    //     try 
+    //     {
+    //         var messages = new ChatMessage[]
+    //         {
+    //             new SystemChatMessage(systemPrompt),
+    //             new UserChatMessage(userPrompt)
+    //         };
+    //
+    //         ChatCompletion completion = await _client.CompleteChatAsync(messages);
+    //
+    //         // 5. Extraction et nettoyage du JSON reçu
+    //         string rawJson = completion.Content[0].Text.Trim();
+    //
+    //         // Parfois l'IA ajoute des blocs ```json ... ```, on les nettoie
+    //         if (rawJson.StartsWith("```json")) rawJson = rawJson.Replace("```json", "").Replace("```", "").Trim();
+    //
+    //         // 6. Désérialisation pour récupérer les IDs
+    //         return JsonSerializer.Deserialize<List<string>>(rawJson) ?? new List<string>();
+    //     }
+    //     catch (JsonException ex)
+    //     {
+    //         // Erreur de formatage de l'IA (rare avec un bon prompt)
+    //         Console.WriteLine($"Erreur désérialisation OpenAI: {ex.Message}. Raw: {userPrompt}");
+    //         return new List<string>();
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Autre erreur API
+    //         Console.WriteLine($"Erreur API OpenAI: {ex.Message}");
+    //         return new List<string>();
+    //     }
+    // }
 }
