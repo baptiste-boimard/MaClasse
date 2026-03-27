@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System.Text.Json.Serialization;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace MaClasse.Shared.Models.Files;
@@ -14,6 +15,10 @@ public class Document
 
   [BsonElement("Name")]
   public string? Name { get; set; }
+  
+  [JsonPropertyName("Summary")]
+  [BsonElement("Summary")]
+  public string? Summary { get; set; }
     
   [BsonElement("Url")]
   public string? Url { get; set; }

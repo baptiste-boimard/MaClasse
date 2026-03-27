@@ -18,6 +18,7 @@ builder.Services.AddDataProtection()
 builder.Services.AddScoped<UserCloudService>();
 builder.Services.AddScoped<SlugifyService>();
 builder.Services.AddScoped<VerifyDeleteService>();
+builder.Services.AddScoped<McpClientService>();
 
 builder.Services.AddScoped<ICloudRepository, CloudRepository>();
 

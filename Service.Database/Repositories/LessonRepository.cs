@@ -204,7 +204,8 @@ public class LessonRepository : ILessonRepository
                 Builders<LessonBook>.Filter.Eq(lb => lb.IdUser, idUser),
                 Builders<LessonBook>.Update
                     .Set("Lessons.$[lesson].Documents.$[doc].Name", document.Name)
-                    .Set("Lessons.$[lesson].Documents.$[doc].IdCloudinary", document.IdCloudinary),
+                    .Set("Lessons.$[lesson].Documents.$[doc].IdCloudinary", document.IdCloudinary)
+                    .Set("Lessons.$[lesson].Documents.$[doc].Summary", document.Summary),
                 new UpdateOptions { ArrayFilters = arrayFilters });
 
         if (result.ModifiedCount == 0) return null;

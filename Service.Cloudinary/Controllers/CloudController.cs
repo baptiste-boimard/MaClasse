@@ -18,24 +18,27 @@ public class CloudController : ControllerBase
   private readonly ICloudRepository _fileRepository;
   private readonly CloudinaryDotNet.Cloudinary _cloudinary;
   private readonly VerifyDeleteService _verifyDeleteService;
+  private readonly McpClientService _mcpClientService;
 
   public CloudController(
     UserCloudService userCloudService,
     ICloudRepository fileRepository,
     CloudinaryDotNet.Cloudinary cloudinary,
-    VerifyDeleteService verifyDeleteService)
+    VerifyDeleteService verifyDeleteService,
+    McpClientService  mcpClientService)
   {
     _userCloudService = userCloudService;
     _fileRepository = fileRepository;
     _cloudinary = cloudinary;
     _verifyDeleteService = verifyDeleteService;
+    _mcpClientService = mcpClientService;
   }
 
   [HttpPost]
   [RequestSizeLimit(8 * 1024 * 1024)]
   [Route("add-file")]
   public async Task<IActionResult> AddFile(
-    [FromForm] IFormFile file, [FromForm] string  filerequest)
+    [FromForm] IFormFile file, [FromForm] string filerequest)
   {
 
     string originalFilename = "";
@@ -76,7 +79,7 @@ public class CloudController : ControllerBase
       Format = "",
       CreatedAt = DateTime.Now   
     };
-
+    
     if (format.ToLower() == "pdf")
     {
       newDocument.ThumbnailUrl = _cloudinary.Api.UrlImgUp
@@ -98,6 +101,38 @@ public class CloudController : ControllerBase
       newDocument.Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString() ?? "";
     }
     
+    // Ajout de l'envoi des infos nécéssaire vers le server mpc pour récupérer le résumé fait
+    // Passage par un service
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    var mcpRequest = new McpAnalysisRequest
+    {
+      Name = file.FileName,
+      FileType = format == "pdf" ? "pdf" : "image"
+    };
+    
+    if (format == "pdf")
+    {
+      // Pour le PDF, on convertit le IFormFile en Base64
+      using var ms = new MemoryStream();
+      await file.CopyToAsync(ms);
+      mcpRequest.Base64Content = Convert.ToBase64String(ms.ToArray());
+      mcpRequest.Url = null; // Pas besoin de l'URL pour le PDF selon votre choix
+    }
+    else
+    {
+      // Pour l'image, on envoie juste l'URL sécurisée de Cloudinary
+      mcpRequest.Url = newFileResult.SecureUrl?.ToString();
+      mcpRequest.Base64Content = null;
+    }
+    
+    // Appel au service MCP (via un client que vous allez injecter)
+    var summary = await _mcpClientService.AnalyzeFileAsync(mcpRequest);
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    
+    newDocument.Summary = summary;
     newDocument.Name = originalFilename;
     newDocument.Format = format;
     newDocument.CreatedAt = createdAt;

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using CloudinaryDotNet.Actions;
+﻿using CloudinaryDotNet.Actions;
 
 namespace Service.Cloudinary.Interfaces;
 
