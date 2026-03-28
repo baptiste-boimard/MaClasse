@@ -29,6 +29,7 @@ public partial class LessonView : ComponentBase
     private bool isReadOnly;
     private int activeLessonTabIndex;
     private bool _isUploading;
+    private string _uploadFileName = string.Empty;
     private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
 
     private string GetTabButtonClass(int tabIndex)
@@ -81,6 +82,7 @@ public partial class LessonView : ComponentBase
             return;
         }
 
+        _uploadFileName = file.Name ?? string.Empty;
         _isUploading = true;
         await InvokeAsync(StateHasChanged);
 
@@ -92,6 +94,7 @@ public partial class LessonView : ComponentBase
         {
             await Task.Delay(350);
             _isUploading = false;
+            _uploadFileName = string.Empty;
             await InvokeAsync(StateHasChanged);
         }
     }

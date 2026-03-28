@@ -201,6 +201,17 @@ public class LessonController : ControllerBase
         
         return Ok(lessonsWithDocument);
     }
+
+    [HttpPost]
+    [Route("get-lesson-references-by-idDocument")]
+    public async Task<IActionResult> GetLessonReferencesByIdDocument([FromBody] RequestLesson request)
+    {
+        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+
+        var lessonReferences = await _lessonRepository.GetLessonReferencesByIdDocument(request.Document, idUser);
+
+        return Ok(lessonReferences);
+    }
     
     [HttpPost]
     [Route("get_all_documents")]

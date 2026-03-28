@@ -40,6 +40,10 @@ public class CloudController : ControllerBase
   public async Task<IActionResult> AddFile(
     [FromForm] IFormFile file, [FromForm] string filerequest)
   {
+    if (file is null || file.Length == 0 || string.IsNullOrWhiteSpace(filerequest))
+    {
+      return BadRequest("Requête d'upload invalide.");
+    }
 
     string originalFilename = "";
     DateTime createdAt = DateTime.Now;
@@ -53,6 +57,11 @@ public class CloudController : ControllerBase
 
     var newFileResult =
       await _fileRepository.UploadFileAsync(file, idUser);
+
+    if (newFileResult is null || string.IsNullOrWhiteSpace(newFileResult.PublicId))
+    {
+      return BadRequest("Le fichier n'a pas pu être uploadé.");
+    }
     
     Console.WriteLine(JsonSerializer.Serialize(newFileResult));
     
@@ -113,11 +122,9 @@ public class CloudController : ControllerBase
     
     if (format == "pdf")
     {
-      // Pour le PDF, on convertit le IFormFile en Base64
-      using var ms = new MemoryStream();
-      await file.CopyToAsync(ms);
-      mcpRequest.Base64Content = Convert.ToBase64String(ms.ToArray());
-      mcpRequest.Url = null; // Pas besoin de l'URL pour le PDF selon votre choix
+      // Test URL-only pour le PDF
+      mcpRequest.Url = newFileResult.SecureUrl?.ToString() ?? newFileResult.Url?.ToString();
+      mcpRequest.Base64Content = null;
     }
     else
     {

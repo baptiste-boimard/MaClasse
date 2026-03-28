@@ -141,6 +141,14 @@
 .dashboard-files-card {
     padding: 0.35rem;
     min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .dashboard-files-card > .file-explorer {
+    height: 100%;
+    min-height: 0;
 }
 
 .dashboard-center-main-card {

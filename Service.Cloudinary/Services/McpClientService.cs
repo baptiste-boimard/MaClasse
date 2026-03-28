@@ -13,25 +13,61 @@ public class McpClientService
 
   public async Task<string?> AnalyzeFileAsync(McpAnalysisRequest request)
   {
+    if (request is null)
+    {
+      return null;
+    }
+
     // Construction du message JSON-RPC pour le serveur MCP
     var mcpMessage = new
-      {
-        jsonrpc = "2.0",
-        method = "tools/call",
-        @params = new { name = "analyze_file", arguments = request },
-        id = Guid.NewGuid().ToString()
+    {
+      jsonrpc = "2.0",
+      method = "tools/call",
+      @params = new { name = "analyze_file", arguments = request },
+      id = Guid.NewGuid().ToString()
     };
 
     // Envoi au projet Serveur MCP (en supposant qu'il expose un endpoint HTTP)
-    var response = await _httpClient.PostAsJsonAsync(
-      $"{_configuration["Url:Mcp"]}/api/mcp/create_summary", mcpMessage);
-    var content = await response.Content.ReadFromJsonAsync<JsonElement>();
+    try
+    {
+      var response = await _httpClient.PostAsJsonAsync(
+        $"{_configuration["Url:ApiGateway"]}/api/mcp/create_summary", mcpMessage);
 
-    // Extraction du texte du résumé
-    // Le format standard MCP renvoie : result.content[0].text
-    return content.GetProperty("result")
-      .GetProperty("content")[0]
-      .GetProperty("text")
-      .GetString();
+      if (!response.IsSuccessStatusCode)
+      {
+        return null;
+      }
+
+      var content = await response.Content.ReadFromJsonAsync<JsonElement>();
+      if (content.ValueKind != JsonValueKind.Object)
+      {
+        return null;
+      }
+
+      // Le format standard MCP renvoie : result.content[0].text
+      if (!content.TryGetProperty("result", out var result))
+      {
+        return null;
+      }
+
+      if (!result.TryGetProperty("content", out var resultContent) ||
+          resultContent.ValueKind != JsonValueKind.Array ||
+          resultContent.GetArrayLength() == 0)
+      {
+        return null;
+      }
+
+      var firstItem = resultContent[0];
+      if (!firstItem.TryGetProperty("text", out var text))
+      {
+        return null;
+      }
+
+      return text.GetString();
+    }
+    catch
+    {
+      return null;
+    }
   }
 }

@@ -5,5 +5,5 @@ namespace Service.MCPServer.Interfaces;
 public interface IOpenAIService
 {
   Task<string> AnalyzeWithGptAsync(McpAnalysisRequest args);
-  // Task<List<string>> FindMatchingDocumentsAsync(string userQuery, List<Document> allDocuments);
+  Task<List<string>> FindMatchingDocumentsAsync(string userQuery, List<Document> allDocuments);
 }

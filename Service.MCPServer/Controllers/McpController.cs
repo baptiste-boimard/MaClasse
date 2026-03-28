@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.MCPServer.Services;
 using System.Text.Json;
 using MaClasse.Shared.Models.Lesson;
+using Service.MCPServer.Interfaces;
 
 namespace Service.MCPServer.Controllers;
 
@@ -12,15 +13,18 @@ public class McpController : ControllerBase
     private readonly McpDispatcher _dispatcher;
     private readonly ILogger<McpController> _logger;
     private readonly GetAllDocumentsSummaryService _getAllDocumentsSummaryService;
+    private readonly IOpenAIService _openAiService;
 
     public McpController(
         McpDispatcher dispatcher,
         ILogger<McpController> logger,
-        GetAllDocumentsSummaryService getAllDocumentsSummaryService)
+        GetAllDocumentsSummaryService getAllDocumentsSummaryService,
+        IOpenAIService openAiService)
     {
         _dispatcher = dispatcher;
         _logger = logger;
         _getAllDocumentsSummaryService = getAllDocumentsSummaryService;
+        _openAiService = openAiService;
     }
 
     [HttpPost]
@@ -74,18 +78,17 @@ public class McpController : ControllerBase
     [Route("advanced_search")]
     public async Task<IActionResult> AdvancedSearch([FromBody] RequestDocuments request)
     {
-        // _logger.LogInformation("Recherche avancée pour l'utilisateur {UserId}", request.IdSession);
-        // 1. Récupérer TOUS les summary des documents de l'utilisateur en BDD
+        // Récupérer TOUS les documents de l'utilisateur en BDD
         
         var allDocuments = await _getAllDocumentsSummaryService.GetAllDocuments(request);
 
         // 2. Demander à l'IA de choisir les meilleurs
-        // var matchingIds = await _openAiService.FindMatchingDocumentsAsync(query, allDocuments);
+        var matchingIds = await _openAiService.FindMatchingDocumentsAsync(request.AdvancedSearch, allDocuments);
 
         // 3. Filtrer la liste complète pour ne renvoyer que les objets Document complets
-        // var results = allDocuments.Where(d => matchingIds.Contains(d.IdDocument)).ToList();
+        var results = allDocuments.Where(d => matchingIds.Contains(d.IdDocument)).ToList();
 
         
-        return Ok(); }
+        return Ok(results); }
     
 }

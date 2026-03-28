@@ -1,6 +1,6 @@
 @using MaClasse.Client.Components.Utils
 
-<div class="file-explorer">
+<div class="file-explorer @(ShowAdvancedSearch ? "file-explorer-advanced-mode" : string.Empty)">
     @if (ShowHeader)
     {
         <div class="file-explorer-header">
@@ -15,22 +15,128 @@
                     <MudTextField T="string"
                                   Class="file-explorer-advanced-search-input"
                                   Placeholder="@AdvancedSearchPlaceholder"
-                                  @bind-Value="_advancedSearchQuery"
+                                  @bind-Value="AdvancedSearchQuery"
+                                  @onkeydown="HandleAdvancedSearchKeyDown"
                                   Lines="2"
                                   Variant="MudBlazor.Variant.Outlined" />
 
                     <MudButton Variant="MudBlazor.Variant.Filled"
+                               Class="file-explorer-advanced-search-button"
                                Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Search"
+                               StartIcon="@(_isAdvancedSearchLoading ? null : Icons.Material.Filled.Search)"
                                OnClick="TriggerAdvancedSearch"
+                               Disabled="@_isAdvancedSearchLoading"
                     
                     
                                >
-                        Rechercher
+                        @if (_isAdvancedSearchLoading)
+                        {
+                            <span>Rechercher</span>
+                        }
+                        else
+                        {
+                            <span>Rechercher</span>
+                        }
                     </MudButton>
+
+                    <MudPaper Class="file-explorer-advanced-search-results" Elevation="0">
+                        @if (_isAdvancedSearchLoading)
+                        {
+                            <div class="file-explorer-advanced-search-loading">
+                                <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Medium" />
+                            </div>
+                        }
+                        else if (_advancedSearchResults.Any())
+                        {
+                            <div class="file-explorer-advanced-search-results-list">
+                                @foreach (var doc in _advancedSearchResults)
+                                {
+                                    <MudCard Class="file-explorer-card" @onclick="@((MouseEventArgs e) => OnAdvancedSearchImageClick(e, doc))">
+                                        <div class="file-explorer-card-body">
+                                            <div class="file-explorer-thumb">
+                                                @if (!string.IsNullOrWhiteSpace(doc.ThumbnailUrl))
+                                                {
+                                                    <img src="@doc.ThumbnailUrl"
+                                                         alt="@doc.Name"
+                                                         class="file-explorer-thumb-image" />
+                                                }
+                                                else
+                                                {
+                                                    <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Color="Color.Secondary" />
+                                                }
+                                            </div>
+
+                                            <p class="file-explorer-file-name">@doc.Name</p>
+                                        </div>
+                                    </MudCard>
+                                }
+                            </div>
+                        }
+                        else if (_hasAdvancedSearchCompleted &&
+                                 _lastCompletedAdvancedSearchQuery == _advancedSearchQuery &&
+                                 !string.IsNullOrWhiteSpace(_advancedSearchQuery))
+                        {
+                            <div class="file-explorer-advanced-search-empty">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Aucun document trouvé.</MudText>
+                            </div>
+                        }
+                    </MudPaper>
                 </div>
             }
         </div>
+    }
+
+    @if (showContextMenu)
+    {
+        <div class="file-explorer-context-backdrop" @onmousedown="CloseDocumentMenu"></div>
+        <MudPaper id="custom-context-menu"
+                  Class="mud-elevation-8"
+                  Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
+                  @onmousedown:stopPropagation>
+            <MudList T="object">
+                <MudListItem T="object" OnClick="@(async () =>
+                                                 {
+                                                     await OpenFileInNewTab();
+                                                     await CloseDocumentMenu();
+                                                 })">
+                    <MudText>Ouvrir</MudText>
+                </MudListItem>
+                @if (!_menuFromAdvancedSearch)
+                {
+                    <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
+                                                     {
+                                                         await CloseDocumentMenu();
+                                                         await DeleteFile();
+                                                     })">
+                        <MudText>Supprimer</MudText>
+                    </MudListItem>
+                    <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
+                                                     {
+                                                         await RenameFile();
+                                                         await CloseDocumentMenu();
+                                                     })">
+                        <MudText>Renommer</MudText>
+                    </MudListItem>
+                }
+                else
+                {
+                    <MudListItem T="object" OnClick="OpenLessonFromAdvancedSearch">
+                        <MudText>Ouvre la leçon</MudText>
+                    </MudListItem>
+                    <MudListItem T="object" OnClick="CopyToCurrentLessonFromAdvancedSearch">
+                        <MudText>Copier dans la leçon</MudText>
+                    </MudListItem>
+
+                    @foreach (var lessonChoice in _advancedSearchLessonChoices)
+                    {
+                        <MudListItem T="object" OnClick="@(async () => await OpenLessonChoice(lessonChoice))">
+                            <MudText>@GetLessonChoiceLabel(lessonChoice)</MudText>
+                        </MudListItem>
+                    }
+                }
+
+            </MudList>
+        </MudPaper>
     }
 
     @if (_isDeleting)
@@ -45,45 +151,26 @@
             </div>
         </div>
     }
+    else if (IsBusy)
+    {
+        <div class="file-explorer-upload-modal-backdrop">
+            <div class="file-explorer-upload-modal">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="file-explorer-upload-spinner" />
+                @if (!string.IsNullOrWhiteSpace(BusyFileName))
+                {
+                    <MudText Typo="Typo.body2" Class="file-explorer-upload-modal-text">
+                        <strong>@BusyFileName</strong>
+                    </MudText>
+                }
+            </div>
+        </div>
+    }
 
     @if (ShowFileList)
     {
         <MudGrid Class="file-explorer-grid">
             @if (files is not null && files.Any())
             {
-                @if (showContextMenu)
-                {
-                    <MudPaper id="custom-context-menu"
-                              Class="mud-elevation-8"
-                              Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
-                              @onmousedown:stopPropagation>
-                        <MudList T="object">
-                            <MudListItem T="object" OnClick="@(async () =>
-                                                             {
-                                                                 await OpenFileInNewTab();
-                                                                 await CloseDocumentMenu();
-                                                             })">
-                                <MudText>Ouvrir</MudText>
-                            </MudListItem>
-                            <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
-                                                             {
-                                                                 await DeleteFile();
-                                                                 await CloseDocumentMenu();
-                                                             })">
-                                <MudText>Supprimer</MudText>
-                            </MudListItem>
-                            <MudListItem T="object" Disabled="@(isReadOnly || _isDeleting || IsBusy)" OnClick="@(async () =>
-                                                             {
-                                                                 await RenameFile();
-                                                                 await CloseDocumentMenu();
-                                                             })">
-                                <MudText>Renommer</MudText>
-                            </MudListItem>
-
-                        </MudList>
-                    </MudPaper>
-                }
-
                 <MudItem xs="12">
                     <div class="file-explorer-list-wrapper">
                         <div class="file-explorer-list">

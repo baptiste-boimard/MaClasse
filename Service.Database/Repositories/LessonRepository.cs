@@ -267,6 +267,39 @@ public class LessonRepository : ILessonRepository
         return result;
     }
 
+    public async Task<List<DocumentLessonReference>> GetLessonReferencesByIdDocument(Document document, string idUser)
+    {
+        var result = new List<DocumentLessonReference>();
+
+        var lessonBook = await _mongoDbContext.LessonBooks
+            .Find(lb => lb.IdUser == idUser)
+            .FirstOrDefaultAsync();
+
+        if (lessonBook == null)
+        {
+            return result;
+        }
+
+        foreach (var lesson in lessonBook.Lessons)
+        {
+            var matchingDocument = lesson.Documents
+                .FirstOrDefault(d => d.IdDocument == document.IdDocument);
+
+            if (matchingDocument == null)
+            {
+                continue;
+            }
+
+            result.Add(new DocumentLessonReference
+            {
+                IdLesson = lesson.IdLesson ?? string.Empty,
+                IdAppointment = lesson.IdAppointment ?? string.Empty
+            });
+        }
+
+        return result;
+    }
+
     public async Task<List<Document>> GetAllDocumentsForIdUser(string idUser)
     {
         var userLessons = await _mongoDbContext.LessonBooks

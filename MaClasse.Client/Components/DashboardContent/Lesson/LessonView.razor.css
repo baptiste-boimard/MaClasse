@@ -172,6 +172,10 @@
     flex: 0 0 auto;
 }
 
+.lesson-upload-spinner-inline {
+    margin-right: 0.45rem;
+}
+
 .lesson-documents-title {
     margin: 0;
     display: inline-flex;

@@ -148,13 +148,22 @@
                                                        Color="Color.Primary"
                                                        Disabled="@(!CanUploadFiles || _isUploading)"
                                                        StartIcon="@Icons.Material.Filled.CloudUpload">
-                                                @(_isUploading ? "Upload en cours..." : "Charger un fichier")
+                                                @if (_isUploading)
+                                                {
+                                                    <MudProgressCircular Indeterminate="true"
+                                                                        Color="Color.Inherit"
+                                                                        Size="Size.Small"
+                                                                        Class="lesson-upload-spinner-inline" />
+                                                }
+                                                @(_isUploading ? "Chargement ..." : "Charger un fichier")
                                             </MudButton>
                                         </ActivatorContent>
                                     </MudFileUpload>
                                 </div>
                             </div>
-                            <FileExplorer ShowHeader="false" IsBusy="@_isUploading" />
+                            <FileExplorer ShowHeader="false"
+                                          IsBusy="@_isUploading"
+                                          BusyFileName="@_uploadFileName" />
                         </section>
                     </div>
                 </div>

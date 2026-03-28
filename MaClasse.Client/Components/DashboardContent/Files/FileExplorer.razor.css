@@ -4,6 +4,11 @@
     gap: 0.35rem;
 }
 
+.file-explorer-advanced-mode {
+    height: 100%;
+    min-height: 0;
+}
+
 .file-explorer-header {
     display: flex;
     align-items: flex-start;
@@ -40,6 +45,14 @@
     width: 100%;
 }
 
+.file-explorer-advanced-mode .file-explorer-advanced-search {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+}
+
 .file-explorer-advanced-search-input {
     width: 100%;
 }
@@ -66,11 +79,91 @@
     line-height: 1.25;
 }
 
+.file-explorer-advanced-search ::deep .file-explorer-advanced-search-button.mud-button-root {
+    min-height: 2rem;
+    height: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.file-explorer-advanced-search-results {
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    overflow: visible;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #c6d6ef;
+    border-radius: 0.7rem;
+    background: #f8fbff;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-explorer-advanced-mode .file-explorer-advanced-search-results {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.file-explorer-advanced-search-loading {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-explorer-advanced-search-empty {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.file-explorer-advanced-search-results-list {
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 0.1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    justify-content: center;
+    justify-items: center;
+    align-content: start;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 13rem;
+    max-height: 13rem;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+    padding-right: 0.25rem;
+}
+
+.file-explorer-advanced-search-results-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.file-explorer-advanced-search-results-list::-webkit-scrollbar-thumb {
+    background: #b5c8e6;
+    border-radius: 8px;
+}
+
 .file-explorer-upload ::deep .mud-button-root {
     min-height: var(--file-explorer-control-height);
     height: var(--file-explorer-control-height);
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.file-explorer-context-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: transparent;
 }
 
 .file-explorer-upload-modal-backdrop {

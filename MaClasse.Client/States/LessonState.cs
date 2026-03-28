@@ -94,9 +94,17 @@ public class LessonState
 
         if (response.IsSuccessStatusCode)
         {
-            Lesson = await response.Content.ReadFromJsonAsync<Lesson>();
+            var updatedLesson = await response.Content.ReadFromJsonAsync<Lesson>();
+            if (updatedLesson is not null)
+            {
+                Lesson = updatedLesson;
+            }
+            else
+            {
+                _snackbar.Add("Réponse invalide lors de la sauvegarde de la leçon.", Severity.Warning);
+            }
             NotifyStateChanged();
-            return true;
+            return updatedLesson is not null;
         }
 
         return false;
@@ -241,12 +249,14 @@ public class LessonState
 
         if (!response.IsSuccessStatusCode)
         {
+            _snackbar.Add("Échec de l'upload du fichier.", Severity.Error);
             return false;
         }
 
         var newDocument = await response.Content.ReadFromJsonAsync<Document>();
         if (newDocument is null)
         {
+            _snackbar.Add("Le serveur n'a pas retourné de document valide.", Severity.Error);
             return false;
         }
 
@@ -258,8 +268,11 @@ public class LessonState
         });
         Console.WriteLine("🔍 Contenu de newDocument :\n" + logjson);
 
-        //* Mise a jour de la Lesson avec le nouveau documents
+        Lesson.Documents ??= new List<Document>();
+
+        //* Mise a jour immédiate de l'UI avec le nouveau document
         Lesson.Documents.Add(newDocument);
+        NotifyStateChanged();
 
         // 🔍 Log de toute la liste des documents
         var logList = JsonSerializer.Serialize(Lesson.Documents, new JsonSerializerOptions
@@ -269,7 +282,11 @@ public class LessonState
         });
         Console.WriteLine("📚 Liste complète des documents dans Lesson :\n" + logList);
 
-        await AddLesson(Lesson, SelectedAppointment);
+        var saveSucceeded = await AddLesson(Lesson, SelectedAppointment);
+        if (!saveSucceeded)
+        {
+            _snackbar.Add("Le document est ajouté localement mais n'a pas pu être sauvegardé en base.", Severity.Warning);
+        }
         progress?.Report(100);
         NotifyStateChanged();
         return true;
@@ -340,6 +357,65 @@ public class LessonState
         Lesson.Documents.RemoveAll(d => d.IdDocument == deletedDocument.IdDocument);
         NotifyStateChanged();
         return true;
+    }
+
+    public async Task<List<DocumentLessonReference>> GetLessonReferencesByDocumentAsync(Document document)
+    {
+        if (document is null || string.IsNullOrWhiteSpace(document.IdDocument))
+        {
+            return new List<DocumentLessonReference>();
+        }
+
+        var request = new RequestLesson
+        {
+            IdSession = _userState.IdSession,
+            Document = document
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{_configuration["Url:ApiGateway"]}/api/database/get-lesson-references-by-idDocument", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new List<DocumentLessonReference>();
+        }
+
+        var references = await response.Content.ReadFromJsonAsync<List<DocumentLessonReference>>();
+        return references ?? new List<DocumentLessonReference>();
+    }
+
+    public async Task<bool> CopyDocumentToCurrentLessonAsync(Document document)
+    {
+        if (document is null || SelectedAppointment?.Id == null || Lesson is null)
+        {
+            return false;
+        }
+
+        Lesson.Documents ??= new List<Document>();
+        if (Lesson.Documents.Any(d => d.IdDocument == document.IdDocument))
+        {
+            return true;
+        }
+
+        Lesson.Documents.Add(new Document
+        {
+            IdDocument = document.IdDocument,
+            IdCloudinary = document.IdCloudinary,
+            Name = document.Name,
+            Summary = document.Summary,
+            Url = document.Url,
+            ThumbnailUrl = document.ThumbnailUrl,
+            Format = document.Format,
+            CreatedAt = document.CreatedAt
+        });
+
+        var saved = await AddLesson(Lesson, SelectedAppointment);
+        if (saved)
+        {
+            NotifyStateChanged();
+        }
+
+        return saved;
     }
     
     public async Task<List<Document>> SearchAdvancedDocumentsAsync(string query)
