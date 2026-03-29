@@ -1,4 +1,5 @@
 using MaClasse.Client.States;
+using MaClasse.Client.Components.DashboardContent.Files;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -34,13 +35,17 @@ public partial class Dashboard : ComponentBase, IDisposable
     private System.Timers.Timer? _courseRefreshTimer;
     private bool _isNextCourseCardExpanded;
     private bool _isStatsCardExpanded;
+    private bool _isFilesCardExpanded;
     private bool _focusNextCoursePreviewAfterRender;
     private bool _focusStatsLessonsAfterRender;
+    private bool _focusFilesAdvancedSearchAfterRender;
     private ElementReference _nextCoursePreviewRef;
     private ElementReference _nextCourseTitleRef;
     private ElementReference _nextCourseTimeRef;
     private ElementReference _statsLessonsRef;
     private ElementReference _statsHoursRef;
+    private ElementReference _centerMainCardRef;
+    private FileExplorer? _dashboardFileExplorerRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,6 +88,15 @@ public partial class Dashboard : ComponentBase, IDisposable
         {
             _focusStatsLessonsAfterRender = false;
             await _statsLessonsRef.FocusAsync();
+        }
+
+        if (_focusFilesAdvancedSearchAfterRender)
+        {
+            _focusFilesAdvancedSearchAfterRender = false;
+            if (_dashboardFileExplorerRef is not null)
+            {
+                await _dashboardFileExplorerRef.FocusAdvancedSearchInputAsync();
+            }
         }
     }
 
@@ -346,6 +360,34 @@ public partial class Dashboard : ComponentBase, IDisposable
             _isStatsCardExpanded = false;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private string GetFilesCardAriaLabel() =>
+        "Documents. Recherche avancée. Appuyez sur Espace ou Entrée pour entrer dans la carte et accéder au champ de recherche.";
+
+    private async Task HandleFilesCardKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await EnterFilesCardAsync();
+        }
+        else if (e.Key == "Escape" && _isFilesCardExpanded)
+        {
+            _isFilesCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task EnterFilesCardAsync()
+    {
+        _isFilesCardExpanded = true;
+        _focusFilesAdvancedSearchAfterRender = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task FocusCenterMainCardFromFilesAsync()
+    {
+        await _centerMainCardRef.FocusAsync();
     }
 
     private string GetNextCourseCardStyle()

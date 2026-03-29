@@ -15,9 +15,8 @@
     flex-direction: column;
     --file-explorer-control-height: 2.2rem;
     gap: 0.55rem;
-    margin: 0.45rem 0.4rem 0.35rem;
+    margin: 0 0.45rem 0.4rem 0.35rem;
     flex: 0 0 auto;
-    margin-top: 1rem;   
 }
 
 .file-explorer-grid {
@@ -140,7 +139,7 @@
     overflow-x: hidden;
     scrollbar-width: thin;
     -ms-overflow-style: auto;
-    padding-right: 0.25rem;
+    padding: 0.3rem 0.25rem 0.3rem 0.25rem;
 }
 
 .file-explorer-advanced-search-results-list::-webkit-scrollbar {
@@ -266,9 +265,23 @@
     box-shadow: 0 10px 20px rgba(18, 52, 102, 0.18);
 }
 
-.file-explorer-card:focus-visible {
-    outline: 3px solid #1e5fbf;
+.file-explorer ::deep .file-explorer-card:focus {
+    outline: none !important;
+    border-color: #7a5bd6 !important;
+    box-shadow:
+        inset 0 0 0 2px rgba(122, 91, 214, 0.88) !important,
+        inset 0 0 0 4px rgba(237, 232, 255, 0.9) !important,
+        0 10px 20px rgba(18, 52, 102, 0.18) !important;
+}
+
+.file-explorer ::deep .file-explorer-card:focus-visible {
+    outline: 3px solid #ffcc66 !important;
     outline-offset: 2px;
+    border-color: #f0b94b !important;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 204, 102, 0.98) !important,
+        inset 0 0 0 4px rgba(255, 246, 221, 0.92) !important,
+        0 10px 20px rgba(18, 52, 102, 0.18) !important;
 }
 
 .file-explorer-card-body {

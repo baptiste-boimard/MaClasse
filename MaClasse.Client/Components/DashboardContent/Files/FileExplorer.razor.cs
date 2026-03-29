@@ -60,6 +60,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private bool _focusContextMenuRequested;
     private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
     private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
+    private MudTextField<string>? _advancedSearchInputRef;
+    private bool _moveFocusAfterAdvancedSearch;
+    private bool _focusFirstAdvancedSearchResultAfterRender;
+    private bool _focusAdvancedSearchFallbackAfterRender;
     private bool IsViewingAnotherDashboard =>
         !string.IsNullOrWhiteSpace(_schedulerState.SchedulerDisplayed) &&
         !string.Equals(_schedulerState.SchedulerDisplayed, _schedulerState.IdUser, StringComparison.Ordinal);
@@ -106,8 +110,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
     [Parameter] public string HeaderIcon { get; set; } = Icons.Material.Filled.FolderOpen;
     [Parameter] public bool ShowAdvancedSearch { get; set; }
+    [Parameter] public bool AllowAdvancedSearchFocus { get; set; } = true;
     [Parameter] public bool IsBusy { get; set; }
     [Parameter] public string BusyFileName { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnAdvancedSearchNoResultFocusFallback { get; set; }
     
     
     protected override void OnInitialized()
@@ -147,6 +153,21 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
                 "documents.focusContextMenuFirstItem",
                 _firstContextMenuItemId,
                 _contextMenuId);
+        }
+
+        if (_focusFirstAdvancedSearchResultAfterRender && _advancedSearchResults.Count > 0)
+        {
+            _focusFirstAdvancedSearchResultAfterRender = false;
+            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", GetAdvancedSearchResultCardId(0));
+        }
+
+        if (_focusAdvancedSearchFallbackAfterRender)
+        {
+            _focusAdvancedSearchFallbackAfterRender = false;
+            if (OnAdvancedSearchNoResultFocusFallback.HasDelegate)
+            {
+                await OnAdvancedSearchNoResultFocusFallback.InvokeAsync();
+            }
         }
 
         if (ShowFileList && !_horizontalWheelEnabled)
@@ -326,6 +347,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         return $"Ouvrir le menu du document {docName}";
     }
 
+    private static string GetAdvancedSearchResultCardId(int index) => $"file-explorer-advanced-result-{index}";
+
+    private int GetAdvancedSearchTabIndex() => AllowAdvancedSearchFocus ? 0 : -1;
+
     private string GetLessonChoiceLabel(Appointment appointment)
     {
         var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
@@ -445,12 +470,59 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
+    private async Task OnAdvancedSearchButtonClick()
+    {
+        var shouldMoveFocus = _moveFocusAfterAdvancedSearch;
+        _moveFocusAfterAdvancedSearch = false;
+
+        await TriggerAdvancedSearch();
+
+        if (!shouldMoveFocus)
+        {
+            return;
+        }
+
+        if (_advancedSearchResults.Count > 0)
+        {
+            _focusFirstAdvancedSearchResultAfterRender = true;
+        }
+        else
+        {
+            _focusAdvancedSearchFallbackAfterRender = true;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleAdvancedSearchButtonKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            _moveFocusAfterAdvancedSearch = true;
+        }
+    }
+
     private async Task HandleAdvancedSearchKeyDown(KeyboardEventArgs e)
     {
+        if (!AllowAdvancedSearchFocus)
+        {
+            return;
+        }
+
         if (e.Key == "Enter" && !e.ShiftKey)
         {
             await TriggerAdvancedSearch();
         }
+    }
+
+    public async Task FocusAdvancedSearchInputAsync()
+    {
+        if (!ShowAdvancedSearch || !AllowAdvancedSearchFocus || _advancedSearchInputRef is null)
+        {
+            return;
+        }
+
+        await _advancedSearchInputRef.FocusAsync();
     }
     
     public async ValueTask DisposeAsync()

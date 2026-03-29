@@ -99,6 +99,22 @@
         };
 
         window.requestAnimationFrame(() => tryFocus());
+    },
+
+    focusElementById: function (elementId) {
+        const tryFocus = (attempt = 0) => {
+            const element = elementId ? document.getElementById(elementId) : null;
+            if (element instanceof HTMLElement) {
+                element.focus();
+                return;
+            }
+
+            if (attempt < 6) {
+                window.setTimeout(() => tryFocus(attempt + 1), 30);
+            }
+        };
+
+        window.requestAnimationFrame(() => tryFocus());
     }
     
     

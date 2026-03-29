@@ -15,6 +15,9 @@
                     <span class="sr-only" aria-live="polite" aria-atomic="true">@AdvancedSearchAriaStatus</span>
                     <MudTextField T="string"
                                   Class="file-explorer-advanced-search-input"
+                                  @ref="_advancedSearchInputRef"
+                                  tabindex="@GetAdvancedSearchTabIndex()"
+                                  Disabled="@(!AllowAdvancedSearchFocus)"
                                   Placeholder="@AdvancedSearchPlaceholder"
                                   @bind-Value="AdvancedSearchQuery"
                                   @onkeydown="HandleAdvancedSearchKeyDown"
@@ -23,9 +26,11 @@
 
                     <MudButton Variant="MudBlazor.Variant.Filled"
                                Class="file-explorer-advanced-search-button"
+                               tabindex="@GetAdvancedSearchTabIndex()"
                                Color="Color.Primary"
                                StartIcon="@(_isAdvancedSearchLoading ? null : Icons.Material.Filled.Search)"
-                               OnClick="TriggerAdvancedSearch"
+                               OnClick="OnAdvancedSearchButtonClick"
+                               @onkeydown="HandleAdvancedSearchButtonKeyDown"
                                Disabled="@_isAdvancedSearchLoading"
                     
                     
@@ -50,11 +55,13 @@
                         else if (_advancedSearchResults.Any())
                         {
                             <div class="file-explorer-advanced-search-results-list">
-                                @foreach (var doc in _advancedSearchResults)
+                                @for (var i = 0; i < _advancedSearchResults.Count; i++)
                                 {
+                                    var doc = _advancedSearchResults[i];
                                     <MudCard Class="file-explorer-card"
+                                             id="@GetAdvancedSearchResultCardId(i)"
                                              role="button"
-                                             tabindex="0"
+                                             tabindex="@GetAdvancedSearchTabIndex()"
                                              aria-label="@GetDocumentCardAriaLabel(doc)"
                                              @onclick="@((MouseEventArgs e) => OnAdvancedSearchImageClick(e, doc))"
                                              @onkeydown="@((KeyboardEventArgs e) => OnAdvancedSearchCardKeyDown(e, doc))">
