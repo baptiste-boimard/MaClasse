@@ -3,6 +3,7 @@
     display: block;
     min-height: 2.4rem;
     gap: 0.9rem;
+    --top-menu-focus-ring: #ffcc66;
 }
 
 .top-menu-left {
@@ -15,7 +16,7 @@
     transform: translateY(-50%);
     max-width: calc(50% - 9rem);
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .top-menu-logo {
@@ -46,13 +47,14 @@
 }
 
 .top-menu-dashboard-label:focus-visible {
-    outline: 3px solid #ffcc66;
+    outline: 3px solid var(--top-menu-focus-ring);
     outline-offset: 2px;
 }
 
 .top-menu-date-time {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     color: #e2e8ff;
     font-weight: 600;
@@ -61,6 +63,12 @@
     position: relative;
     left: 50%;
     transform: translateX(-50%);
+}
+
+.top-menu-date-time:focus-visible {
+    outline: 3px solid var(--top-menu-focus-ring);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
 }
 
 .top-menu-actions {
@@ -74,7 +82,7 @@
     max-width: calc(50% - 9rem);
     min-width: 0;
     justify-content: flex-end;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .top-menu-avatar-button {
@@ -87,9 +95,48 @@
 
 .top-menu-avatar-button:focus-visible,
 .top-menu-mail-link:focus-visible {
-    outline: 3px solid #9cb7e9;
+    outline: 3px solid var(--top-menu-focus-ring);
     outline-offset: 2px;
     border-radius: 0.35rem;
+}
+
+.top-menu :is(
+    .top-menu-dashboard-label,
+    .view-dashboard-current,
+    .view-dashboard-activator,
+    .top-menu-avatar-button,
+    .top-menu-mail-link,
+    .mud-button-root,
+    .mud-icon-button
+):focus-visible {
+    outline: 3px solid var(--top-menu-focus-ring) !important;
+    outline-offset: 2px;
+}
+
+::deep .top-menu-logout-button.mud-button-root {
+    min-height: 2rem;
+    height: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border-radius: 999px;
+}
+
+::deep .top-menu-logout-button.mud-button-root .mud-button-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: 1;
+}
+
+::deep .top-menu-logout-button.mud-button-root:focus-visible {
+    outline: 3px solid var(--top-menu-focus-ring) !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.35);
 }
 
 .top-menu-avatar {

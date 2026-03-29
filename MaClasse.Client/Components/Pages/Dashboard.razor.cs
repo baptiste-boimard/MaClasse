@@ -2,6 +2,7 @@ using MaClasse.Client.States;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace MaClasse.Client.Components.Pages;
 
@@ -31,6 +32,15 @@ public partial class Dashboard : ComponentBase, IDisposable
     private int _weeklyLessonCount;
     private string _weeklyHoursLabel = "0h00";
     private System.Timers.Timer? _courseRefreshTimer;
+    private bool _isNextCourseCardExpanded;
+    private bool _isStatsCardExpanded;
+    private bool _focusNextCoursePreviewAfterRender;
+    private bool _focusStatsLessonsAfterRender;
+    private ElementReference _nextCoursePreviewRef;
+    private ElementReference _nextCourseTitleRef;
+    private ElementReference _nextCourseTimeRef;
+    private ElementReference _statsLessonsRef;
+    private ElementReference _statsHoursRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,6 +69,21 @@ public partial class Dashboard : ComponentBase, IDisposable
     {
         RefreshDashboardMetrics();
         InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusNextCoursePreviewAfterRender)
+        {
+            _focusNextCoursePreviewAfterRender = false;
+            await _nextCoursePreviewRef.FocusAsync();
+        }
+
+        if (_focusStatsLessonsAfterRender)
+        {
+            _focusStatsLessonsAfterRender = false;
+            await _statsLessonsRef.FocusAsync();
+        }
     }
 
     private void StartCourseRefreshTimer()
@@ -169,6 +194,158 @@ public partial class Dashboard : ComponentBase, IDisposable
         }
 
         _lessonState.SetLessonSelected(_nextCourseAppointment);
+    }
+
+    private string GetNextCourseCardAriaLabel()
+    {
+        if (_nextCourseAppointment is null)
+        {
+            return $"{(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")}. {_nextCoursePreview}";
+        }
+
+        var title = string.IsNullOrWhiteSpace(_nextCourseAppointment.Text)
+            ? "Cours sans titre"
+            : _nextCourseAppointment.Text;
+
+        var start = _nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm");
+        var end = _nextCourseAppointment.End.ToLocalTime().ToString("HH:mm");
+
+        return $"{(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")}. {title}. {start} à {end}. {_nextCoursePreview}. Appuyez sur Espace ou Entrée pour entrer dans la carte.";
+    }
+
+    private async Task HandleNextCourseCardKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await EnterNextCourseCardAsync();
+        }
+        else if (e.Key == "Escape" && _isNextCourseCardExpanded)
+        {
+            _isNextCourseCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleNextCourseCardKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await EnterNextCourseCardAsync();
+        }
+    }
+
+    private async Task HandleNextCourseCardKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await EnterNextCourseCardAsync();
+        }
+    }
+
+    private async Task EnterNextCourseCardAsync()
+    {
+        _isNextCourseCardExpanded = true;
+        _focusNextCoursePreviewAfterRender = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private int GetNextCourseInnerTabIndex() => _isNextCourseCardExpanded ? 0 : -1;
+
+    private string GetNextCoursePreviewAriaLabel() => _nextCoursePreview;
+
+    private string GetNextCourseTitleAriaLabel() =>
+        string.IsNullOrWhiteSpace(_nextCourseAppointment?.Text) ? "Cours sans titre" : _nextCourseAppointment.Text;
+
+    private string GetNextCourseTimeAriaLabel()
+    {
+        if (_nextCourseAppointment is null)
+        {
+            return string.Empty;
+        }
+
+        var start = _nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm");
+        var end = _nextCourseAppointment.End.ToLocalTime().ToString("HH:mm");
+        return $"Horaire du cours, de {start} à {end}";
+    }
+
+    private async Task HandleNextCoursePreviewKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Tab" && e.ShiftKey)
+        {
+            _isNextCourseCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleNextCourseButtonKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Tab" && !e.ShiftKey)
+        {
+            _isNextCourseCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+    }
+
+    private string GetStatsCardAriaLabel() =>
+        $"Indicateurs rapides. Leçons cette semaine {_weeklyLessonCount}. Heures cette semaine {_weeklyHoursLabel}. Appuyez sur Espace ou Entrée pour entrer dans la carte.";
+
+    private string GetWeeklyLessonCountAriaLabel() => $"Leçons cette semaine : {_weeklyLessonCount}";
+
+    private string GetWeeklyHoursAriaLabel() => $"Heures cette semaine : {_weeklyHoursLabel}";
+
+    private async Task HandleStatsCardKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await EnterStatsCardAsync();
+        }
+        else if (e.Key == "Escape" && _isStatsCardExpanded)
+        {
+            _isStatsCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task EnterStatsCardAsync()
+    {
+        _isStatsCardExpanded = true;
+        _focusStatsLessonsAfterRender = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private int GetStatsInnerTabIndex() => _isStatsCardExpanded ? 0 : -1;
+
+    private async Task HandleStatsLessonsKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Tab" && e.ShiftKey)
+        {
+            _isStatsCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (e.Key == "Escape")
+        {
+            _isStatsCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleStatsHoursKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Tab" && !e.ShiftKey)
+        {
+            _isStatsCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (e.Key == "Escape")
+        {
+            _isStatsCardExpanded = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private string GetNextCourseCardStyle()

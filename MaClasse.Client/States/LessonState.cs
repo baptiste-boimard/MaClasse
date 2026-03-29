@@ -170,9 +170,20 @@ public class LessonState
         }
     }
 
-    public async void UpdateSelectedAppointment(List<Appointment> appointments)
+    public void UpdateSelectedAppointment(List<Appointment> appointments)
     {
-        var updated = appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
+        if (appointments is null || appointments.Count == 0)
+        {
+            return;
+        }
+
+        var selectedAppointmentId = SelectedAppointment?.Id;
+        if (string.IsNullOrWhiteSpace(selectedAppointmentId))
+        {
+            return;
+        }
+
+        var updated = appointments.FirstOrDefault(a => a.Id == selectedAppointmentId);
 
         if (updated != null)
         {
@@ -369,6 +380,7 @@ public class LessonState
         var request = new RequestLesson
         {
             IdSession = _userState.IdSession,
+            UserLessonDisplayed = UserLessonDisplayed,
             Document = document
         };
 
@@ -420,10 +432,15 @@ public class LessonState
     
     public async Task<List<Document>> SearchAdvancedDocumentsAsync(string query)
     {
+        var displayedUserId = !string.IsNullOrWhiteSpace(UserLessonDisplayed)
+            ? UserLessonDisplayed
+            : _schedulerState.SchedulerDisplayed;
+
         var request = new RequestDocuments
         {
             IdSession = _userState.IdSession,
-            AdvancedSearch = query
+            AdvancedSearch = query,
+            UserIdDisplayed = displayedUserId
         };
         
         if (string.IsNullOrWhiteSpace(query)) return new List<Document>();
@@ -471,6 +488,7 @@ public class LessonState
     {
         UserLessonDisplayed = userId;
         IsReadOnly = userId != _schedulerState.IdUser ? true : false;
+        NotifyStateChanged();
     }
     
     public async Task<Document> GetDocument(string idUser, string idDocument)

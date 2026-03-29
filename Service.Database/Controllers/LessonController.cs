@@ -192,8 +192,9 @@ public class LessonController : ControllerBase
     [Route("get-lessons-by-idDocument")]
     public async Task<IActionResult> GetLessonBookByIdDocument([FromBody] RequestLesson request)
     {
-        //* Récupération de l'ID de l'utilisateur
-        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        var idUser = string.IsNullOrWhiteSpace(request.UserLessonDisplayed)
+            ? _userService.GetUserByIdSession(request.IdSession).Result.UserId
+            : request.UserLessonDisplayed;
         
         var lessonsWithDocument = await _lessonRepository.GetLessonsByIdDocument(request.Document, idUser);
 
@@ -206,7 +207,9 @@ public class LessonController : ControllerBase
     [Route("get-lesson-references-by-idDocument")]
     public async Task<IActionResult> GetLessonReferencesByIdDocument([FromBody] RequestLesson request)
     {
-        var idUser = _userService.GetUserByIdSession(request.IdSession).Result.UserId;
+        var idUser = string.IsNullOrWhiteSpace(request.UserLessonDisplayed)
+            ? _userService.GetUserByIdSession(request.IdSession).Result.UserId
+            : request.UserLessonDisplayed;
 
         var lessonReferences = await _lessonRepository.GetLessonReferencesByIdDocument(request.Document, idUser);
 
@@ -217,12 +220,9 @@ public class LessonController : ControllerBase
     [Route("get_all_documents")]
     public async Task<IActionResult> GetAllSummary([FromBody] RequestDocuments request)
     {
-        // var idSession = JsonSerializer.Deserialize<RequestDocuments>(request.IdSession);
-     
-        var idSession = request.IdSession;
-        
-        var idUser =
-            _userService.GetUserByIdSession(idSession).Result.UserId;
+        var idUser = string.IsNullOrWhiteSpace(request.UserIdDisplayed)
+            ? _userService.GetUserByIdSession(request.IdSession).Result.UserId
+            : request.UserIdDisplayed;
 
         var allDocuments = await _lessonRepository.GetAllDocumentsForIdUser(idUser);
         

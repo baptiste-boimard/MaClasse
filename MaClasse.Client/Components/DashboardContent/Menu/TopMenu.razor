@@ -8,7 +8,6 @@
 
         <div class="top-menu-dashboard-cluster" role="group" aria-label="Sélecteur de tableau de bord">
             <span class="top-menu-dashboard-label"
-                  tabindex="0"
                   role="note"
                   aria-label="Section Tableau de bord">
                 Tableau de bord
@@ -21,16 +20,26 @@
         </div>
     </div>
 
-    <div class="top-menu-date-time" role="status" aria-live="polite" aria-atomic="true">
+    <div class="top-menu-date-time"
+         role="status"
+         tabindex="0"
+         aria-live="polite"
+         aria-atomic="true"
+         aria-label="@CurrentDateTimeAriaLabel"
+         title="@CurrentDateTimeAriaLabel">
         <Date/>
         <Hour/>
     </div>
 
     <div class="top-menu-actions">
-        <button class="top-menu-avatar-button" title="Mon profil" @onclick="@OpenProfileDialog">
+        <button class="top-menu-avatar-button"
+                title="Mon profil"
+                aria-label="Avatar Google, vous rendre sur votre profil"
+                @onclick="@OpenProfileDialog">
             <img src="@Picture"
                  class="top-menu-avatar"
-                 alt="Avatar Google"
+                 alt=""
+                 aria-hidden="true"
                  referrerpolicy="no-referrer" />
         </button>
 
@@ -43,6 +52,7 @@
         </a>
 
         <MudButton title="Se déconnecter"
+                   Class="top-menu-logout-button"
                    Variant="MudBlazor.Variant.Filled"
                    Size="Size.Small"
                    Color="Color.Warning"

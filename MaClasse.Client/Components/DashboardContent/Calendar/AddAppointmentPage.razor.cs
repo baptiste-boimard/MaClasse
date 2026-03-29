@@ -2,7 +2,7 @@
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
-using MudBlazor.Utilities;
+using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 
 namespace MaClasse.Client.Components.DashboardContent.Calendar;
@@ -46,6 +46,18 @@ public partial class AddAppointmentPage : ComponentBase
 
     private string _colorValue;
     private bool _recurring;
+    private static readonly IReadOnlyList<string> _availableColors = new List<string>
+    {
+        "#5A8DEE",
+        "#8E7DFD",
+        "#E05D93",
+        "#FF7A70",
+        "#F2C311",
+        "#59B36B",
+        "#1DB9B3",
+        "#A8B2BE",
+    };
+    private IReadOnlyList<string> AvailableColors => _availableColors;
     
     protected override void OnParametersSet()
     {
@@ -68,13 +80,28 @@ public partial class AddAppointmentPage : ComponentBase
                 IdRecurring = Model.IdRecurring
             };
             
-            _colorValue = Model.Color;
+            _colorValue = _availableColors.Contains(Model.Color ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                ? Model.Color
+                : _availableColors[3];
             _recurring = Model.Recurring;
         }
         else
         {
             _recurring = false;
-            _colorValue = "#8E7DFD"; 
+            _colorValue = _availableColors[3];
+        }
+    }
+
+    private void SelectColor(string color)
+    {
+        _colorValue = color;
+    }
+
+    private void OnColorKeyDown(KeyboardEventArgs e, string color)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            SelectColor(color);
         }
     }
 
@@ -93,6 +120,7 @@ public partial class AddAppointmentPage : ComponentBase
             {
                 model.Start = tempStartDate.Value.Date + tempStartTime.Value;
                 model.End = tempEndDate.Value.Date + tempEndTime.Value;
+                model.Color = _colorValue;
 
                 if (model.Start < model.End)
                 {

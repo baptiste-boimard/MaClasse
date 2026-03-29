@@ -1,5 +1,6 @@
 .view-dashboard-switch {
     width: auto;
+    --view-dashboard-focus-ring: #ffcc66;
 }
 
 .view-dashboard-switch-group {
@@ -30,7 +31,7 @@
 }
 
 .view-dashboard-current:focus-visible {
-    outline: 3px solid #ffcc66;
+    outline: 3px solid var(--view-dashboard-focus-ring);
     outline-offset: 2px;
 }
 
@@ -56,11 +57,11 @@
 }
 
 .view-dashboard-activator:focus-visible {
-    outline: 3px solid #ffcc66;
+    outline: 3px solid var(--view-dashboard-focus-ring);
     outline-offset: 2px;
 }
 
 ::deep(.view-dashboard-menu .mud-menu-item:focus-visible) {
-    outline: 3px solid #ffcc66;
+    outline: 3px solid var(--view-dashboard-focus-ring);
     outline-offset: 2px;
 }

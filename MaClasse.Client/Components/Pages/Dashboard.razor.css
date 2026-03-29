@@ -18,7 +18,7 @@
 }
 
 .dashboard-topbar {
-    background: transparent;
+    background: transparent;dashboard-reading-card-title
     color: #ffffff;
     border-radius: 1rem;
     padding: 0;
@@ -106,6 +106,15 @@
     overflow: hidden;
 }
 
+.dashboard-stats-card:focus-visible {
+    outline: none;
+    border-color: #f0b94b;
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 204, 102, 0.98),
+        inset 0 0 0 6px rgba(255, 246, 221, 0.92),
+        0 8px 20px rgba(30, 42, 69, 0.12);
+}
+
 .dashboard-stats-card article {
     border: 1px solid #d2ddf0;
     border-radius: 0.8rem;
@@ -116,6 +125,15 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+
+.dashboard-stats-card article:focus-visible {
+    outline: none;
+    border-color: #f0b94b;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 204, 102, 0.95),
+        inset 0 0 0 4px rgba(255, 246, 221, 0.92);
+    background: linear-gradient(180deg, #fffdf5 0%, #fff6df 100%);
 }
 
 .dashboard-stats-card span {
@@ -385,6 +403,16 @@
         radial-gradient(circle at 9% 10%, rgba(255, 190, 92, 0.35), transparent 30%),
         linear-gradient(165deg, #ffffff 0%, #f8efff 100%);
     overflow: hidden;
+    position: relative;
+}
+
+.dashboard-reading-card:focus-visible {
+    outline: none;
+    border-color: #f0b94b;
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 204, 102, 0.98),
+        inset 0 0 0 6px rgba(255, 246, 221, 0.92),
+        0 8px 20px rgba(30, 42, 69, 0.12);
 }
 
 .dashboard-reading-card h3,
@@ -415,6 +443,20 @@
     margin: 0.4rem 0 0.65rem;
     font-size: 0.82rem;
     color: #35557d;
+}
+
+.dashboard-reading-card p[tabindex="0"]:focus-visible,
+.dashboard-reading-card h4[tabindex="0"]:focus-visible {
+    outline: none;
+    border-radius: 0.65rem;
+    box-shadow: inset 0 0 0 2px rgba(240, 185, 75, 0.95);
+    background: rgba(255, 248, 230, 0.96);
+}
+
+::deep .dashboard-reading-card .dashboard-course-action-button.mud-button-root:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.35);
 }
 
 .dashboard-course-title {

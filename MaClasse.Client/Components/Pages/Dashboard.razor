@@ -21,39 +21,72 @@
         <main id="dashboard-main" class="dashboard-content" tabindex="-1">
             <aside class="dashboard-left-panel" aria-label="Panneau ressources">
                 <section class="dashboard-card dashboard-reading-card"
-                         aria-label="@(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")"
+                         tabindex="0"
+                         role="button"
+                         aria-expanded="@_isNextCourseCardExpanded"
+                         aria-label="@GetNextCourseCardAriaLabel()"
+                         @onkeydown="HandleNextCourseCardKeyDown"
+                         @onkeyup="HandleNextCourseCardKeyUp"
+                         @onkeypress="HandleNextCourseCardKeyPress"
                          style="@GetNextCourseCardStyle()">
-                    <h3>
+                    <h3 id="dashboard-reading-card-title">
                         <MudIcon Icon="@Icons.Material.Filled.AutoStories" Class="dashboard-title-icon" aria-hidden="true" />
                         @(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")
                     </h3>
-                    <p aria-live="polite">@_nextCoursePreview</p>
+                    <p tabindex="@GetNextCourseInnerTabIndex()"
+                       aria-label="@GetNextCoursePreviewAriaLabel()"
+                       @ref="_nextCoursePreviewRef"
+                       @onkeydown="HandleNextCoursePreviewKeyDown"
+                       @onkeydown:stopPropagation="true"
+                       aria-live="polite">@_nextCoursePreview</p>
 
                     @if (_nextCourseAppointment is not null)
                     {
-                        <h4 class="dashboard-course-title">@(_nextCourseAppointment.Text ?? "Cours sans titre")</h4>
-                        <p class="dashboard-course-time">
+                        <h4 class="dashboard-course-title"
+                            tabindex="@GetNextCourseInnerTabIndex()"
+                            aria-label="@GetNextCourseTitleAriaLabel()"
+                            @onkeydown:stopPropagation="true"
+                            @ref="_nextCourseTitleRef">@(_nextCourseAppointment.Text ?? "Cours sans titre")</h4>
+                        <p class="dashboard-course-time"
+                           tabindex="@GetNextCourseInnerTabIndex()"
+                           aria-label="@GetNextCourseTimeAriaLabel()"
+                           @onkeydown:stopPropagation="true"
+                           @ref="_nextCourseTimeRef">
                             @_nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm")
                             -
                             @_nextCourseAppointment.End.ToLocalTime().ToString("HH:mm")
                         </p>
 
                         <MudButton Variant="MudBlazor.Variant.Filled"
+                                   Class="dashboard-course-action-button"
+                                   tabindex="@GetNextCourseInnerTabIndex()"
                                    Color="Color.Primary"
                                    Size="Size.Small"
                                    StartIcon="@Icons.Material.Filled.Visibility"
+                                   @onkeydown="HandleNextCourseButtonKeyDown"
                                    OnClick="@OpenNextCourseInLessonPanel">
                             Afficher le cours
                         </MudButton>
                     }
                 </section>
 
-                <section class="dashboard-card dashboard-stats-card" aria-label="Indicateurs rapides">
-                    <article>
+                <section class="dashboard-card dashboard-stats-card"
+                         tabindex="0"
+                         role="button"
+                         aria-expanded="@_isStatsCardExpanded"
+                         aria-label="@GetStatsCardAriaLabel()"
+                         @onkeydown="HandleStatsCardKeyDown">
+                    <article tabindex="@GetStatsInnerTabIndex()"
+                             aria-label="@GetWeeklyLessonCountAriaLabel()"
+                             @ref="_statsLessonsRef"
+                             @onkeydown="HandleStatsLessonsKeyDown">
                         <span>Leçons cette semaine</span>
                         <strong>@_weeklyLessonCount</strong>
                     </article>
-                    <article>
+                    <article tabindex="@GetStatsInnerTabIndex()"
+                             aria-label="@GetWeeklyHoursAriaLabel()"
+                             @ref="_statsHoursRef"
+                             @onkeydown="HandleStatsHoursKeyDown">
                         <span>Heures cette semaine</span>
                         <strong>@_weeklyHoursLabel</strong>
                     </article>

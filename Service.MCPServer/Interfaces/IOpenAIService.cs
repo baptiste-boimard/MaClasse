@@ -6,4 +6,5 @@ public interface IOpenAIService
 {
   Task<string> AnalyzeWithGptAsync(McpAnalysisRequest args);
   Task<List<string>> FindMatchingDocumentsAsync(string userQuery, List<Document> allDocuments);
+  Task<string> DetectAdvancedSearchIntentAsync(string userQuery);
 }

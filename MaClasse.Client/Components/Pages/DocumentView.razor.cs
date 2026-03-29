@@ -114,4 +114,5 @@ public partial class DocumentView : ComponentBase
   {
     await _jsRuntime.InvokeVoidAsync("closeCurrentTab");
   }
+
 }

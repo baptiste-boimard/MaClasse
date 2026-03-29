@@ -16,6 +16,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private readonly IDialogService _dialogService;
     private readonly IJSRuntime _jsRuntime;
     private readonly SchedulerState _schedulerState;
+    private readonly ViewDashboardState _viewDashboardState;
     private readonly ISnackbar _snackbar;
 
 
@@ -24,12 +25,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         IDialogService dialogService,
         IJSRuntime jsRuntime,
         SchedulerState schedulerState,
+        ViewDashboardState viewDashboardState,
         ISnackbar snackbar)
     {
         _lessonState = lessonState;
         _dialogService = dialogService;
         _jsRuntime = jsRuntime;
         _schedulerState = schedulerState;
+        _viewDashboardState = viewDashboardState;
         _snackbar = snackbar;
     }
 
@@ -54,6 +57,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private bool _isAdvancedSearchLoading;
     private bool _hasAdvancedSearchCompleted;
     private string _lastCompletedAdvancedSearchQuery = string.Empty;
+    private bool _focusContextMenuRequested;
+    private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
+    private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
+    private bool IsViewingAnotherDashboard =>
+        !string.IsNullOrWhiteSpace(_schedulerState.SchedulerDisplayed) &&
+        !string.Equals(_schedulerState.SchedulerDisplayed, _schedulerState.IdUser, StringComparison.Ordinal);
     private const string AdvancedSearchPlaceholder =
         "Décriver le document que vous recherchez,\nex : Trouve les documents traitant de musiques africaines";
 
@@ -72,6 +81,26 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
+    private string AdvancedSearchAriaStatus
+    {
+        get
+        {
+            if (_isAdvancedSearchLoading)
+            {
+                return "Recherche en cours";
+            }
+
+            if (_hasAdvancedSearchCompleted)
+            {
+                return _advancedSearchResults.Count > 0
+                    ? $"{_advancedSearchResults.Count} document(s) trouvé(s)"
+                    : "Aucun document trouvé";
+            }
+
+            return string.Empty;
+        }
+    }
+
     [Parameter] public bool ShowHeader { get; set; } = true;
     [Parameter] public bool ShowFileList { get; set; } = true;
     [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
@@ -84,6 +113,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
+        _schedulerState.OnChange += RefreshState;
         SyncFromState();
     }
 
@@ -108,6 +138,15 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("documents.setInstance", _dotNetRef);
             await _jsRuntime.InvokeVoidAsync("documents.registerOutsideClick");
+        }
+
+        if (showContextMenu && _focusContextMenuRequested)
+        {
+            _focusContextMenuRequested = false;
+            await _jsRuntime.InvokeVoidAsync(
+                "documents.focusContextMenuFirstItem",
+                _firstContextMenuItemId,
+                _contextMenuId);
         }
 
         if (ShowFileList && !_horizontalWheelEnabled)
@@ -190,13 +229,39 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task OnAdvancedSearchImageClick(MouseEventArgs e, Document doc)
     {
-        selectedDoc = doc;
-        _menuFromAdvancedSearch = true;
-        _advancedSearchLessonChoices.Clear();
-        menuX = (int)e.ClientX;
-        menuY = (int)e.ClientY;
-        showContextMenu = true;
-        await InvokeAsync(StateHasChanged);
+        await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, (int)e.ClientX, (int)e.ClientY);
+    }
+
+    private async Task OnFileCardKeyDown(KeyboardEventArgs e, Document doc)
+    {
+        if (e.Key is "Enter" or " ")
+        {
+            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: false, 420, 220);
+        }
+    }
+
+    private async Task OnAdvancedSearchCardKeyDown(KeyboardEventArgs e, Document doc)
+    {
+        if (e.Key is "Enter" or " ")
+        {
+            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, 420, 220);
+        }
+    }
+
+    private async Task HandleMenuBackdropKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Escape" or "Enter" or " ")
+        {
+            await CloseDocumentMenu();
+        }
+    }
+
+    private async Task HandleContextMenuKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await CloseDocumentMenu();
+        }
     }
 
     [JSInvokable]
@@ -217,6 +282,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             menuX = x;
             menuY = y;
             showContextMenu = true;
+            _focusContextMenuRequested = true;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -236,10 +302,42 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         await InvokeAsync(StateHasChanged);
     }
 
+    private async Task OpenDocumentMenuAsync(Document? doc, bool fromAdvancedSearch, int x, int y)
+    {
+        if (doc is null)
+        {
+            return;
+        }
+
+        selectedDoc = doc;
+        _menuFromAdvancedSearch = fromAdvancedSearch;
+        _advancedSearchLessonChoices.Clear();
+        menuX = x;
+        menuY = y;
+        showContextMenu = true;
+        _focusContextMenuRequested = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private static string GetDocumentCardAriaLabel(Document doc)
+    {
+        var docName = string.IsNullOrWhiteSpace(doc.Name) ? "document sans nom" : doc.Name;
+        return $"Ouvrir le menu du document {docName}";
+    }
+
     private string GetLessonChoiceLabel(Appointment appointment)
     {
         var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
         return $"{text} - {appointment.Start.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}";
+    }
+
+    private string GetLessonChoiceAriaLabel(Appointment appointment)
+    {
+        var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
+        var frenchCulture = CultureInfo.GetCultureInfo("fr-FR");
+        var fullDate = appointment.Start.ToString("dddd d MMMM yyyy 'à' HH:mm", frenchCulture);
+        return $"{text}, {fullDate}";
     }
 
     private async Task OpenLessonChoice(Appointment appointment)
@@ -268,7 +366,16 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             .Distinct()
             .ToHashSet();
 
-        var matchingAppointments = (_schedulerState.Appointments ?? new List<Appointment>())
+        var sourceAppointments = _schedulerState.Appointments ?? new List<Appointment>();
+        if (IsViewingAnotherDashboard)
+        {
+            sourceAppointments = _viewDashboardState.DashBoards?
+                .FirstOrDefault(d => d.UserId == _schedulerState.SchedulerDisplayed)?
+                .UserScheduler?
+                .Appointments ?? sourceAppointments;
+        }
+
+        var matchingAppointments = sourceAppointments
             .Where(a => a.Id is not null && appointmentIds.Contains(a.Id))
             .OrderBy(a => a.Start)
             .ToList();
@@ -292,6 +399,11 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task CopyToCurrentLessonFromAdvancedSearch()
     {
+        if (IsViewingAnotherDashboard)
+        {
+            return;
+        }
+
         if (selectedDoc is null)
         {
             return;
@@ -344,6 +456,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         _lessonState.OnChange -= RefreshState;
+        _schedulerState.OnChange -= RefreshState;
 
         if (_horizontalWheelEnabled)
         {

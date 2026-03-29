@@ -43,8 +43,8 @@ public partial class Scheduler : ComponentBase
 
     private RadzenScheduler<Appointment> scheduler;
     private string schedulerWidth => selectedViewIndex == 0 ? "20rem" : "44rem";
-    private TimeSpan startTime = new TimeSpan(6, 0, 0);
-    private TimeSpan endTime = new TimeSpan(21, 30, 0);
+    private TimeSpan startTime = new TimeSpan(7, 0, 0);
+    private TimeSpan endTime = new TimeSpan(19, 0, 0);
     private bool datePickerOpen = false;
     private bool showAppointmentPanel = false;
     private DateTime _currentMonth = DateTime.Today;
@@ -191,8 +191,17 @@ public partial class Scheduler : ComponentBase
         {
             appointment.Id = Guid.NewGuid().ToString();
         }
-        
-        appointments.Add(appointment);
+
+        var existingIndex = appointments.FindIndex(a => a.Id == appointment.Id);
+        if (existingIndex >= 0)
+        {
+            appointments[existingIndex] = appointment;
+        }
+        else
+        {
+            appointments.Add(appointment);
+        }
+
         showAppointmentPanel = false;
         isEditMode = false;
         _schedulerState.SetAppointments(appointments);

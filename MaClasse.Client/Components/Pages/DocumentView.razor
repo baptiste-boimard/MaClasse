@@ -98,7 +98,13 @@
                     @if (IsPdf(document.Format))
                     {
                         <div style=" width: 100%; height: 100%;">
-                            <iframe src="@PdfViewUrl" style="width: 100%;height: 100%;border: none;">
+                            <iframe src="@PdfViewUrl"
+                                    style="width: 100%;height: 100%;border: none;"
+                                    allow="fullscreen"
+                                    allowfullscreen
+                                    webkitallowfullscreen
+                                    mozallowfullscreen
+                                    msallowfullscreen>
                                 <p>
                                     Votre navigateur ne supporte pas l'affichage de ce type de documents intégrés.
                                     Vous pouvez <a href="@document.Url" target="_blank" rel="noopener noreferrer">télécharger le fichier ici</a>.

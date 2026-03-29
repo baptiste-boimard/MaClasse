@@ -3,6 +3,7 @@ using Service.MCPServer.Services;
 using System.Text.Json;
 using MaClasse.Shared.Models.Lesson;
 using Service.MCPServer.Interfaces;
+using MaClasse.Shared.Models.Files;
 
 namespace Service.MCPServer.Controllers;
 
@@ -10,6 +11,11 @@ namespace Service.MCPServer.Controllers;
 [Route("api")]   
 public class McpController : ControllerBase
 {
+    private static readonly HashSet<string> ImageFormats = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "png", "jpg", "jpeg", "bmp", "gif", "webp", "svg", "tiff", "tif", "heic", "heif"
+    };
+
     private readonly McpDispatcher _dispatcher;
     private readonly ILogger<McpController> _logger;
     private readonly GetAllDocumentsSummaryService _getAllDocumentsSummaryService;
@@ -79,16 +85,51 @@ public class McpController : ControllerBase
     public async Task<IActionResult> AdvancedSearch([FromBody] RequestDocuments request)
     {
         // Récupérer TOUS les documents de l'utilisateur en BDD
-        
         var allDocuments = await _getAllDocumentsSummaryService.GetAllDocuments(request);
 
+        var userQuery = request.AdvancedSearch?.Trim() ?? string.Empty;
+
+        // Intention explicite: "Toutes les images" / "Tous les pdf"
+        var intent = await _openAiService.DetectAdvancedSearchIntentAsync(userQuery);
+
+        if (intent == "all_images")
+        {
+            var imageResults = allDocuments.Where(IsImageDocument).ToList();
+            return Ok(imageResults);
+        }
+
+        if (intent == "all_pdfs")
+        {
+            var pdfResults = allDocuments
+                .Where(d => string.Equals(d.Format, "pdf", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(d.Format, "application/pdf", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            return Ok(pdfResults);
+        }
+
         // 2. Demander à l'IA de choisir les meilleurs
-        var matchingIds = await _openAiService.FindMatchingDocumentsAsync(request.AdvancedSearch, allDocuments);
+        var matchingIds = await _openAiService.FindMatchingDocumentsAsync(userQuery, allDocuments);
 
         // 3. Filtrer la liste complète pour ne renvoyer que les objets Document complets
         var results = allDocuments.Where(d => matchingIds.Contains(d.IdDocument)).ToList();
 
-        
-        return Ok(results); }
-    
+        return Ok(results);
+    }
+
+    private static bool IsImageDocument(Document document)
+    {
+        if (string.IsNullOrWhiteSpace(document.Format))
+        {
+            return false;
+        }
+
+        var format = document.Format.Trim();
+
+        if (format.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return ImageFormats.Contains(format);
+    }
 }

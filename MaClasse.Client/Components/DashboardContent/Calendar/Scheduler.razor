@@ -7,8 +7,8 @@
 
         <div class="scheduler-toolbar-row">
             <MudButton StartIcon="@Icons.Material.Filled.Today"
-                       AriaLabel="Revenir à la date d'aujourd'hui"
-                       Title="Aujourd'hui"
+                       aria-label="Revenir à la date d'aujourd'hui"
+                       title="Aujourd'hui"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        OnClick="@GoToToday">
@@ -20,14 +20,14 @@
                                 Variant="Variant.Outlined"
                                 aria-label="Choix de la vue du calendrier">
                     <MudIconButton Icon="@Icons.Material.Filled.Today"
-                                   AriaLabel="Afficher la vue jour"
+                                   aria-label="Afficher la vue jour"
                                    aria-pressed="@(selectedViewIndex == 0)"
                                    title="Vue jour"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(0))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.ViewWeek"
-                                   AriaLabel="Afficher la vue semaine"
+                                   aria-label="Afficher la vue semaine"
                                    aria-pressed="@(selectedViewIndex == 1)"
                                    title="Vue semaine"
                                    Color="Color.Info"
@@ -38,13 +38,13 @@
 
         <div class="scheduler-toolbar-row">
             <MudIconButton Icon="@Icons.Material.Filled.DateRange"
-                           AriaLabel="Ouvrir le sélecteur de date"
+                           aria-label="Ouvrir le sélecteur de date"
                            title="Choisir une date"
                            Color="Color.Primary"
                            OnClick="@(() => datePickerOpen = true)" />
 
             <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIosNew"
-                           AriaLabel="Aller à la période précédente"
+                           aria-label="Aller à la période précédente"
                            title="Période précédente"
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
@@ -55,13 +55,13 @@
             </MudText>
 
             <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos"
-                           AriaLabel="Aller à la période suivante"
+                           aria-label="Aller à la période suivante"
                            title="Période suivante"
                            Color="Color.Info"
                            OnClick="@GoToNext" />
 
             <MudIconButton Icon="@Icons.Material.Filled.PostAdd"
-                           AriaLabel="Ajouter un rendez-vous"
+                           aria-label="Ajouter un rendez-vous"
                            title="Ajouter un rendez-vous"
                            Disabled="_schedulerState.isReadOnly"
                            Color="Color.Success"

@@ -145,4 +145,67 @@ public class OpenAIService : IOpenAIService
             return new List<string>();
         }
     }
+
+    public async Task<string> DetectAdvancedSearchIntentAsync(string userQuery)
+    {
+        if (string.IsNullOrWhiteSpace(userQuery))
+        {
+            return "none";
+        }
+
+        const string systemPrompt = @"Tu classes une requête de recherche de documents.
+            Réponds UNIQUEMENT avec un JSON strict au format:
+            {""intent"":""all_images|all_pdfs|none""}
+            Règles:
+            - all_images: l'utilisateur veut voir toutes les images
+            - all_pdfs: l'utilisateur veut voir tous les PDF
+            - none: tout autre cas.";
+
+        try
+        {
+            var messages = new ChatMessage[]
+            {
+                new SystemChatMessage(systemPrompt),
+                new UserChatMessage($"Requête: {userQuery}")
+            };
+
+            ChatCompletion completion = await _client.CompleteChatAsync(messages);
+            var raw = completion.Content[0].Text.Trim();
+
+            if (raw.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+            {
+                raw = raw.Replace("```json", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace("```", "", StringComparison.OrdinalIgnoreCase)
+                    .Trim();
+            }
+
+            using var jsonDoc = JsonDocument.Parse(raw);
+            var intent = jsonDoc.RootElement.GetProperty("intent").GetString()?.Trim().ToLowerInvariant();
+
+            return intent is "all_images" or "all_pdfs" ? intent : "none";
+        }
+        catch
+        {
+            return DetectAdvancedSearchIntentFallback(userQuery);
+        }
+    }
+
+    private static string DetectAdvancedSearchIntentFallback(string userQuery)
+    {
+        var normalized = userQuery.Trim().ToLowerInvariant();
+
+        if (normalized.Contains("image") &&
+            (normalized.Contains("toutes") || normalized.Contains("tous") || normalized.Contains("tout")))
+        {
+            return "all_images";
+        }
+
+        if (normalized.Contains("pdf") &&
+            (normalized.Contains("toutes") || normalized.Contains("tous") || normalized.Contains("tout")))
+        {
+            return "all_pdfs";
+        }
+
+        return "none";
+    }
 }

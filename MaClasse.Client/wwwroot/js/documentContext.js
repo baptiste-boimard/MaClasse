@@ -63,7 +63,7 @@
     registerOutsideClick: function () {
         document.addEventListener("mousedown", function (e) {
         
-            const menu = document.getElementById("custom-context-menu");
+            const menu = document.querySelector(".file-explorer-context-menu");
             if (menu && !menu.contains(e.target)) {
                 if (window.documents.dotNetInstance) {
                     window.documents.dotNetInstance.invokeMethodAsync("CloseDocumentMenu");
@@ -71,6 +71,34 @@
             }
        
         });
+    },
+
+    focusContextMenuFirstItem: function (firstItemId, menuId) {
+        const tryFocus = (attempt = 0) => {
+            const firstItem = firstItemId ? document.getElementById(firstItemId) : null;
+            if (firstItem instanceof HTMLElement && !firstItem.hasAttribute("disabled")) {
+                firstItem.focus();
+                return;
+            }
+
+            const menu = menuId ? document.getElementById(menuId) : null;
+            if (menu instanceof HTMLElement) {
+                const fallbackItem = menu.querySelector(".file-explorer-menu-item:not(:disabled)");
+                if (fallbackItem instanceof HTMLElement) {
+                    fallbackItem.focus();
+                    return;
+                }
+
+                menu.focus();
+                return;
+            }
+
+            if (attempt < 6) {
+                window.setTimeout(() => tryFocus(attempt + 1), 30);
+            }
+        };
+
+        window.requestAnimationFrame(() => tryFocus());
     }
     
     
