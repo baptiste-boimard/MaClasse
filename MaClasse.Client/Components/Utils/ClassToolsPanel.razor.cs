@@ -84,6 +84,11 @@ public partial class ClassToolsPanel
                     "focusHelpers.wireTabRedirectFromSelf",
                     "class-tools-card-entry",
                     "class-sound-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireShiftTabRedirectFromSelf",
+                    "class-sound-card-entry",
+                    "class-tools-card-entry");
             }
 
             if (ShowSoundCard)
@@ -92,6 +97,14 @@ public partial class ClassToolsPanel
                     "focusHelpers.wireTabRedirectFromSelf",
                     "class-sound-card-entry",
                     "top-menu-entry");
+            }
+
+            if (ShowToolsCard)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireShiftTabRedirectFromSelf",
+                    "class-tools-card-entry",
+                    "dashboard-scheduler-card-entry");
             }
         }
         catch

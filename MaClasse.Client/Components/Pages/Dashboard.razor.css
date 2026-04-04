@@ -234,6 +234,15 @@
     -ms-overflow-style: none !important;
 }
 
+#dashboard-scheduler-card-entry:focus,
+#dashboard-scheduler-card-entry:focus-visible {
+    outline: none;
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 204, 102, 0.98),
+        inset 0 0 0 6px rgba(255, 246, 221, 0.92),
+        0 8px 20px rgba(30, 42, 69, 0.12);
+}
+
 .dashboard-scheduler-card::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;

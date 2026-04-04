@@ -86,7 +86,7 @@ public partial class Dashboard : ComponentBase, IDisposable
         if (firstRender)
         {
             await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirect",
+                "focusHelpers.wireTabRedirectFromSelf",
                 "dashboard-files-card-entry",
                 "dashboard-center-main-card-entry");
 
@@ -99,6 +99,47 @@ public partial class Dashboard : ComponentBase, IDisposable
                 "focusHelpers.wireTabRedirectFromSelf",
                 "top-menu-entry",
                 "dashboard-reading-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireEnterSpaceRedirectFromSelf",
+                "top-menu-entry",
+                "view-dashboard-current-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "view-dashboard-current-entry",
+                "file-explorer-advanced-search-button-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireAdvancedSearchTabFlow",
+                "file-explorer-advanced-search-button-entry",
+                "file-explorer-advanced-result-",
+                "dashboard-center-main-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "dashboard-scheduler-card-entry",
+                "dashboard-center-main-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "dashboard-center-main-card-entry",
+                "dashboard-files-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "dashboard-files-card-entry",
+                "dashboard-stats-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "dashboard-stats-card-entry",
+                "dashboard-reading-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "dashboard-reading-card-entry",
+                "top-menu-entry");
         }
 
         if (_focusNextCoursePreviewAfterRender)
