@@ -1,4 +1,4 @@
-﻿@page "/dashboard"
+@page "/dashboard"
 @using MaClasse.Client.Components.DashboardContent.Menu
 @using MaClasse.Client.Components.DashboardContent.Calendar
 @using Microsoft.AspNetCore.Authorization
@@ -21,6 +21,7 @@
         <main id="dashboard-main" class="dashboard-content" tabindex="-1">
             <aside class="dashboard-left-panel" aria-label="Panneau ressources">
                 <section class="dashboard-card dashboard-reading-card"
+                         id="dashboard-reading-card-entry"
                          tabindex="0"
                          role="button"
                          aria-expanded="@_isNextCourseCardExpanded"
@@ -93,6 +94,7 @@
                 </section>
 
                 <section class="dashboard-card dashboard-files-card"
+                         id="dashboard-files-card-entry"
                          tabindex="0"
                          role="button"
                          aria-expanded="@_isFilesCardExpanded"
@@ -110,9 +112,12 @@
                 </section>
             </aside>
 
-            <section class="dashboard-center-panel" tabindex="0" aria-label="Panneau cours">
-                <section class="dashboard-card dashboard-center-main-card" tabindex="-1" @ref="_centerMainCardRef">
-                    <LessonView/>
+            <section class="dashboard-center-panel"
+                     id="dashboard-center-panel-entry">
+                <section id="dashboard-center-main-card-entry"
+                         class="dashboard-card dashboard-center-main-card"
+                         tabindex="0">
+                    <LessonView @ref="_lessonViewRef" />
                 </section>
             </section>
 

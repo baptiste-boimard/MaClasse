@@ -1,4 +1,4 @@
-﻿﻿using System.Globalization;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using MaClasse.Client.States;
 using Radzen;
@@ -98,6 +98,14 @@ public partial class Scheduler : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "scheduler-view-root",
+                "class-tools-card-entry");
+        }
+
         if (!firstRender && !_pendingScrollToCurrentTime)
         {
             return;

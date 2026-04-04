@@ -18,7 +18,7 @@
 }
 
 .dashboard-topbar {
-    background: transparent;dashboard-reading-card-title
+    background: transparent;
     color: #ffffff;
     border-radius: 1rem;
     padding: 0;
@@ -63,14 +63,20 @@
     outline: none;
 }
 
-.dashboard-center-panel:focus-visible .dashboard-center-main-card,
+#dashboard-center-panel-entry:focus,
+#dashboard-center-panel-entry:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#dashboard-center-main-card-entry:focus,
+#dashboard-center-main-card-entry:focus-visible,
 .dashboard-center-main-card:focus,
 .dashboard-center-main-card:focus-visible {
-    border-color: #f0b94b;
+    outline: none !important;
     box-shadow:
-        inset 0 0 0 3px rgba(255, 204, 102, 0.98),
-        inset 0 0 0 6px rgba(255, 246, 221, 0.92),
-        0 8px 20px rgba(30, 42, 69, 0.12);
+        inset 0 0 0 3px #ffcc66,
+        inset 0 0 0 6px rgba(255, 246, 221, 0.92) !important;
 }
 
 .dashboard-right-panel {

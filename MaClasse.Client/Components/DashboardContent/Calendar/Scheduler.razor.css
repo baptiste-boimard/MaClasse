@@ -8,6 +8,13 @@
     border-radius: 1rem;
 }
 
+.scheduler-view:focus,
+.scheduler-view:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 0;
+    box-shadow: none !important;
+}
+
 .scheduler-toolbar {
     display: flex;
     flex-direction: column;
@@ -96,4 +103,22 @@
 /* Accentuation WCAG des icônes de contrôle calendrier */
 .scheduler-view :is(.mud-icon-button, .mud-button-root) {
     color: #12345b;
+}
+
+/* Supprime les halos bleus potentiels Radzen/Mud dans le scheduler et impose le focus jaune. */
+::deep .scheduler-view :is(
+    .mud-button-root:focus,
+    .mud-button-root:focus-visible,
+    .mud-icon-button:focus,
+    .mud-icon-button:focus-visible,
+    .rz-button:focus,
+    .rz-inputtext:focus,
+    .rz-state-focus,
+    .rz-state-focused,
+    [tabindex]:focus,
+    button:focus
+) {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
 }

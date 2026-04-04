@@ -3,6 +3,7 @@ using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace MaClasse.Client.Components.DashboardContent.Lesson;
@@ -12,15 +13,18 @@ public partial class LessonView : ComponentBase
     private readonly LessonState _lessonState;
     private readonly HttpClient _httpClient;
     private readonly IDialogService _dialogService;
+    private readonly IJSRuntime _jsRuntime;
 
     public LessonView(
         LessonState lessonState,
         HttpClient httpClient,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IJSRuntime jsRuntime)
     {
         _lessonState = lessonState;
         _httpClient = httpClient;
         _dialogService = dialogService;
+        _jsRuntime = jsRuntime;
     }
 
     private Appointment appointement = new Appointment();
@@ -30,6 +34,8 @@ public partial class LessonView : ComponentBase
     private int activeLessonTabIndex;
     private bool _isUploading;
     private string _uploadFileName = string.Empty;
+    private ElementReference _headerTitleRef;
+    private string? _pendingPanelFocusContainerId;
     private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
 
     private string GetTabButtonClass(int tabIndex)
@@ -39,8 +45,36 @@ public partial class LessonView : ComponentBase
             : "lesson-tab-button";
     }
 
-    private void HandleTabKeyDown(KeyboardEventArgs e, int currentIndex)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await _jsRuntime.InvokeVoidAsync(
+            "focusHelpers.wireSuccessTabNavigation",
+            "lesson-tab-succes",
+            "lesson-action-save");
+
+        if (!string.IsNullOrWhiteSpace(_pendingPanelFocusContainerId))
+        {
+            var containerId = _pendingPanelFocusContainerId;
+            _pendingPanelFocusContainerId = null;
+            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", containerId);
+        }
+    }
+
+    private async Task HandleTabKeyDown(KeyboardEventArgs e, int currentIndex)
+    {
+        if (e.Key == "Tab" && currentIndex == 3)
+        {
+            if (e.ShiftKey)
+            {
+                activeLessonTabIndex = 2;
+                await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "lesson-tab-eleves");
+                return;
+            }
+
+            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "lesson-action-save");
+            return;
+        }
+
         if (e.Key == "ArrowRight")
         {
             activeLessonTabIndex = (currentIndex + 1) % 4;
@@ -57,6 +91,23 @@ public partial class LessonView : ComponentBase
         {
             activeLessonTabIndex = 3;
         }
+        else if (e.Key is "Enter" or "NumpadEnter" or " " or "Space" or "Spacebar")
+        {
+            activeLessonTabIndex = currentIndex;
+            _pendingPanelFocusContainerId = GetPanelIdByTabIndex(currentIndex);
+        }
+    }
+
+    private static string GetPanelIdByTabIndex(int tabIndex)
+    {
+        return tabIndex switch
+        {
+            0 => "lesson-panel-general",
+            1 => "lesson-panel-pedagogie",
+            2 => "lesson-panel-eleves",
+            3 => "lesson-panel-succes",
+            _ => "lesson-panel-general"
+        };
     }
 
     protected override void OnInitialized()
@@ -169,5 +220,23 @@ public partial class LessonView : ComponentBase
     {
         lesson = _lessonState.GetCopyLesson();
         isPasteDisabled = true;
+    }
+
+    public async Task FocusHeaderTitleAsync()
+    {
+        await _headerTitleRef.FocusAsync();
+    }
+
+    public async Task FocusGeneralTabAsync()
+    {
+        await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", "lesson-tab-buttons-bar");
+    }
+
+    private async Task HandleHeaderTitleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Tab" && !e.ShiftKey)
+        {
+            await FocusGeneralTabAsync();
+        }
     }
 }

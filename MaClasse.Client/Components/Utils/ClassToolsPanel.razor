@@ -4,7 +4,10 @@
 <div class="@PanelClass" @attributes="AdditionalAttributes">
     @if (ShowToolsCard)
     {
-    <section class="class-tools-card" aria-label="Outils de classe">
+    <section class="class-tools-card"
+             id="class-tools-card-entry"
+             tabindex="0"
+             aria-label="Outils de classe">
         <div class="class-tools-header">
             <h3>
                 <MudIcon Icon="@Icons.Material.Filled.Timer" Class="class-tools-title-icon" aria-hidden="true" />
@@ -18,7 +21,8 @@
                            Class="class-tool-compact-btn"
                            role="tab"
                            aria-selected="@(_activeTool == ToolMode.Timer)"
-                           OnClick="@(() => SelectTool(ToolMode.Timer))">
+                           OnClick="@(() => SelectTool(ToolMode.Timer))"
+                           tabindex="0">
                     Minuteur
                 </MudButton>
                 <MudButton Variant="@(_activeTool == ToolMode.Stopwatch ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
@@ -27,7 +31,8 @@
                            Class="class-tool-compact-btn"
                            role="tab"
                            aria-selected="@(_activeTool == ToolMode.Stopwatch)"
-                           OnClick="@(() => SelectTool(ToolMode.Stopwatch))">
+                           OnClick="@(() => SelectTool(ToolMode.Stopwatch))"
+                           tabindex="0">
                     Chronomètre
                 </MudButton>
             </div>
@@ -105,7 +110,10 @@
 
     @if (ShowSoundCard)
     {
-    <section class="class-sound-card" aria-label="Sonomètre">
+    <section class="class-sound-card"
+             id="class-sound-card-entry"
+             tabindex="0"
+             aria-label="Sonomètre">
         <h3>
             <MudIcon Icon="@Icons.Material.Filled.GraphicEq" Class="class-tools-title-icon" aria-hidden="true" />
             Sonomètre

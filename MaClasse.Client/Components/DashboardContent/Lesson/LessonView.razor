@@ -8,7 +8,11 @@
     <div class="lesson-header">
         @if (appointement.Id == null)
         {
-            <p class="lesson-header-title">
+            <p class="lesson-header-title"
+               tabindex="-1"
+               @ref="_headerTitleRef"
+               @onkeydown="HandleHeaderTitleKeyDown"
+               @onkeydown:preventDefault="true">
                 Aucun événement sélectionné dans l'agenda
             </p>    
         }
@@ -20,7 +24,11 @@
                     var startLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.Start, parisTimeZone);
                     var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
                 }
-                <p class="lesson-header-title">
+                <p class="lesson-header-title"
+                   tabindex="-1"
+                   @ref="_headerTitleRef"
+                   @onkeydown="HandleHeaderTitleKeyDown"
+                   @onkeydown:preventDefault="true">
                     Cours du
                     @startLocal.ToString("dddd d MMMM", new CultureInfo("fr-FR"))
                     de
@@ -42,7 +50,8 @@
     </div>
 
     <MudPaper Class="lesson-card" Elevation="0" Style="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;">
-        <div class="lesson-tab-buttons"
+        <div id="lesson-tab-buttons-bar"
+             class="lesson-tab-buttons"
              role="tablist"
              aria-label="Sections du cours">
             <MudButton Variant="MudBlazor.Variant.Text"
@@ -266,6 +275,7 @@
         <div class="lesson-actions">
             <div class="lesson-actions-left">
                 <MudButton Variant="MudBlazor.Variant.Filled"
+                           id="lesson-action-save"
                            Color="Color.Primary"
                            OnClick="SaveLesson"
                            Disabled="@isReadOnly"
@@ -273,19 +283,20 @@
                     Sauvegarder
                 </MudButton>
 
-                <MudButtonGroup Color="Color.Info"
-                                Size="Size.Medium"
-                                Variant="MudBlazor.Variant.Filled">
-                    <MudButton OnClick="CopyLesson"
-                               Disabled="@isReadOnly"
-                               StartIcon="@Icons.Material.Filled.ContentCopy">
-                        Copier
-                    </MudButton>
-                    <MudButton OnClick="PasteLesson"
-                               Disabled="@(isPasteDisabled || isReadOnly)">
-                        Coller
-                    </MudButton>
-                </MudButtonGroup>
+                <MudButton Variant="MudBlazor.Variant.Filled"
+                           Color="Color.Info"
+                           OnClick="CopyLesson"
+                           Disabled="@isReadOnly"
+                           StartIcon="@Icons.Material.Filled.ContentCopy">
+                    Copier
+                </MudButton>
+
+                <MudButton Variant="MudBlazor.Variant.Filled"
+                           Color="Color.Info"
+                           OnClick="PasteLesson"
+                           Disabled="@(isPasteDisabled || isReadOnly)">
+                    Coller
+                </MudButton>
             </div>
 
             <MudButton Variant="MudBlazor.Variant.Filled"

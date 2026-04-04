@@ -77,6 +77,22 @@ public partial class ClassToolsPanel
             await LoadPersistedStateAsync();
             _syncSubscriptionId = await JsRuntime.InvokeAsync<string>("classToolsSync.subscribe", _dotNetRef);
             await PersistStateAsync();
+
+            if (ShowToolsCard && ShowSoundCard)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabRedirectFromSelf",
+                    "class-tools-card-entry",
+                    "class-sound-card-entry");
+            }
+
+            if (ShowSoundCard)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabRedirectFromSelf",
+                    "class-sound-card-entry",
+                    "top-menu-entry");
+            }
         }
         catch
         {

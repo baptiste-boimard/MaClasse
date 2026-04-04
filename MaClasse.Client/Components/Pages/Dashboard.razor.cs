@@ -1,9 +1,11 @@
 using MaClasse.Client.States;
 using MaClasse.Client.Components.DashboardContent.Files;
+using MaClasse.Client.Components.DashboardContent.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace MaClasse.Client.Components.Pages;
 
@@ -13,17 +15,20 @@ public partial class Dashboard : ComponentBase, IDisposable
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly SchedulerState _schedulerState;
     private readonly LessonState _lessonState;
+    private readonly IJSRuntime _jsRuntime;
 
     public Dashboard(
         UserState userState,
         AuthenticationStateProvider authenticationStateProvider,
         SchedulerState schedulerState,
-        LessonState lessonState)
+        LessonState lessonState,
+        IJSRuntime jsRuntime)
     {
         _userState = userState;
         _authenticationStateProvider = authenticationStateProvider;
         _schedulerState = schedulerState;
         _lessonState = lessonState;
+        _jsRuntime = jsRuntime;
     }
 
     private UserState? userInformation;
@@ -44,8 +49,8 @@ public partial class Dashboard : ComponentBase, IDisposable
     private ElementReference _nextCourseTimeRef;
     private ElementReference _statsLessonsRef;
     private ElementReference _statsHoursRef;
-    private ElementReference _centerMainCardRef;
     private FileExplorer? _dashboardFileExplorerRef;
+    private LessonView? _lessonViewRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,6 +83,24 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirect",
+                "dashboard-files-card-entry",
+                "dashboard-center-main-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "dashboard-center-main-card-entry",
+                "scheduler-view-root");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "top-menu-entry",
+                "dashboard-reading-card-entry");
+        }
+
         if (_focusNextCoursePreviewAfterRender)
         {
             _focusNextCoursePreviewAfterRender = false;
@@ -170,6 +193,7 @@ public partial class Dashboard : ComponentBase, IDisposable
 
         var normalizedAppointments = (_schedulerState.Appointments ?? new List<Appointment>())
             .Where(a => a != null && a.End > a.Start)
+            .Where(a => !IsVacationAppointment(a))
             .Select(a => new
             {
                 StartLocal = a.Start.ToLocalTime(),
@@ -192,6 +216,12 @@ public partial class Dashboard : ComponentBase, IDisposable
         var hours = totalMinutes / 60;
         var minutesRemainder = totalMinutes % 60;
         _weeklyHoursLabel = $"{hours}h{minutesRemainder:00}";
+    }
+
+    private static bool IsVacationAppointment(Appointment appointment)
+    {
+        var title = appointment.Text ?? string.Empty;
+        return title.Contains("Vacance", StringComparison.OrdinalIgnoreCase);
     }
 
     private void RefreshDashboardMetrics()
@@ -387,7 +417,12 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     private async Task FocusCenterMainCardFromFilesAsync()
     {
-        await _centerMainCardRef.FocusAsync();
+        if (_lessonViewRef is null)
+        {
+            return;
+        }
+
+        await _lessonViewRef.FocusGeneralTabAsync();
     }
 
     private string GetNextCourseCardStyle()
