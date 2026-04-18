@@ -37,7 +37,7 @@
 
 .class-tools-card:focus,
 .class-tools-card:focus-visible {
-    outline: none;
+    outline: none !important;
     box-shadow:
         inset 0 0 0 3px #ffcc66,
         inset 0 0 0 6px rgba(255, 246, 221, 0.92);
@@ -49,7 +49,7 @@
 
 .class-sound-card:focus,
 .class-sound-card:focus-visible {
-    outline: none;
+    outline: none !important;
     box-shadow:
         inset 0 0 0 3px #ffcc66,
         inset 0 0 0 6px rgba(255, 246, 221, 0.92);

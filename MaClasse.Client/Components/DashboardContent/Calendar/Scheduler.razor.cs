@@ -65,6 +65,7 @@ public partial class Scheduler : ComponentBase
     private bool isClosingContextMenu = false;
     private bool isReadOnly;
     private bool _pendingScrollToCurrentTime;
+    private string? _pendingFocusAppointmentId;
 
 
     
@@ -100,10 +101,51 @@ public partial class Scheduler : ComponentBase
     {
         if (firstRender)
         {
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireEnterSpaceRedirectFromSelf",
+                "scheduler-toolbar",
+                "scheduler-toolbar-today");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabSequenceByIds",
+                (object)new[]
+                {
+                    "scheduler-toolbar-today",
+                    "scheduler-view-switch-today",
+                    "scheduler-view-switch-week",
+                    "scheduler-view-select-date",
+                    "scheduler-view-previous-date",
+                    "scheduler-view-select-period",
+                    "scheduler-view-next-date",
+                    "scheduler-view-new-appointment",
+                });
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireShiftTabRedirectFromSelf",
+                "scheduler-toolbar-today",
+                "scheduler-toolbar");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "scheduler-view-new-appointment",
+                "scheduler-canvas");
+
+            await _jsRuntime.InvokeVoidAsync("appointments.wireCanvasNavigation", "scheduler-canvas");
+            await PushAppointmentsDataToJs();
+            await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
         }
 
-        if (!firstRender && !_pendingScrollToCurrentTime)
+        if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null)
         {
+            return;
+        }
+
+        if (_pendingFocusAppointmentId != null)
+        {
+            var id = _pendingFocusAppointmentId;
+            _pendingFocusAppointmentId = null;
+            await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
+            await _jsRuntime.InvokeVoidAsync("appointments.focusEventByIdWhenReady", id, "scheduler-canvas", 40);
             return;
         }
 
@@ -132,7 +174,7 @@ public partial class Scheduler : ComponentBase
 
                 }).ToList();
         
-            InvokeAsync(() => { StateHasChanged(); });
+            InvokeAsync(async () => { StateHasChanged(); await PushAppointmentsDataToJs(); });
         }
         else
         {
@@ -151,9 +193,20 @@ public partial class Scheduler : ComponentBase
                     IdRecurring = a.IdRecurring
 
                 }).ToList();
-            
-            InvokeAsync(() => { StateHasChanged(); });
+
+            InvokeAsync(async () => { StateHasChanged(); await PushAppointmentsDataToJs(); });
         }
+    }
+
+    private async Task PushAppointmentsDataToJs()
+    {
+        var data = appointments.Select(a => new
+        {
+            id = a.Id,
+            start = a.Start.ToString("O"),
+            end = a.End.ToString("O")
+        });
+        await _jsRuntime.InvokeVoidAsync("appointments.setAppointmentsData", data);
     }
     
     void OnDaySelect(SchedulerDaySelectEventArgs args)
@@ -233,10 +286,9 @@ public partial class Scheduler : ComponentBase
     
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
     {
+        args.Attributes["onmousedown"] = $"appointments.handleAppointmentClick(event, '{args.Data.Id}')";
         if (!string.IsNullOrEmpty(args.Data.Color))
         {
-            //* Applique la couleur de fond depuis l'objet
-            args.Attributes["onmousedown"] = $"appointments.handleAppointmentClick(event, '{args.Data.Id}')";
             args.Attributes["style"] = $"background-color: {args.Data.Color}; color: black;";
         }
     }
@@ -350,6 +402,18 @@ public partial class Scheduler : ComponentBase
     }
     
     //* Ouuverture du menu quand clic sur un appointment
+    [JSInvokable("NavigateToDate")]
+    public async Task NavigateToDate(string appointmentId, string isoDate)
+    {
+        if (DateTime.TryParse(isoDate, out var date))
+        {
+            _pendingFocusAppointmentId = appointmentId;
+            currentDate = date;
+            _schedulerState.SetCurrentDisplayedDate(date);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     [JSInvokable("ShowCustomMenu")]
     public async Task ShowCustomMenu(string id, int x, int y)
     {

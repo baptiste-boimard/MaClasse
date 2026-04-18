@@ -118,15 +118,32 @@ div.mud-popover[data-ticks*="63849588"] {
     left: 600px !important;
 }
 
-/* WCAG: focus visible cohérent sur les composants interactifs. */
-:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus-visible {
+/* WCAG: focus visible cohérent sur tous les éléments interactifs et navigables. */
+:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus,
+:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus-visible,
+.rz-event:focus {
+    outline: 3px solid var(--wcag-focus-ring) !important;
+    outline-offset: 2px !important;
+}
+
+div[tabindex]:focus,
+section[tabindex]:focus {
     outline: 3px solid var(--wcag-focus-ring);
     outline-offset: 2px;
 }
 
-:where(.mud-button-root, .mud-icon-button, .mud-input-control, .mud-list-item, .mud-menu-item):focus-visible {
-    outline: 3px solid var(--wcag-focus-ring);
-    outline-offset: 2px;
+div[tabindex]:focus:not(:focus-visible),
+section[tabindex]:focus:not(:focus-visible) {
+    outline: none !important;
+}
+
+.mud-button-root:focus,
+.mud-button-root:focus-visible,
+.mud-icon-button:focus,
+.mud-icon-button:focus-visible {
+    outline: 3px solid var(--wcag-focus-ring) !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
 }
 
 .sr-only {

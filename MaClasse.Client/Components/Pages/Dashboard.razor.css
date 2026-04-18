@@ -60,7 +60,7 @@
 }
 
 .dashboard-center-panel:focus-visible {
-    outline: none;
+    outline: none !important;
 }
 
 #dashboard-center-panel-entry:focus,
@@ -127,7 +127,7 @@
 }
 
 .dashboard-stats-card:focus-visible {
-    outline: none;
+    outline: none !important;
     border-color: #f0b94b;
     box-shadow:
         inset 0 0 0 3px rgba(255, 204, 102, 0.98),
@@ -148,7 +148,7 @@
 }
 
 .dashboard-stats-card article:focus-visible {
-    outline: none;
+    outline: none !important;
     border-color: #f0b94b;
     box-shadow:
         inset 0 0 0 2px rgba(255, 204, 102, 0.95),
@@ -185,7 +185,7 @@
 }
 
 .dashboard-files-card:focus-visible {
-    outline: none;
+    outline: none !important;
     border-color: #f0b94b;
     box-shadow:
         inset 0 0 0 3px rgba(255, 204, 102, 0.98),
@@ -236,7 +236,7 @@
 
 #dashboard-scheduler-card-entry:focus,
 #dashboard-scheduler-card-entry:focus-visible {
-    outline: none;
+    outline: none !important;
     box-shadow:
         inset 0 0 0 3px rgba(255, 204, 102, 0.98),
         inset 0 0 0 6px rgba(255, 246, 221, 0.92),
@@ -456,7 +456,7 @@
 }
 
 .dashboard-reading-card:focus-visible {
-    outline: none;
+    outline: none !important;
     border-color: #f0b94b;
     box-shadow:
         inset 0 0 0 3px rgba(255, 204, 102, 0.98),
