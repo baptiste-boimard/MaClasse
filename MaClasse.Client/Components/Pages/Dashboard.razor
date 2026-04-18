@@ -117,7 +117,8 @@
                      id="dashboard-center-panel-entry">
                 <section id="dashboard-center-main-card-entry"
                          class="dashboard-card dashboard-center-main-card"
-                         tabindex="0">
+                         tabindex="0"
+                         @onkeydown="HandleCenterMainCardKeyDown">
                     <LessonView @ref="_lessonViewRef" />
                 </section>
             </section>

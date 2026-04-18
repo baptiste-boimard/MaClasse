@@ -93,7 +93,8 @@ public partial class Dashboard : ComponentBase, IDisposable
             await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireTabRedirectFromSelf",
                 "dashboard-center-main-card-entry",
-                "scheduler-view-root");
+                "dashboard-scheduler-card-entry");
+
 
             await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireTabRedirectFromSelf",
@@ -101,20 +102,31 @@ public partial class Dashboard : ComponentBase, IDisposable
                 "dashboard-reading-card-entry");
 
             await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "top-menu-button-logout",
+                "dashboard-reading-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "lesson-action-delete",
+                "dashboard-scheduler-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireEnterSpaceRedirectFromSelf",
                 "top-menu-entry",
                 "view-dashboard-current-entry");
 
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "view-dashboard-current-entry",
-                "file-explorer-advanced-search-button-entry");
 
             await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireAdvancedSearchTabFlow",
                 "file-explorer-advanced-search-button-entry",
                 "file-explorer-advanced-result-",
                 "dashboard-center-main-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "dashboard-scheduler-card-entry",
+                "class-tools-card-entry");
 
             await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireShiftTabRedirectFromSelf",
@@ -454,6 +466,14 @@ public partial class Dashboard : ComponentBase, IDisposable
         _isFilesCardExpanded = true;
         _focusFilesAdvancedSearchAfterRender = true;
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleCenterMainCardKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar" && _lessonViewRef is not null)
+        {
+            await _lessonViewRef.FocusHeaderTitleAsync();
+        }
     }
 
     private async Task FocusCenterMainCardFromFilesAsync()

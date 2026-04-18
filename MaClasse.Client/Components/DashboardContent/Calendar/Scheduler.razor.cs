@@ -100,10 +100,6 @@ public partial class Scheduler : ComponentBase
     {
         if (firstRender)
         {
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "scheduler-view-root",
-                "class-tools-card-entry");
         }
 
         if (!firstRender && !_pendingScrollToCurrentTime)

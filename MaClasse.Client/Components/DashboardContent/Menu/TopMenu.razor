@@ -22,7 +22,8 @@
         </div>
     </div>
 
-    <div class="top-menu-date-time"
+    <div id="top-menu-date-time" 
+         class="top-menu-date-time"
          role="status"
          tabindex="0"
          aria-live="polite"
@@ -34,7 +35,8 @@
     </div>
 
     <div class="top-menu-actions">
-        <button class="top-menu-avatar-button"
+        <button id="top-menu-avatar-button"
+                class="top-menu-avatar-button"
                 title="Mon profil"
                 aria-label="Avatar Google, vous rendre sur votre profil"
                 @onclick="@OpenProfileDialog">
@@ -45,7 +47,8 @@
                  referrerpolicy="no-referrer" />
         </button>
 
-        <a class="top-menu-mail-link"
+        <a id="top-menu-mail-link"
+           class="top-menu-mail-link"
            href="https://mail.google.com"
            title="Se rendre sur votre Gmail"
            target="_blank"
@@ -53,7 +56,8 @@
             <strong>@Email</strong>
         </a>
 
-        <MudButton title="Se déconnecter"
+        <MudButton id="top-menu-button-logout"
+                   title="Se déconnecter"
                    Class="top-menu-logout-button"
                    Variant="MudBlazor.Variant.Filled"
                    Size="Size.Small"

@@ -5,7 +5,7 @@
 
 <div class="lesson-view">
 
-    <div class="lesson-header">
+    <div id="lesson-view-header-title" class="lesson-header">
         @if (appointement.Id == null)
         {
             <p class="lesson-header-title"
@@ -299,7 +299,8 @@
                 </MudButton>
             </div>
 
-            <MudButton Variant="MudBlazor.Variant.Filled"
+            <MudButton id="lesson-action-delete"
+                       Variant="MudBlazor.Variant.Filled"
                        Color="Color.Error"
                        OnClick="DeleteLesson"
                        Disabled="@isReadOnly"

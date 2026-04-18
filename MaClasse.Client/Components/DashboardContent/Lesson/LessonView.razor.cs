@@ -66,7 +66,6 @@ public partial class LessonView : ComponentBase
         {
             if (e.ShiftKey)
             {
-                activeLessonTabIndex = 2;
                 await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "lesson-tab-eleves");
                 return;
             }

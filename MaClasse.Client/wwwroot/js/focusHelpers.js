@@ -1,5 +1,67 @@
 window.focusHelpers = window.focusHelpers || {};
 
+window.focusHelpers.wireTabSequenceByIds = function (ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return;
+    }
+
+    const wireKey = ids.join("|");
+    window.focusHelpers.__tabSequenceByIdsWired = window.focusHelpers.__tabSequenceByIdsWired || {};
+    if (window.focusHelpers.__tabSequenceByIdsWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__tabSequenceByIdsWired[wireKey] = true;
+
+    const isAvailable = function (el) {
+        if (!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+    };
+
+    const getFocusTarget = function (id) {
+        const el = document.getElementById(id);
+        if (!el || !isAvailable(el)) return null;
+        if (el.tabIndex >= 0) return el;
+        return el.querySelector("button:not([disabled]), [tabindex]:not([tabindex='-1']), input:not([disabled]), a[href]") || null;
+    };
+
+    const resolveTargets = function () {
+        return ids
+            .map((id) => ({ id, target: getFocusTarget(id), el: document.getElementById(id) }))
+            .filter((item) => item.target !== null);
+    };
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const targets = resolveTargets();
+        if (targets.length === 0) {
+            return;
+        }
+
+        const currentIndex = targets.findIndex(
+            (item) => item.target === active || item.el === active || (item.el && item.el.contains(active))
+        );
+
+        if (currentIndex < 0 || currentIndex === targets.length - 1) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const nextItem = targets[currentIndex + 1];
+        nextItem.target.focus({ preventScroll: true });
+    }, true);
+};
+
 window.focusHelpers.focusElementById = function (id) {
     if (!id) {
         return;
@@ -221,5 +283,137 @@ window.focusHelpers.wireAdvancedSearchTabFlow = function (searchButtonId, result
         }
 
         window.focusHelpers.focusElementById(fallbackElementId);
+    }, true);
+};
+
+window.focusHelpers.wireAltFocusCycleByIds = function (ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return;
+    }
+
+    const wireKey = ids.join("|");
+    window.focusHelpers.__altFocusCycleByIdsWired = window.focusHelpers.__altFocusCycleByIdsWired || {};
+    if (window.focusHelpers.__altFocusCycleByIdsWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__altFocusCycleByIdsWired[wireKey] = true;
+
+    const isVisible = function (el) {
+        if (!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+    };
+
+    const resolveTargets = function () {
+        return ids
+            .map((id) => document.getElementById(id))
+            .filter((el) => el instanceof HTMLElement && isVisible(el));
+    };
+
+    let altHandledOnKeyDown = false;
+
+    document.addEventListener("keydown", function (e) {
+        if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+            return;
+        }
+        if (e.key !== "Alt" && e.key !== "AltGraph" && e.key !== "") {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const targets = resolveTargets();
+        if (targets.length === 0) {
+            return;
+        }
+
+        const currentIndex = targets.findIndex((t) => t === active || t.contains(active));
+        if (currentIndex < 0) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const nextTarget = targets[(currentIndex + 1) % targets.length];
+        nextTarget.focus({ preventScroll: true });
+        altHandledOnKeyDown = true;
+    }, true);
+
+    document.addEventListener("keyup", function (e) {
+        if ((!e.altKey && e.key !== "Alt" && e.key !== "AltGraph" && e.key !== "") || !altHandledOnKeyDown) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        altHandledOnKeyDown = false;
+    }, true);
+};
+
+window.focusHelpers.wireAltFocusCycleInContainer = function (containerSelector, targetSelectors) {
+    if (!containerSelector || !Array.isArray(targetSelectors) || targetSelectors.length === 0) {
+        return;
+    }
+
+    const container = document.querySelector(containerSelector);
+    if (!(container instanceof HTMLElement)) {
+        return;
+    }
+
+    const wireKey = `${containerSelector}|${targetSelectors.join("|")}`;
+    window.focusHelpers.__altFocusCycleInContainerWired = window.focusHelpers.__altFocusCycleInContainerWired || {};
+    if (window.focusHelpers.__altFocusCycleInContainerWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__altFocusCycleInContainerWired[wireKey] = true;
+
+    const resolveTargets = function () {
+        return targetSelectors
+            .map((selector) => container.querySelector(selector))
+            .filter((element) => element instanceof HTMLElement);
+    };
+
+    let altHandledOnKeyDown = false;
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Alt" || e.ctrlKey || e.metaKey || e.shiftKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const targets = resolveTargets();
+        if (targets.length === 0) {
+            return;
+        }
+
+        const currentIndex = targets.findIndex((target) => target === active || target.contains(active));
+        if (currentIndex < 0) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const nextTarget = targets[(currentIndex + 1) % targets.length];
+        nextTarget.focus({ preventScroll: true });
+        altHandledOnKeyDown = true;
+    }, true);
+
+    document.addEventListener("keyup", function (e) {
+        if (e.key !== "Alt" || !altHandledOnKeyDown) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        altHandledOnKeyDown = false;
     }, true);
 };
