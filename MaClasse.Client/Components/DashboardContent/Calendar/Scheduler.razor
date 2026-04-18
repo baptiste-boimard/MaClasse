@@ -3,11 +3,10 @@
 @using Variant = MudBlazor.Variant
 
 <div class="scheduler-view"
-     id="scheduler-view-root"
-     tabindex="-1">
-    <div class="scheduler-toolbar">
+     id="scheduler-view-root">
+    <div id="scheduler-toolbar" class="scheduler-toolbar">
 
-        <div class="scheduler-toolbar-row">
+        <div id="scheduler-toolbar-today" class="scheduler-toolbar-row">
             <MudButton StartIcon="@Icons.Material.Filled.Today"
                        aria-label="Revenir à la date d'aujourd'hui"
                        title="Aujourd'hui"
@@ -21,14 +20,16 @@
                 <MudButtonGroup Color="Color.Info"
                                 Variant="Variant.Outlined"
                                 aria-label="Choix de la vue du calendrier">
-                    <MudIconButton Icon="@Icons.Material.Filled.Today"
+                    <MudIconButton id="scheduler-view-switch-today"
+                                   Icon="@Icons.Material.Filled.Today"
                                    aria-label="Afficher la vue jour"
                                    aria-pressed="@(selectedViewIndex == 0)"
                                    title="Vue jour"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(0))" />
 
-                    <MudIconButton Icon="@Icons.Material.Filled.ViewWeek"
+                    <MudIconButton id="scheduler-view-switch-week"
+                                   Icon="@Icons.Material.Filled.ViewWeek"
                                    aria-label="Afficher la vue semaine"
                                    aria-pressed="@(selectedViewIndex == 1)"
                                    title="Vue semaine"
@@ -39,30 +40,35 @@
         </div>
 
         <div class="scheduler-toolbar-row">
-            <MudIconButton Icon="@Icons.Material.Filled.DateRange"
+            <MudIconButton id="scheduler-view-select-date"
+                           Icon="@Icons.Material.Filled.DateRange"
                            aria-label="Ouvrir le sélecteur de date"
                            title="Choisir une date"
                            Color="Color.Primary"
                            OnClick="@(() => datePickerOpen = true)" />
 
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIosNew"
+            <MudIconButton id="scheduler-view-previous-date"
+                           Icon="@Icons.Material.Filled.ArrowBackIosNew"
                            aria-label="Aller à la période précédente"
                            title="Période précédente"
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
 
-            <MudText Typo="Typo.body1"
+            <MudText id="scheduler-view-select-period"
+                     Typo="Typo.body1"
                      Class="@($"scheduler-date-label{(selectedViewIndex == 1 ? " scheduler-date-label--week" : string.Empty)}")">
                 @DisplayedDateLabel
             </MudText>
 
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos"
+            <MudIconButton id="scheduler-view-next-date"
+                           Icon="@Icons.Material.Filled.ArrowForwardIos"
                            aria-label="Aller à la période suivante"
                            title="Période suivante"
                            Color="Color.Info"
                            OnClick="@GoToNext" />
 
-            <MudIconButton Icon="@Icons.Material.Filled.PostAdd"
+            <MudIconButton id="scheduler-view-new-appointment"
+                           Icon="@Icons.Material.Filled.PostAdd"
                            aria-label="Ajouter un rendez-vous"
                            title="Ajouter un rendez-vous"
                            Disabled="_schedulerState.isReadOnly"
@@ -115,7 +121,7 @@
         </div>
     }
 
-    <div class="scheduler-canvas">
+    <div id="scheduler-canvas" class="scheduler-canvas">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"
