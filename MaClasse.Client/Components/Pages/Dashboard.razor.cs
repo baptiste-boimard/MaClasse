@@ -194,10 +194,7 @@ public partial class Dashboard : ComponentBase, IDisposable
         if (_focusFilesAdvancedSearchAfterRender)
         {
             _focusFilesAdvancedSearchAfterRender = false;
-            if (_dashboardFileExplorerRef is not null)
-            {
-                await _dashboardFileExplorerRef.FocusAdvancedSearchInputAsync();
-            }
+            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", "file-explorer-search");
         }
     }
 
@@ -348,22 +345,6 @@ public partial class Dashboard : ComponentBase, IDisposable
         }
     }
 
-    private async Task HandleNextCourseCardKeyUp(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            await EnterNextCourseCardAsync();
-        }
-    }
-
-    private async Task HandleNextCourseCardKeyPress(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            await EnterNextCourseCardAsync();
-        }
-    }
-
     private async Task EnterNextCourseCardAsync()
     {
         _isNextCourseCardExpanded = true;
@@ -477,7 +458,9 @@ public partial class Dashboard : ComponentBase, IDisposable
     {
         if (e.Key is "Enter" or " " or "Space" or "Spacebar")
         {
-            await EnterFilesCardAsync();
+            _isFilesCardExpanded = true;
+            _focusFilesAdvancedSearchAfterRender = true;
+            await InvokeAsync(StateHasChanged);
         }
         else if (e.Key == "Escape" && _isFilesCardExpanded)
         {
@@ -488,6 +471,9 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     private async Task EnterFilesCardAsync()
     {
+        if (_isFilesCardExpanded)
+            return;
+
         _isFilesCardExpanded = true;
         _focusFilesAdvancedSearchAfterRender = true;
         await InvokeAsync(StateHasChanged);

@@ -50,18 +50,16 @@
 
     getActiveElementMenuPosition: function () {
         const el = document.activeElement;
-        const rect = el ? el.getBoundingClientRect() : { left: 0, bottom: 0 };
+        const rect = el ? el.getBoundingClientRect() : { right: 0, top: 0 };
         const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
         const margin = 8;
-        const menu = document.getElementById("custom-context-menu");
-        const menuRect = menu ? menu.getBoundingClientRect() : null;
-        const menuWidth = Math.ceil(menuRect?.width ?? 180);
-        const menuHeight = Math.ceil(menuRect?.height ?? 140);
+        const menuWidth = 180;
+        const menuHeight = 140;
         const maxX = Math.max(margin, window.innerWidth - menuWidth - margin);
         const maxY = Math.max(margin, window.innerHeight - menuHeight - margin);
         return {
-            x: Math.round(clamp(rect.left, margin, maxX)),
-            y: Math.round(clamp(rect.bottom, margin, maxY))
+            x: Math.round(clamp(rect.right + margin, margin, maxX)),
+            y: Math.round(clamp(rect.top, margin, maxY))
         };
     },
 

@@ -13,7 +13,8 @@
             {
                 <div class="file-explorer-advanced-search">
                     <span class="sr-only" aria-live="polite" aria-atomic="true">@AdvancedSearchAriaStatus</span>
-                    <MudTextField T="string"
+                    <MudTextField id="file-explorer-search"
+                                  T="string"
                                   Class="file-explorer-advanced-search-input"
                                   @ref="_advancedSearchInputRef"
                                   tabindex="@GetAdvancedSearchTabIndex()"
@@ -134,8 +135,8 @@
                             disabled="@(isReadOnly || _isDeleting || IsBusy)"
                             @onclick="@(async () =>
                                        {
-                                           await CloseDocumentMenu();
                                            await DeleteFile();
+                                           await CloseDocumentMenu();
                                        })">
                         Supprimer
                     </button>

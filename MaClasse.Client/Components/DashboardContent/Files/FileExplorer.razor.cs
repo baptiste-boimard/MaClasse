@@ -206,18 +206,17 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     private async Task DeleteFile()
     {
-        if (selectedDoc is null || _isDeleting || IsBusy)
-        {
+        var docToDelete = selectedDoc;
+        if (docToDelete is null || _isDeleting || IsBusy)
             return;
-        }
 
         _isDeleting = true;
-        _deleteFileName = selectedDoc.Name ?? "Fichier";
+        _deleteFileName = docToDelete.Name ?? "Fichier";
         await InvokeAsync(StateHasChanged);
 
         try
         {
-            await _lessonState.DeleteFileAsync(selectedDoc);
+            await _lessonState.DeleteFileAsync(docToDelete);
         }
         finally
         {

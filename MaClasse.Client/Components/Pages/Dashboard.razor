@@ -27,14 +27,13 @@
                          aria-expanded="@_isNextCourseCardExpanded"
                          aria-label="@GetNextCourseCardAriaLabel()"
                          @onkeydown="HandleNextCourseCardKeyDown"
-                         @onkeyup="HandleNextCourseCardKeyUp"
-                         @onkeypress="HandleNextCourseCardKeyPress"
                          style="@GetNextCourseCardStyle()">
                     <h3 id="dashboard-reading-card-title">
                         <MudIcon Icon="@Icons.Material.Filled.AutoStories" Class="dashboard-title-icon" aria-hidden="true" />
                         @(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")
                     </h3>
-                    <p tabindex="@GetNextCourseInnerTabIndex()"
+                    <p id="dashboard-reading-card-remainingtime"
+                       tabindex="@GetNextCourseInnerTabIndex()"
                        aria-label="@GetNextCoursePreviewAriaLabel()"
                        @ref="_nextCoursePreviewRef"
                        @onkeydown="HandleNextCoursePreviewKeyDown"
@@ -43,12 +42,14 @@
 
                     @if (_nextCourseAppointment is not null)
                     {
-                        <h4 class="dashboard-course-title"
+                        <h4 id="dashboard-reading-card-titlelesson"
+                            class="dashboard-course-title"
                             tabindex="@GetNextCourseInnerTabIndex()"
                             aria-label="@GetNextCourseTitleAriaLabel()"
                             @onkeydown:stopPropagation="true"
                             @ref="_nextCourseTitleRef">@(_nextCourseAppointment.Text ?? "Cours sans titre")</h4>
-                        <p class="dashboard-course-time"
+                        <p id="dashboard-reading-card-hourly"
+                           class="dashboard-course-time"
                            tabindex="@GetNextCourseInnerTabIndex()"
                            aria-label="@GetNextCourseTimeAriaLabel()"
                            @onkeydown:stopPropagation="true"
@@ -100,7 +101,8 @@
                          role="button"
                          aria-expanded="@_isFilesCardExpanded"
                          aria-label="@GetFilesCardAriaLabel()"
-                         @onkeydown="HandleFilesCardKeyDown">
+                         @onkeydown="HandleFilesCardKeyDown"
+                         @onclick="EnterFilesCardAsync">
                     <div @onkeydown:stopPropagation="true">
                         <FileExplorer @ref="_dashboardFileExplorerRef"
                                       ShowFileList="false"
