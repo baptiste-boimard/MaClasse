@@ -39,7 +39,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private Appointment appointement = new Appointment();
     private List<Document> files = new List<Document>();
     
-    private Document selectedDoc;
+    private Document? selectedDoc;
     private bool showContextMenu;
     private int menuX;
     private int menuY;
@@ -57,6 +57,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private bool _isAdvancedSearchLoading;
     private bool _hasAdvancedSearchCompleted;
     private string _lastCompletedAdvancedSearchQuery = string.Empty;
+    private string _selectedDocumentId = string.Empty;
     private bool _focusContextMenuRequested;
     private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
     private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
@@ -129,6 +130,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         var currentLesson = _lessonState.Lesson;
         files = currentLesson?.Documents ?? new List<Document>();
         isReadOnly = _lessonState.IsReadOnly;
+
+        if (!string.IsNullOrWhiteSpace(_selectedDocumentId) &&
+            !files.Any(d => string.Equals(d.IdDocument, _selectedDocumentId, StringComparison.Ordinal)) &&
+            !_advancedSearchResults.Any(d => string.Equals(d.IdDocument, _selectedDocumentId, StringComparison.Ordinal)))
+        {
+            _selectedDocumentId = string.Empty;
+            selectedDoc = null;
+        }
     }
 
     private void RefreshState()
@@ -153,6 +162,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
                 "documents.focusContextMenuFirstItem",
                 _firstContextMenuItemId,
                 _contextMenuId);
+            await _jsRuntime.InvokeVoidAsync(
+                "documents.watchFocusOutsideMenu",
+                _contextMenuId,
+                _dotNetRef);
         }
 
         if (_focusFirstAdvancedSearchResultAfterRender && _advancedSearchResults.Count > 0)
@@ -217,9 +230,13 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task RenameFile()
     {
+        var docToRename = selectedDoc;
+        if (docToRename is null)
+            return;
+
         var parameters = new DialogParameters
         {
-            { "Document", selectedDoc }
+            { "Document", docToRename }
         };
 
         var options = new DialogOptions
@@ -231,19 +248,27 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         var dialog = await _dialogService.ShowAsync<RenameDocumentDialog>(
             "Renommer votre fichier", parameters, options);
 
+        if (dialog is null)
+            return;
+
         var result = await dialog.Result;
 
-        if (!result.Canceled && result.Data is string newName && !string.IsNullOrWhiteSpace(newName))
-        {
-            selectedDoc.Name = newName;
-            _lessonState.RenameFile(selectedDoc);
-        }
+        if (result is null || result.Canceled || result.Data is not string newName || string.IsNullOrWhiteSpace(newName))
+            return;
+
+        docToRename.Name = newName;
+        _lessonState.RenameFile(docToRename);
     }
     
     private async Task OnImageClick(MouseEventArgs e, string documentId)
     {
         var x = (int)e.ClientX;
         var y = (int)e.ClientY;
+
+        _selectedDocumentId = documentId ?? string.Empty;
+        selectedDoc = files.FirstOrDefault(d => d.IdDocument == _selectedDocumentId) ??
+                      _advancedSearchResults.FirstOrDefault(d => d.IdDocument == _selectedDocumentId);
+        await InvokeAsync(StateHasChanged);
         
         await _jsRuntime.InvokeVoidAsync("documents.handleDocumentClickFromBlazor", documentId, x, y);
     }
@@ -257,7 +282,8 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     {
         if (e.Key is "Enter" or " ")
         {
-            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: false, 420, 220);
+            var pos = await _jsRuntime.InvokeAsync<MenuPosition>("documents.getActiveElementMenuPosition");
+            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: false, pos.X, pos.Y);
         }
     }
 
@@ -265,13 +291,16 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     {
         if (e.Key is "Enter" or " ")
         {
-            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, 420, 220);
+            var pos = await _jsRuntime.InvokeAsync<MenuPosition>("documents.getActiveElementMenuPosition");
+            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, pos.X, pos.Y);
         }
     }
 
+    private sealed record MenuPosition(int X, int Y);
+
     private async Task HandleMenuBackdropKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key is "Escape" or "Enter" or " ")
+        if (e.Key == "Escape")
         {
             await CloseDocumentMenu();
         }
@@ -290,6 +319,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     {
         try
         {
+            _selectedDocumentId = id ?? string.Empty;
             selectedDoc = files.FirstOrDefault(d => d.IdDocument == id);
             selectedDoc ??= _advancedSearchResults.FirstOrDefault(d => d.IdDocument == id);
             _menuFromAdvancedSearch = !files.Any(d => d.IdDocument == id);
@@ -317,10 +347,36 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [JSInvokable]
     public async Task CloseDocumentMenu()
     {
+        await _jsRuntime.InvokeVoidAsync("documents.cancelFocusOutsideMenu");
+
+        var hasChanged = showContextMenu ||
+                         _menuFromAdvancedSearch ||
+                         _advancedSearchLessonChoices.Count > 0;
+
         showContextMenu = false;
         _menuFromAdvancedSearch = false;
         _advancedSearchLessonChoices.Clear();
-        await InvokeAsync(StateHasChanged);
+        hasChanged |= ClearDocumentSelectionState();
+
+        if (hasChanged)
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    [JSInvokable]
+    public async Task CloseMenuOnFocusOut()
+    {
+        await CloseDocumentMenu();
+    }
+
+    [JSInvokable]
+    public async Task ClearDocumentSelection()
+    {
+        if (ClearDocumentSelectionState())
+        {
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task OpenDocumentMenuAsync(Document? doc, bool fromAdvancedSearch, int x, int y)
@@ -331,6 +387,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
 
         selectedDoc = doc;
+        _selectedDocumentId = doc.IdDocument ?? string.Empty;
         _menuFromAdvancedSearch = fromAdvancedSearch;
         _advancedSearchLessonChoices.Clear();
         menuX = x;
@@ -348,6 +405,40 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     }
 
     private static string GetAdvancedSearchResultCardId(int index) => $"file-explorer-advanced-result-{index}";
+
+    private bool ClearDocumentSelectionState()
+    {
+        var hasChanged = false;
+
+        if (!string.IsNullOrWhiteSpace(_selectedDocumentId))
+        {
+            _selectedDocumentId = string.Empty;
+            hasChanged = true;
+        }
+
+        if (selectedDoc is not null)
+        {
+            selectedDoc = null;
+            hasChanged = true;
+        }
+
+        return hasChanged;
+    }
+
+    private string GetFileCardClass(Document doc)
+    {
+        if (doc is null)
+        {
+            return "file-explorer-card";
+        }
+
+        var isSelected = !string.IsNullOrWhiteSpace(doc.IdDocument) &&
+                         string.Equals(doc.IdDocument, _selectedDocumentId, StringComparison.Ordinal);
+
+        return isSelected
+            ? "file-explorer-card is-selected"
+            : "file-explorer-card";
+    }
 
     private int GetAdvancedSearchTabIndex() => AllowAdvancedSearchFocus ? 0 : -1;
 

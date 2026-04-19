@@ -59,7 +59,7 @@
                                 @for (var i = 0; i < _advancedSearchResults.Count; i++)
                                 {
                                     var doc = _advancedSearchResults[i];
-                                    <MudCard Class="file-explorer-card"
+                                    <MudCard Class="@GetFileCardClass(doc)"
                                              id="@GetAdvancedSearchResultCardId(i)"
                                              role="button"
                                              tabindex="@GetAdvancedSearchTabIndex()"
@@ -220,7 +220,7 @@
                         <div class="file-explorer-list">
                             @foreach (var doc in files)
                             {
-                                <MudCard Class="file-explorer-card"
+                                <MudCard Class="@GetFileCardClass(doc)"
                                          role="button"
                                          tabindex="0"
                                          aria-label="@GetDocumentCardAriaLabel(doc)"
