@@ -35,7 +35,6 @@
     background: linear-gradient(165deg, #ffffff 0%, #f3f8ff 100%);
 }
 
-.class-tools-card:focus,
 .class-tools-card:focus-visible {
     outline: none !important;
     box-shadow:
@@ -47,7 +46,6 @@
     background: linear-gradient(165deg, #ffffff 0%, #f4fbf8 100%);
 }
 
-.class-sound-card:focus,
 .class-sound-card:focus-visible {
     outline: none !important;
     box-shadow:

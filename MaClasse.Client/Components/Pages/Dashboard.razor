@@ -97,8 +97,8 @@
 
                 <section class="dashboard-card dashboard-files-card"
                          id="dashboard-files-card-entry"
-                         tabindex="0"
-                         role="button"
+                         tabindex="@(_isFilesCardExpanded ? null : "0")"
+                         role="@(_isFilesCardExpanded ? "region" : "button")"
                          aria-expanded="@_isFilesCardExpanded"
                          aria-label="@GetFilesCardAriaLabel()"
                          @onkeydown="HandleFilesCardKeyDown"

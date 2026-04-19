@@ -40,7 +40,7 @@ public partial class Dashboard : ComponentBase, IDisposable
     private System.Timers.Timer? _courseRefreshTimer;
     private bool _isNextCourseCardExpanded;
     private bool _isStatsCardExpanded;
-    private bool _isFilesCardExpanded;
+    private bool _isFilesCardExpanded = true;
     private bool _focusNextCoursePreviewAfterRender;
     private bool _focusStatsLessonsAfterRender;
     private bool _focusFilesAdvancedSearchAfterRender;
@@ -194,7 +194,8 @@ public partial class Dashboard : ComponentBase, IDisposable
         if (_focusFilesAdvancedSearchAfterRender)
         {
             _focusFilesAdvancedSearchAfterRender = false;
-            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", "file-explorer-search");
+            if (_dashboardFileExplorerRef is not null)
+                await _dashboardFileExplorerRef.FocusAdvancedSearchInputAsync();
         }
     }
 

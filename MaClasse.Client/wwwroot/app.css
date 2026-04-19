@@ -38,7 +38,7 @@ a, .btn-link {
     border-color: #6d67bb;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus-visible, .btn:active:focus-visible, .btn-link.nav-link:focus-visible, .form-control:focus-visible, .form-check-input:focus-visible {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #ffcc66;
 }
 
@@ -50,7 +50,7 @@ a, .btn-link {
     padding: 0 !important;
 }
 
-h1:focus {
+h1:focus-visible {
     outline: none;
 }
 
@@ -118,28 +118,20 @@ div.mud-popover[data-ticks*="63849588"] {
     left: 600px !important;
 }
 
-/* WCAG: focus visible cohérent sur tous les éléments interactifs et navigables. */
-:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus,
+/* WCAG: focus visible cohérent sur tous les éléments interactifs et navigables. Clavier uniquement (:focus-visible). */
 :where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus-visible,
-.rz-event:focus {
+.rz-event:focus-visible {
     outline: 3px solid var(--wcag-focus-ring) !important;
     outline-offset: 2px !important;
 }
 
-div[tabindex]:focus,
-section[tabindex]:focus {
+div[tabindex]:focus-visible,
+section[tabindex]:focus-visible {
     outline: 3px solid var(--wcag-focus-ring);
     outline-offset: 2px;
 }
 
-div[tabindex]:focus:not(:focus-visible),
-section[tabindex]:focus:not(:focus-visible) {
-    outline: none !important;
-}
-
-.mud-button-root:focus,
 .mud-button-root:focus-visible,
-.mud-icon-button:focus,
 .mud-icon-button:focus-visible {
     outline: 3px solid var(--wcag-focus-ring) !important;
     outline-offset: 2px !important;
@@ -147,7 +139,6 @@ section[tabindex]:focus:not(:focus-visible) {
 }
 
 /* Force un focus lisible sur les miniatures de documents (même si d'autres règles globales passent après). */
-.lesson-general-documents-panel .file-explorer .file-explorer-card:focus,
 .lesson-general-documents-panel .file-explorer .file-explorer-card:focus-visible,
 .lesson-general-documents-panel .file-explorer .file-explorer-card.mud-focus-visible {
     outline: 3px solid #ffcc66 !important;

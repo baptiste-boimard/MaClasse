@@ -63,15 +63,12 @@
     outline: none !important;
 }
 
-#dashboard-center-panel-entry:focus,
 #dashboard-center-panel-entry:focus-visible {
     outline: none !important;
     box-shadow: none !important;
 }
 
-#dashboard-center-main-card-entry:focus,
 #dashboard-center-main-card-entry:focus-visible,
-.dashboard-center-main-card:focus,
 .dashboard-center-main-card:focus-visible {
     outline: none !important;
     box-shadow:
@@ -234,7 +231,6 @@
     -ms-overflow-style: none !important;
 }
 
-#dashboard-scheduler-card-entry:focus,
 #dashboard-scheduler-card-entry:focus-visible {
     outline: none !important;
     box-shadow:
@@ -494,11 +490,8 @@
     color: #35557d;
 }
 
-#dashboard-reading-card-remainingtime:focus,
 #dashboard-reading-card-remainingtime:focus-visible,
-#dashboard-reading-card-titlelesson:focus,
 #dashboard-reading-card-titlelesson:focus-visible,
-#dashboard-reading-card-hourly:focus,
 #dashboard-reading-card-hourly:focus-visible {
     outline: none !important;
     border-radius: 0.65rem;

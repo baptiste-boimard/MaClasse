@@ -22,7 +22,6 @@
     font-weight: 700;
 }
 
-.lesson-header-title:focus,
 .lesson-header-title:focus-visible {
     outline: 3px solid #ffcc66;
     outline-offset: 2px;
@@ -153,6 +152,14 @@
 ::deep .lesson-general-material-panel .lesson-field-material textarea.mud-input-slot {
     height: 100% !important;
     min-height: 100% !important;
+}
+
+::deep .lesson-field-general-class input.mud-input-slot:focus,
+::deep .lesson-field-general-class input.mud-input-slot:focus-visible,
+::deep .lesson-field-general-title input.mud-input-slot:focus,
+::deep .lesson-field-general-title input.mud-input-slot:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .lesson-general-documents-panel {
@@ -339,9 +346,7 @@
 }
 
 /* MudButton rend le <button> en interne: forcer le focus visible sur l'élément réel. */
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button:focus,
 ::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button:focus-visible,
-::deep .lesson-tab-buttons [role="tab"]:focus,
 ::deep .lesson-tab-buttons [role="tab"]:focus-visible {
     outline: 3px solid #ffcc66 !important;
     outline-offset: 2px !important;
@@ -349,9 +354,7 @@
     border-radius: 10px !important;
 }
 
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active:focus,
 ::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active:focus-visible,
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"]:focus,
 ::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"]:focus-visible {
     border-color: #ffcc66 !important;
     box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.35) !important;
@@ -420,8 +423,7 @@
 
 /* Boutons d'actions: forcer l'indicateur jaune en navigation clavier. */
 ::deep .lesson-actions .mud-button-root:focus-visible,
-::deep .lesson-actions .mud-button-root.mud-focus-visible,
-::deep .lesson-actions .mud-button-root:focus {
+::deep .lesson-actions .mud-button-root.mud-focus-visible {
     outline: 3px solid #ffcc66 !important;
     outline-offset: 2px !important;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18) !important;

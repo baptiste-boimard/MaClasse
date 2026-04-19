@@ -281,10 +281,8 @@
     box-shadow: 0 10px 20px rgba(18, 52, 102, 0.18);
 }
 
-.file-explorer ::deep .file-explorer-card:focus,
 .file-explorer ::deep .file-explorer-card:focus-visible,
 .file-explorer ::deep .file-explorer-card.mud-focus-visible,
-.file-explorer ::deep .mud-card.file-explorer-card:focus,
 .file-explorer ::deep .mud-card.file-explorer-card:focus-visible,
 .file-explorer ::deep .mud-card.file-explorer-card.mud-focus-visible {
     outline: 3px solid var(--file-explorer-focus-ring) !important;
@@ -299,10 +297,8 @@
     z-index: 2;
 }
 
-.file-explorer ::deep .file-explorer-card:focus::after,
 .file-explorer ::deep .file-explorer-card:focus-visible::after,
 .file-explorer ::deep .file-explorer-card.mud-focus-visible::after,
-.file-explorer ::deep .mud-card.file-explorer-card:focus::after,
 .file-explorer ::deep .mud-card.file-explorer-card:focus-visible::after,
 .file-explorer ::deep .mud-card.file-explorer-card.mud-focus-visible::after,
 .file-explorer ::deep .file-explorer-card.is-selected::after {

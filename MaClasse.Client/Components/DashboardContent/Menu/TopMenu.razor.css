@@ -6,7 +6,6 @@
     --top-menu-focus-ring: #ffcc66;
 }
 
-.top-menu:focus,
 .top-menu:focus-visible {
     outline: 3px solid var(--top-menu-focus-ring);
     outline-offset: 2px;
