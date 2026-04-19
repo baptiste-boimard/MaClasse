@@ -134,22 +134,26 @@
             <div class="class-sound-head">
                 <span>Niveau sonore (dB)</span>
                 <div class="class-sound-inline-actions">
-                    <MudButton Variant="MudBlazor.Variant.Filled"
-                               Color="Color.Success"
-                               Size="Size.Small"
-                               Class="class-sound-action-btn"
-                               Disabled="@_isSoundMeterActive"
-                               OnClick="@StartSoundMeterAsync">
-                        Activer
-                    </MudButton>
-                    <MudButton Variant="MudBlazor.Variant.Outlined"
-                               Color="Color.Error"
-                               Size="Size.Small"
-                               Class="class-sound-action-btn"
-                               Disabled="@(!_isSoundMeterActive)"
-                               OnClick="@StopSoundMeterAsync">
-                        Arrêter
-                    </MudButton>
+                    <span id="class-sound-activate" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Filled"
+                                   Color="Color.Success"
+                                   Size="Size.Small"
+                                   Class="class-sound-action-btn"
+                                   Disabled="@_isSoundMeterActive"
+                                   OnClick="@StartSoundMeterAsync">
+                            Activer
+                        </MudButton>
+                    </span>
+                    <span id="class-sound-desactivate" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Outlined"
+                                   Color="Color.Error"
+                                   Size="Size.Small"
+                                   Class="class-sound-action-btn"
+                                   Disabled="@(!_isSoundMeterActive)"
+                                   OnClick="@StopSoundMeterAsync">
+                            Arrêter
+                        </MudButton>
+                    </span>
                 </div>
                 <strong aria-live="polite">@GetSoundDbLabel()</strong>
             </div>

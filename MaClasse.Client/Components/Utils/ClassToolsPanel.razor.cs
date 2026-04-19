@@ -107,6 +107,41 @@ public partial class ClassToolsPanel
                     "focusHelpers.wireTabRedirectFromSelf",
                     "class-sound-card-entry",
                     "top-menu-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireEnterSpaceRedirectFromSelf",
+                    "class-sound-card-entry",
+                    "class-sound-activate");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentShiftTabRedirect",
+                    "class-sound-activate",
+                    "class-sound-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabSequenceByIds",
+                    new[] { "class-sound-activate", "class-sound-desactivate" });
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentTabRedirect",
+                    "class-sound-desactivate",
+                    "top-menu-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-sound-activate");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-sound-desactivate");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-sound-activate");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-sound-desactivate");
             }
 
             if (ShowToolsCard)
