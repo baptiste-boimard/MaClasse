@@ -15,7 +15,8 @@
             </h3>
 
             <div class="class-tools-switch" role="tablist" aria-label="Sélection d'outil">
-                <MudButton Variant="@(_activeTool == ToolMode.Timer ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
+                <MudButton id="class-tools-timer"
+                           Variant="@(_activeTool == ToolMode.Timer ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
                            Color="Color.Primary"
                            Size="Size.Small"
                            Class="class-tool-compact-btn"
@@ -25,7 +26,8 @@
                            tabindex="0">
                     Minuteur
                 </MudButton>
-                <MudButton Variant="@(_activeTool == ToolMode.Stopwatch ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
+                <MudButton id="class-tools-stopwatch"
+                           Variant="@(_activeTool == ToolMode.Stopwatch ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
                            Color="Color.Primary"
                            Size="Size.Small"
                            Class="class-tool-compact-btn"
@@ -41,30 +43,35 @@
         @if (_activeTool == ToolMode.Timer)
         {
             <div class="class-tool-panel class-tools-mode-panel class-tools-mode-panel-timer" role="tabpanel" aria-label="Panneau minuteur">
-                <div class="class-tool-time class-tool-time-chrono" aria-live="polite">@GetTimerDisplay()</div>
+                <div id="class-tools-timer-show" class="class-tool-time class-tool-time-chrono" tabindex="0" aria-live="polite">@GetTimerDisplay()</div>
                 <div class="class-tool-chip-row class-tool-chip-row-timer">
-                    <MudChip T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(1))">+1m</MudChip>
-                    <MudChip T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(5))">+5m</MudChip>
-                    <MudChip T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(10))">+10m</MudChip>
+                    <MudChip id="class-tools-timer-add-1" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(1))">+1m</MudChip>
+                    <MudChip id="class-tools-timer-add-5" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(5))">+5m</MudChip>
+                    <MudChip id="class-tools-timer-add-30" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(10))">+10m</MudChip>
                 </div>
                 <div class="class-tool-actions">
-                    <MudButton Variant="MudBlazor.Variant.Filled"
-                               Color="Color.Success"
-                               Size="Size.Small"
-                               Class="class-tool-compact-btn"
-                               Disabled="@(_timerRemaining <= TimeSpan.Zero || _isTimerRunning)"
-                               OnClick="@StartTimer">
-                        Démarrer
-                    </MudButton>
-                    <MudButton Variant="MudBlazor.Variant.Outlined"
-                               Color="Color.Error"
-                               Size="Size.Small"
-                               Class="class-tool-compact-btn"
-                               Disabled="@(!_isTimerRunning)"
-                               OnClick="@StopTimer">
-                        Arrêter
-                    </MudButton>
-                    <MudButton Variant="MudBlazor.Variant.Text"
+                    <span id="class-tools-timer-action-start" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Filled"
+                                   Color="Color.Success"
+                                   Size="Size.Small"
+                                   Class="class-tool-compact-btn"
+                                   Disabled="@(_timerRemaining <= TimeSpan.Zero || _isTimerRunning)"
+                                   OnClick="@StartTimer">
+                            Démarrer
+                        </MudButton>
+                    </span>
+                    <span id="class-tools-timer-action-stop" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Outlined"
+                                   Color="Color.Error"
+                                   Size="Size.Small"
+                                   Class="class-tool-compact-btn"
+                                   Disabled="@(!_isTimerRunning)"
+                                   OnClick="@StopTimer">
+                            Arrêter
+                        </MudButton>
+                    </span>
+                    <MudButton id="class-tools-timer-action-reset"
+                               Variant="MudBlazor.Variant.Text"
                                Color="Color.Primary"
                                Size="Size.Small"
                                Class="class-tool-compact-btn"
@@ -77,25 +84,30 @@
         else if (_activeTool == ToolMode.Stopwatch)
         {
             <div class="class-tool-panel class-tools-mode-panel" role="tabpanel" aria-label="Panneau chronomètre">
-                <div class="class-tool-time class-tool-time-chrono" aria-live="polite">@GetStopwatchDisplay()</div>
+                <div id="class-tools-stopwatch-show" class="class-tool-time class-tool-time-chrono" tabindex="0" aria-live="polite">@GetStopwatchDisplay()</div>
                 <div class="class-tool-actions">
-                    <MudButton Variant="MudBlazor.Variant.Filled"
-                               Color="Color.Success"
-                               Size="Size.Small"
-                               Class="class-tool-compact-btn"
-                               Disabled="@_isStopwatchRunning"
-                               OnClick="@StartStopwatch">
-                        Démarrer
-                    </MudButton>
-                    <MudButton Variant="MudBlazor.Variant.Outlined"
-                               Color="Color.Error"
-                               Size="Size.Small"
-                               Class="class-tool-compact-btn"
-                               Disabled="@(!_isStopwatchRunning)"
-                               OnClick="@StopStopwatch">
-                        Arrêter
-                    </MudButton>
-                    <MudButton Variant="MudBlazor.Variant.Text"
+                    <span id="class-tools-stopwatch-start" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Filled"
+                                   Color="Color.Success"
+                                   Size="Size.Small"
+                                   Class="class-tool-compact-btn"
+                                   Disabled="@_isStopwatchRunning"
+                                   OnClick="@StartStopwatch">
+                            Démarrer
+                        </MudButton>
+                    </span>
+                    <span id="class-tools-stopwatch-stop" tabindex="0">
+                        <MudButton Variant="MudBlazor.Variant.Outlined"
+                                   Color="Color.Error"
+                                   Size="Size.Small"
+                                   Class="class-tool-compact-btn"
+                                   Disabled="@(!_isStopwatchRunning)"
+                                   OnClick="@StopStopwatch">
+                            Arrêter
+                        </MudButton>
+                    </span>
+                    <MudButton id="class-tools-stopwatch-reset"
+                               Variant="MudBlazor.Variant.Text"
                                Color="Color.Primary"
                                Size="Size.Small"
                                Class="class-tool-compact-btn"

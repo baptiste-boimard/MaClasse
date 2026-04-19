@@ -89,6 +89,16 @@ public partial class ClassToolsPanel
                     "focusHelpers.wireShiftTabRedirectFromSelf",
                     "class-sound-card-entry",
                     "class-tools-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabRedirectFromSelf",
+                    "class-tools-stopwatch",
+                    "class-sound-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentTabRedirect",
+                    "class-tools-stopwatch-reset",
+                    "class-sound-card-entry");
             }
 
             if (ShowSoundCard)
@@ -105,6 +115,101 @@ public partial class ClassToolsPanel
                     "focusHelpers.wireShiftTabRedirectFromSelf",
                     "class-tools-card-entry",
                     "dashboard-scheduler-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireEnterSpaceRedirectFromSelf",
+                    "class-tools-card-entry",
+                    "class-tools-timer");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabRedirectFromSelf",
+                    "class-tools-timer",
+                    "class-tools-stopwatch");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireShiftTabRedirectFromSelf",
+                    "class-tools-timer",
+                    "class-tools-card-entry");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabButtonEnterToPanel",
+                    "class-tools-timer",
+                    "class-tools-timer-show");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentShiftTabRedirect",
+                    "class-tools-timer-show",
+                    "class-tools-timer");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabSequenceByIds",
+                    new[]
+                    {
+                        "class-tools-timer-show",
+                        "class-tools-timer-add-1",
+                        "class-tools-timer-add-5",
+                        "class-tools-timer-add-30",
+                        "class-tools-timer-action-start",
+                        "class-tools-timer-action-stop",
+                        "class-tools-timer-action-reset"
+                    });
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentTabRedirect",
+                    "class-tools-timer-action-reset",
+                    "class-tools-stopwatch");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-tools-timer-action-start");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-tools-timer-action-stop");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-tools-timer-action-start");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-tools-timer-action-stop");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabButtonEnterToPanel",
+                    "class-tools-stopwatch",
+                    "class-tools-stopwatch-show");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireDocumentShiftTabRedirect",
+                    "class-tools-stopwatch-show",
+                    "class-tools-timer");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireTabSequenceByIds",
+                    new[]
+                    {
+                        "class-tools-stopwatch-show",
+                        "class-tools-stopwatch-start",
+                        "class-tools-stopwatch-stop",
+                        "class-tools-stopwatch-reset"
+                    });
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-tools-stopwatch-start");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.wireKeyActivateToInnerButtonClick",
+                    "class-tools-stopwatch-stop");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-tools-stopwatch-start");
+
+                await JsRuntime.InvokeVoidAsync(
+                    "focusHelpers.keepInnerButtonTabIndexNegative",
+                    "class-tools-stopwatch-stop");
             }
         }
         catch

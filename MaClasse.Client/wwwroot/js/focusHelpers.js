@@ -417,3 +417,167 @@ window.focusHelpers.wireAltFocusCycleInContainer = function (containerSelector, 
         altHandledOnKeyDown = false;
     }, true);
 };
+
+window.focusHelpers.wireDocumentShiftTabRedirect = function (fromElementId, toElementId) {
+    if (!fromElementId || !toElementId) {
+        return;
+    }
+
+    const wireKey = fromElementId + "|doc-shift-tab|" + toElementId;
+    window.focusHelpers.__documentShiftTabRedirectWired = window.focusHelpers.__documentShiftTabRedirectWired || {};
+    if (window.focusHelpers.__documentShiftTabRedirectWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__documentShiftTabRedirectWired[wireKey] = true;
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || !e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const fromEl = document.getElementById(fromElementId);
+        if (!fromEl) {
+            return;
+        }
+
+        if (active !== fromEl && !fromEl.contains(active)) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        window.focusHelpers.focusElementById(toElementId);
+    }, true);
+};
+
+window.focusHelpers.wireDocumentTabRedirect = function (fromElementId, toElementId) {
+    if (!fromElementId || !toElementId) {
+        return;
+    }
+
+    const wireKey = fromElementId + "|doc-tab|" + toElementId;
+    window.focusHelpers.__documentTabRedirectWired = window.focusHelpers.__documentTabRedirectWired || {};
+    if (window.focusHelpers.__documentTabRedirectWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__documentTabRedirectWired[wireKey] = true;
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const fromEl = document.getElementById(fromElementId);
+        if (!fromEl) {
+            return;
+        }
+
+        if (active !== fromEl && !fromEl.contains(active)) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        window.focusHelpers.focusElementById(toElementId);
+    }, true);
+};
+
+window.focusHelpers.wireTabButtonEnterToPanel = function (tabButtonId, panelFirstElementId) {
+    if (!tabButtonId || !panelFirstElementId) {
+        return;
+    }
+
+    const button = document.getElementById(tabButtonId);
+    if (!button || button.dataset.tabButtonEnterToPanelWired === "1") {
+        return;
+    }
+
+    button.dataset.tabButtonEnterToPanelWired = "1";
+
+    button.addEventListener("keydown", function (e) {
+        const isEnter = e.key === "Enter";
+        const isSpace = e.key === " " || e.key === "Space" || e.key === "Spacebar";
+        if (!isEnter && !isSpace) {
+            return;
+        }
+
+        if (e.target !== button) {
+            return;
+        }
+
+        // Ne pas preventDefault : le clic doit se propager pour que SelectTool soit appelé.
+        // On attend le re-render Blazor avant de déplacer le focus.
+        const tryFocus = function (remaining) {
+            const target = document.getElementById(panelFirstElementId);
+            if (target) {
+                window.focusHelpers.focusElementById(panelFirstElementId);
+                return;
+            }
+            if (remaining > 0) {
+                requestAnimationFrame(function () { tryFocus(remaining - 1); });
+            }
+        };
+
+        requestAnimationFrame(function () { tryFocus(15); });
+    });
+};
+
+window.focusHelpers.wireKeyActivateToInnerButtonClick = function (wrapperId) {
+    if (!wrapperId) {
+        return;
+    }
+
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper || wrapper.dataset.keyActivateToInnerButtonClickWired === "1") {
+        return;
+    }
+
+    wrapper.dataset.keyActivateToInnerButtonClickWired = "1";
+
+    wrapper.addEventListener("keydown", function (e) {
+        const isEnter = e.key === "Enter";
+        const isSpace = e.key === " " || e.key === "Space" || e.key === "Spacebar";
+        if (!isEnter && !isSpace) {
+            return;
+        }
+
+        e.preventDefault();
+
+        const btn = wrapper.querySelector("button:not([disabled])");
+        if (btn) {
+            btn.click();
+        }
+    });
+};
+
+window.focusHelpers.keepInnerButtonTabIndexNegative = function (wrapperId) {
+    if (!wrapperId) {
+        return;
+    }
+
+    const wireKey = "inner-btn-tabindex-" + wrapperId;
+    window.focusHelpers.__innerBtnTabIndexWired = window.focusHelpers.__innerBtnTabIndexWired || {};
+    if (window.focusHelpers.__innerBtnTabIndexWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__innerBtnTabIndexWired[wireKey] = true;
+
+    setInterval(function () {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+        const btn = wrapper.querySelector("button");
+        if (btn && btn.tabIndex !== -1) {
+            btn.tabIndex = -1;
+        }
+    }, 150);
+};
