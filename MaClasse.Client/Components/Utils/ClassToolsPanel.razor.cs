@@ -11,6 +11,10 @@ public partial class ClassToolsPanel
     [Parameter] public bool SoundFirst { get; set; }
     [Parameter] public bool ShowToolsCard { get; set; } = true;
     [Parameter] public bool ShowSoundCard { get; set; } = true;
+    [Parameter] public string SoundCardTabTarget { get; set; } = "top-menu-entry";
+    [Parameter] public string ToolsCardShiftTabTarget { get; set; } = "dashboard-scheduler-card-entry";
+    [Parameter] public string? ToolsCardTabTarget { get; set; }
+    [Parameter] public string? ToolsCardLastItemTabTarget { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private string PanelClass
@@ -106,7 +110,7 @@ public partial class ClassToolsPanel
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireTabRedirectFromSelf",
                     "class-sound-card-entry",
-                    "top-menu-entry");
+                    SoundCardTabTarget);
 
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireEnterSpaceRedirectFromSelf",
@@ -125,7 +129,7 @@ public partial class ClassToolsPanel
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireDocumentTabRedirect",
                     "class-sound-desactivate",
-                    "top-menu-entry");
+                    SoundCardTabTarget);
 
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireKeyActivateToInnerButtonClick",
@@ -149,7 +153,15 @@ public partial class ClassToolsPanel
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireShiftTabRedirectFromSelf",
                     "class-tools-card-entry",
-                    "dashboard-scheduler-card-entry");
+                    ToolsCardShiftTabTarget);
+
+                if (!string.IsNullOrEmpty(ToolsCardTabTarget))
+                {
+                    await JsRuntime.InvokeVoidAsync(
+                        "focusHelpers.wireTabRedirectFromSelf",
+                        "class-tools-card-entry",
+                        ToolsCardTabTarget);
+                }
 
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.wireEnterSpaceRedirectFromSelf",
@@ -245,6 +257,14 @@ public partial class ClassToolsPanel
                 await JsRuntime.InvokeVoidAsync(
                     "focusHelpers.keepInnerButtonTabIndexNegative",
                     "class-tools-stopwatch-stop");
+
+                if (!string.IsNullOrEmpty(ToolsCardLastItemTabTarget))
+                {
+                    await JsRuntime.InvokeVoidAsync(
+                        "focusHelpers.wireDocumentTabRedirect",
+                        "class-tools-stopwatch-reset",
+                        ToolsCardLastItemTabTarget);
+                }
             }
         }
         catch

@@ -13,14 +13,17 @@
                  style="--toolbar-offset:@(isFullscreen ? "2rem" : "0.35rem");">
             <ClassToolsPanel Class="document-view-toolbar-panel document-view-toolbar-panel-left"
                              ShowToolsCard="false"
-                             ShowSoundCard="true" />
+                             ShowSoundCard="true"
+                             SoundCardTabTarget="document-view-topbar" />
 
-            <div class="document-view-topbar">
-                <div class="document-view-hour">
+            <div id="document-view-topbar"
+                 tabindex="0"
+                 class="document-view-topbar">
+                <div id="document-view-hour" tabindex="0" class="document-view-hour">
                     <Hour FontSizeRem="2.5" />
                 </div>
 
-                <MudStack Row="true" Spacing="1" Class="document-view-actions">
+                <MudStack id="document-view-actions" Row="true" Spacing="1" Class="document-view-actions">
                     <MudButton
                         Variant="MudBlazor.Variant.Filled"
                         Size="Size.Small"
@@ -66,12 +69,15 @@
 
             <ClassToolsPanel Class="document-view-toolbar-panel document-view-toolbar-panel-right"
                              ShowToolsCard="true"
-                             ShowSoundCard="false" />
+                             ShowSoundCard="false"
+                             ToolsCardShiftTabTarget="document-view-topbar"
+                             ToolsCardTabTarget="document-view-scroll-area"
+                             ToolsCardLastItemTabTarget="class-sound-card-entry" />
         </section>
     }
     
     
-    <div class="document-view-scroll-area">
+    <div id="document-view-scroll-area" tabindex="0" class="document-view-scroll-area">
         @if (isLoading)
         {
             <MudProgressCircular Indeterminate Color="Color.Primary"/>
@@ -98,7 +104,8 @@
                     @if (IsPdf(document.Format))
                     {
                         <div style=" width: 100%; height: 100%;">
-                            <iframe src="@PdfViewUrl"
+                            <iframe id="document-view-pdf-frame"
+                                    src="@PdfViewUrl"
                                     style="width: 100%;height: 100%;border: none;"
                                     allow="fullscreen"
                                     allowfullscreen
@@ -115,7 +122,7 @@
                     }
                     else if (IsImage(document.Format))
                     {
-                        <img src="@document.Url" alt="@document.Name" style="max-width: 100%; max-height: 100%; object-fit: contain"/>
+                        <img id="document-view-image" src="@document.Url" alt="@document.Name" style="max-width: 100%; max-height: 100%; object-fit: contain"/>
                     }
                     else
                     {

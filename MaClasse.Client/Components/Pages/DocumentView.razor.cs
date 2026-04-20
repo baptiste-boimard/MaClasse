@@ -46,6 +46,75 @@ public partial class DocumentView : ComponentBase
 
   private ElementReference documentContainerRef;
   private bool isFullscreen;
+  private bool _focusWired;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (_focusWired || document == null) return;
+    _focusWired = true;
+
+    try
+    {
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireTabRedirectFromSelf",
+        "document-view-topbar",
+        "class-tools-card-entry");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireShiftTabRedirectFromSelf",
+        "document-view-topbar",
+        "class-sound-card-entry");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireEnterSpaceRedirectFromSelf",
+        "document-view-topbar",
+        "document-view-hour");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireDocumentShiftTabRedirect",
+        "document-view-hour",
+        "document-view-topbar");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireTabToFirstInContainer",
+        "document-view-hour",
+        "document-view-actions");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireContainerExitShiftTab",
+        "document-view-actions",
+        "document-view-hour");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireContainerExitTab",
+        "document-view-actions",
+        "document-view-topbar");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireShiftTabRedirectFromSelf",
+        "document-view-scroll-area",
+        "class-tools-card-entry");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireTabRedirectFromSelf",
+        "document-view-scroll-area",
+        "class-sound-card-entry");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wirePdfScrollAreaEnter",
+        "document-view-scroll-area",
+        "document-view-pdf-frame");
+
+      await _jsRuntime.InvokeVoidAsync(
+        "focusHelpers.wireImageScrollAreaKeyboard",
+        "document-view-scroll-area",
+        "document-view-image");
+    }
+    catch
+    {
+      // Ignore JS bootstrap errors.
+    }
+  }
 
   protected override async Task OnInitializedAsync()
   {

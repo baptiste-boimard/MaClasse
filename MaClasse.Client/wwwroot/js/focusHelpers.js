@@ -581,3 +581,226 @@ window.focusHelpers.keepInnerButtonTabIndexNegative = function (wrapperId) {
         }
     }, 150);
 };
+
+window.focusHelpers.wireTabToFirstInContainer = function (fromId, containerId) {
+    if (!fromId || !containerId) {
+        return;
+    }
+
+    const fromEl = document.getElementById(fromId);
+    if (!fromEl || fromEl.dataset.tabToFirstInContainerWired === "1") {
+        return;
+    }
+
+    fromEl.dataset.tabToFirstInContainerWired = "1";
+
+    fromEl.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || e.shiftKey) {
+            return;
+        }
+
+        if (e.target !== fromEl) {
+            return;
+        }
+
+        e.preventDefault();
+        window.focusHelpers.focusFirstInContainer(containerId);
+    }, true);
+};
+
+window.focusHelpers.wireContainerExitTab = function (containerId, targetId) {
+    if (!containerId || !targetId) {
+        return;
+    }
+
+    const wireKey = containerId + "|container-exit-tab|" + targetId;
+    window.focusHelpers.__containerExitTabWired = window.focusHelpers.__containerExitTabWired || {};
+    if (window.focusHelpers.__containerExitTabWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__containerExitTabWired[wireKey] = true;
+
+    const getFocusables = function (container) {
+        return Array.from(container.querySelectorAll(
+            "button:not([disabled]), [tabindex]:not([tabindex='-1']), input:not([disabled]), a[href]"
+        )).filter(function (el) { return el instanceof HTMLElement; });
+    };
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container || !container.contains(active)) {
+            return;
+        }
+
+        const focusables = getFocusables(container);
+        if (focusables.length === 0 || active !== focusables[focusables.length - 1]) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        window.focusHelpers.focusElementById(targetId);
+    }, true);
+};
+
+window.focusHelpers.wirePdfScrollAreaEnter = function (scrollAreaId, iframeId) {
+    if (!scrollAreaId || !iframeId) {
+        return;
+    }
+
+    const wireKey = "pdf-scroll-area-enter-" + scrollAreaId;
+    window.focusHelpers.__pdfScrollAreaEnterWired = window.focusHelpers.__pdfScrollAreaEnterWired || {};
+    if (window.focusHelpers.__pdfScrollAreaEnterWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__pdfScrollAreaEnterWired[wireKey] = true;
+
+    document.addEventListener("keydown", function (e) {
+        const isEnter = e.key === "Enter";
+        const isSpace = e.key === " " || e.key === "Space" || e.key === "Spacebar";
+        if (!isEnter && !isSpace) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const scrollEl = document.getElementById(scrollAreaId);
+        if (!scrollEl || active !== scrollEl) {
+            return;
+        }
+
+        const iframe = document.getElementById(iframeId);
+        if (!iframe) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        iframe.focus();
+    }, true);
+};
+
+window.focusHelpers.wireImageScrollAreaKeyboard = function (scrollAreaId, imageId) {
+    if (!scrollAreaId || !imageId) {
+        return;
+    }
+
+    const wireKey = "image-scroll-area-keyboard-" + scrollAreaId;
+    window.focusHelpers.__imageScrollAreaKeyboardWired = window.focusHelpers.__imageScrollAreaKeyboardWired || {};
+    if (window.focusHelpers.__imageScrollAreaKeyboardWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__imageScrollAreaKeyboardWired[wireKey] = true;
+
+    const scrollKeys = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"]);
+
+    document.addEventListener("keydown", function (e) {
+        if (!scrollKeys.has(e.key)) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const scrollEl = document.getElementById(scrollAreaId);
+        if (!scrollEl || active !== scrollEl) {
+            return;
+        }
+
+        const img = document.getElementById(imageId);
+        if (!img) {
+            return;
+        }
+
+        const scrollableParent = (function findScrollable(el) {
+            let node = el.parentElement;
+            while (node && node !== document.body) {
+                const style = getComputedStyle(node);
+                const overflowY = style.overflowY;
+                const overflowX = style.overflowX;
+                const canScrollY = (overflowY === "auto" || overflowY === "scroll") && node.scrollHeight > node.clientHeight;
+                const canScrollX = (overflowX === "auto" || overflowX === "scroll") && node.scrollWidth > node.clientWidth;
+                if (canScrollY || canScrollX) {
+                    return node;
+                }
+                node = node.parentElement;
+            }
+            return scrollEl;
+        })(img);
+
+        const stepSmall = 80;
+        const stepPage = scrollableParent.clientHeight * 0.85;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        switch (e.key) {
+            case "ArrowDown":  scrollableParent.scrollBy({ top: stepSmall, behavior: "smooth" }); break;
+            case "ArrowUp":    scrollableParent.scrollBy({ top: -stepSmall, behavior: "smooth" }); break;
+            case "ArrowRight": scrollableParent.scrollBy({ left: stepSmall, behavior: "smooth" }); break;
+            case "ArrowLeft":  scrollableParent.scrollBy({ left: -stepSmall, behavior: "smooth" }); break;
+            case "PageDown":   scrollableParent.scrollBy({ top: stepPage, behavior: "smooth" }); break;
+            case "PageUp":     scrollableParent.scrollBy({ top: -stepPage, behavior: "smooth" }); break;
+            case "Home":       scrollableParent.scrollTo({ top: 0, behavior: "smooth" }); break;
+            case "End":        scrollableParent.scrollTo({ top: scrollableParent.scrollHeight, behavior: "smooth" }); break;
+        }
+    }, true);
+};
+
+window.focusHelpers.wireContainerExitShiftTab = function (containerId, targetId) {
+    if (!containerId || !targetId) {
+        return;
+    }
+
+    const wireKey = containerId + "|container-exit-shift-tab|" + targetId;
+    window.focusHelpers.__containerExitShiftTabWired = window.focusHelpers.__containerExitShiftTabWired || {};
+    if (window.focusHelpers.__containerExitShiftTabWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__containerExitShiftTabWired[wireKey] = true;
+
+    const getFocusables = function (container) {
+        return Array.from(container.querySelectorAll(
+            "button:not([disabled]), [tabindex]:not([tabindex='-1']), input:not([disabled]), a[href]"
+        )).filter(function (el) { return el instanceof HTMLElement; });
+    };
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || !e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) {
+            return;
+        }
+
+        const container = document.getElementById(containerId);
+        if (!container || !container.contains(active)) {
+            return;
+        }
+
+        const focusables = getFocusables(container);
+        if (focusables.length === 0 || active !== focusables[0]) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        window.focusHelpers.focusElementById(targetId);
+    }, true);
+};
