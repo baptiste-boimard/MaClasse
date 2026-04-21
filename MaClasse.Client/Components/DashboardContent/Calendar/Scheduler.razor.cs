@@ -131,6 +131,7 @@ public partial class Scheduler : ComponentBase
                 "scheduler-canvas");
 
             await _jsRuntime.InvokeVoidAsync("appointments.wireCanvasNavigation", "scheduler-canvas");
+            await _jsRuntime.InvokeVoidAsync("focusHelpers.wireEscapeToClosePanel", _dotNetRef);
             await PushAppointmentsDataToJs();
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
         }
@@ -346,6 +347,24 @@ public partial class Scheduler : ComponentBase
     {
         showAppointmentPanel = false;
         isEditMode = false;
+    }
+
+    private void OnSchedulerKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && showAppointmentPanel)
+        {
+            ClosePanel();
+        }
+    }
+
+    [JSInvokable]
+    public void EscapePressed()
+    {
+        if (showAppointmentPanel)
+        {
+            ClosePanel();
+            InvokeAsync(StateHasChanged);
+        }
     }
     
     private async Task SetSchedulerViewAsync(int index)

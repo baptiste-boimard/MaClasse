@@ -197,6 +197,28 @@ body.using-mouse .scheduler-view *:focus-visible {
     box-shadow: none !important;
 }
 
+/* Supprime le focus violet Radzen sur les cellules de slot (souris ET clavier) */
+.scheduler-canvas td:focus,
+.scheduler-canvas td:focus-visible,
+.scheduler-canvas [class*="rz-slot"]:focus,
+.scheduler-canvas [class*="rz-slot"]:focus-visible,
+.scheduler-canvas .rz-view-slot:focus,
+.scheduler-canvas .rz-view-slot:focus-visible,
+.scheduler-canvas table:focus,
+.scheduler-canvas table:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* Supprime le border violet Radzen sur les cellules de slot focusées */
+.rz-state-focused,
+.rz-slots.rz-state-focused {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;

@@ -814,6 +814,26 @@ window.focusHelpers.wireMudMenuCloseOnFocusOut = function (menuWrapperId, dotNet
     }, true);
 };
 
+window.focusHelpers.wireEscapeToClosePanel = function (dotNetRef) {
+    const wireKey = "escape-close-panel";
+    window.focusHelpers.__escapePanelWired = window.focusHelpers.__escapePanelWired || {};
+    if (window.focusHelpers.__escapePanelWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__escapePanelWired[wireKey] = true;
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") {
+            return;
+        }
+        // Si un picker MudBlazor est ouvert, laisser MudBlazor le fermer en premier
+        if (document.querySelector(".mud-popover-open")) {
+            return;
+        }
+        dotNetRef.invokeMethodAsync("EscapePressed").catch(function () {});
+    }, true); // capture phase : tire avant tout stopPropagation MudBlazor
+};
+
 window.focusHelpers.wireMudMenuFocusFirstOnOpen = function (menuWrapperId) {
     // Géré côté Blazor via OnActivatorKeyDown + focusFirstOpenMudMenuItemDelayed
 };

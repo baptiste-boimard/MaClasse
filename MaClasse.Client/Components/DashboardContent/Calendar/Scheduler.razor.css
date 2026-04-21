@@ -115,6 +115,17 @@
     color: #12345b;
 }
 
+/* Supprime le focus violet natif Radzen sur les cellules de slot */
+::deep .rz-slot:focus,
+::deep .rz-slot:focus-visible,
+::deep td:focus,
+::deep td:focus-visible,
+::deep [class*="rz-slot"]:focus,
+::deep [class*="rz-slot"]:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 /* Supprime les halos bleus potentiels Radzen/Mud dans le scheduler et impose le focus jaune (clavier uniquement). */
 ::deep .scheduler-view :is(
     .mud-button-root:focus-visible,

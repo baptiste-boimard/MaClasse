@@ -3,7 +3,8 @@
 @using Variant = MudBlazor.Variant
 
 <div class="scheduler-view"
-     id="scheduler-view-root">
+     id="scheduler-view-root"
+     @onkeydown="OnSchedulerKeyDown">
     <div id="scheduler-toolbar" class="scheduler-toolbar" tabindex="0">
 
         <div class="scheduler-toolbar-row">
