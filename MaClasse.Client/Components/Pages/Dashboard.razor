@@ -20,11 +20,10 @@
             <aside class="dashboard-left-panel">
                 <section class="dashboard-card dashboard-reading-card"
                          id="dashboard-reading-card-entry"
-                         tabindex="0"
                          style="@GetNextCourseCardStyle()">
                     <h3 id="dashboard-reading-card-title">
-                        <MudIcon Icon="@Icons.Material.Filled.AutoStories" Class="dashboard-title-icon" />
-                        @(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")
+                        <MudIcon Icon="@Icons.Material.Filled.AutoStories" Class="dashboard-title-icon" aria-hidden="true" />
+                        @(_hasCurrentCourse ? "Cours démarré" : "Prochain cours")
                     </h3>
                     <p @ref="_nextCoursePreviewRef">@_nextCoursePreview</p>
 
@@ -33,6 +32,7 @@
                         <h4 class="dashboard-course-title"
                             @ref="_nextCourseTitleRef">@(_nextCourseAppointment.Text ?? "Cours sans titre")</h4>
                         <p class="dashboard-course-time"
+                           aria-hidden="true"
                            @ref="_nextCourseTimeRef">
                             @_nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm")
                             -
@@ -44,6 +44,7 @@
                                    Color="Color.Primary"
                                    Size="Size.Small"
                                    StartIcon="@Icons.Material.Filled.Visibility"
+                                   aria-label="@GetButtonAriaLabel()"
                                    OnClick="@OpenNextCourseInLessonPanel">
                             Afficher le cours
                         </MudButton>

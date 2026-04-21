@@ -108,7 +108,7 @@ public partial class Dashboard : ComponentBase, IDisposable
         if (selectedCourse is null)
         {
             _nextCourseAppointment = null;
-            _nextCoursePreview = "Aucun cours à venir.";
+            _nextCoursePreview = "Aucun cours à venir";
             return;
         }
 
@@ -116,18 +116,21 @@ public partial class Dashboard : ComponentBase, IDisposable
 
         if (_hasCurrentCourse)
         {
-            _nextCoursePreview = "Cours actuellement en cours.";
+            var remaining = selectedCourse.EndLocal - now;
+            _nextCoursePreview = remaining.TotalMinutes >= 60
+                ? $"Fini dans {(int)remaining.TotalHours}h{remaining.Minutes:00}"
+                : $"Fini dans {Math.Max(1, (int)Math.Round(remaining.TotalMinutes))} min";
             return;
         }
 
         var delay = selectedCourse.StartLocal - now;
         if (delay.TotalMinutes < 60)
         {
-            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min.";
-        }
+        }            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min";
+
         else
         {
-            _nextCoursePreview = $"Prévu le {selectedCourse.StartLocal:dddd dd MMM}.";
+            _nextCoursePreview = $"Prévu le {selectedCourse.StartLocal:dddd dd MMM}";
         }
     }
 
@@ -185,6 +188,18 @@ public partial class Dashboard : ComponentBase, IDisposable
         }
 
         _lessonState.SetLessonSelected(_nextCourseAppointment);
+    }
+
+    private string GetButtonAriaLabel()
+    {
+        if (_nextCourseAppointment is null)
+            return "Afficher le cours";
+
+        var heading = _hasCurrentCourse ? "Cours démarré" : "Prochain cours";
+        var courseTitle = _nextCourseAppointment.Text ?? "Cours sans titre";
+        var start = _nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm");
+        var end = _nextCourseAppointment.End.ToLocalTime().ToString("HH:mm");
+        return $"Afficher le cours : {heading}, {_nextCoursePreview}, {courseTitle}, {start} à {end}";
     }
 
     private string GetNextCourseCardStyle()
