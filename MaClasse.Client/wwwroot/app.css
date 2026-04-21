@@ -138,6 +138,14 @@ section[tabindex]:focus-visible {
     box-shadow: none !important;
 }
 
+/* Outline des items de menu MudBlazor 8 : <div class="mud-menu-item" tabindex="0"> */
+.mud-popover-open .mud-menu-item:focus,
+.mud-popover-open .mud-menu-item:focus-visible {
+    outline: 3px solid var(--wcag-focus-ring) !important;
+    outline-offset: -3px !important;
+    box-shadow: none !important;
+}
+
 /* Force un focus lisible sur les miniatures de documents (même si d'autres règles globales passent après). */
 .lesson-general-documents-panel .file-explorer .file-explorer-card:focus-visible,
 .lesson-general-documents-panel .file-explorer .file-explorer-card.mud-focus-visible {

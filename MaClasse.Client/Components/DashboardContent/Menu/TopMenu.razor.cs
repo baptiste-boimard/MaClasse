@@ -63,6 +63,10 @@ public partial class TopMenu : ComponentBase, IDisposable
                 "top-menu-mail-link",
                 "top-menu-button-logout",
             });
+
+        await _jsRuntime.InvokeVoidAsync(
+            "focusHelpers.wireMudMenuFocusFirstOnOpen",
+            "top-menu-dashboard-select");
     }
 
     public async Task OpenProfileDialog()

@@ -61,7 +61,8 @@
     outline-offset: 2px;
 }
 
-::deep(.view-dashboard-menu .mud-menu-item:focus-visible) {
-    outline: 3px solid var(--view-dashboard-focus-ring);
-    outline-offset: 2px;
+::deep(.mud-menu-item:focus),
+::deep(.mud-menu-item:focus-visible) {
+    outline: 3px solid var(--view-dashboard-focus-ring) !important;
+    outline-offset: -3px !important;
 }

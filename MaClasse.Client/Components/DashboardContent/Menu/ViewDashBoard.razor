@@ -12,7 +12,8 @@
             @_buttonText
         </span>
 
-        <MudMenu id="top-menu-dashboard-select"
+        <MudMenu @ref="_dashboardMenu"
+                 id="top-menu-dashboard-select"
                  Class="view-dashboard-menu"
                  Style="align-self: auto;"
                  title="Ouvrir la liste des dashboards"
@@ -21,7 +22,8 @@
                 <button type="button"
                         class="view-dashboard-activator"
                         aria-label="Ouvrir la liste des dashboards"
-                        aria-haspopup="menu">
+                        aria-haspopup="menu"
+                        @onkeydown="OnActivatorKeyDown">
                     <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown"
                              Class="view-dashboard-activator-icon" />
                 </button>

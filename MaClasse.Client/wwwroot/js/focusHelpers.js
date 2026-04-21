@@ -761,6 +761,88 @@ window.focusHelpers.wireImageScrollAreaKeyboard = function (scrollAreaId, imageI
     }, true);
 };
 
+window.focusHelpers.wireMudMenuCloseOnFocusOut = function (menuWrapperId, dotNetRef) {
+    if (!menuWrapperId || !dotNetRef) {
+        return;
+    }
+
+    const wireKey = "mud-menu-close-focusout-" + menuWrapperId;
+    window.focusHelpers.__mudMenuCloseOnFocusOutWired = window.focusHelpers.__mudMenuCloseOnFocusOutWired || {};
+    if (window.focusHelpers.__mudMenuCloseOnFocusOutWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__mudMenuCloseOnFocusOutWired[wireKey] = true;
+
+    document.addEventListener("focusout", function (e) {
+        const relatedTarget = e.relatedTarget;
+
+        const openPopovers = Array.from(document.querySelectorAll(".mud-popover-open"));
+        if (openPopovers.length === 0) {
+            return;
+        }
+
+        const wrapper = document.getElementById(menuWrapperId);
+
+        const isInsidePopover = openPopovers.some(function (p) {
+            return relatedTarget && p.contains(relatedTarget);
+        });
+        const isInsideWrapper = wrapper && relatedTarget && wrapper.contains(relatedTarget);
+
+        if (isInsidePopover || isInsideWrapper) {
+            return;
+        }
+
+        dotNetRef.invokeMethodAsync("CloseMenuAsync").catch(function () {});
+    }, true);
+};
+
+window.focusHelpers.wireMudMenuFocusFirstOnOpen = function (menuWrapperId) {
+    // Géré côté Blazor via OnActivatorKeyDown + focusFirstOpenMudMenuItemDelayed
+};
+
+window.focusHelpers.focusFirstOpenMudMenuItemDelayed = function (delay) {
+    setTimeout(function () {
+        const openPopover = document.querySelector(".mud-popover-open");
+        if (!openPopover) {
+            return;
+        }
+        // MudBlazor 8 rend MudMenuItem comme <div tabindex="0" class="mud-menu-item ...">
+        const firstItem =
+            openPopover.querySelector(".mud-menu-item[tabindex='0']") ||
+            openPopover.querySelector("div[tabindex='0']") ||
+            openPopover.querySelector("[tabindex='0']");
+        if (!firstItem) {
+            return;
+        }
+        firstItem.focus({ preventScroll: true });
+
+        // MudMenuItem est un <div> : pas d'activation native par Enter, brancher le clavier
+        if (firstItem.tagName !== "BUTTON" && firstItem.tagName !== "A") {
+            const popover = openPopover;
+            if (popover.dataset.mudMenuItemKeyboardWired === "1") {
+                return;
+            }
+            popover.dataset.mudMenuItemKeyboardWired = "1";
+            popover.addEventListener("keydown", function (e) {
+                const isEnter = e.key === "Enter";
+                const isSpace = e.key === " " || e.key === "Space" || e.key === "Spacebar";
+                if (!isEnter && !isSpace) {
+                    return;
+                }
+                const active = document.activeElement;
+                if (!(active instanceof HTMLElement) || !popover.contains(active)) {
+                    return;
+                }
+                if (active.tagName === "BUTTON" || active.tagName === "A") {
+                    return;
+                }
+                e.preventDefault();
+                active.click();
+            });
+        }
+    }, delay);
+};
+
 window.focusHelpers.wireContainerExitShiftTab = function (containerId, targetId) {
     if (!containerId || !targetId) {
         return;
