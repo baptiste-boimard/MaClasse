@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using MaClasse.Client.States;
 using System.Globalization;
 using MaClasse.Shared.Models.Files;
@@ -38,7 +38,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private Appointment appointement = new Appointment();
     private List<Document> files = new List<Document>();
-    
+
     private Document selectedDoc;
     private bool showContextMenu;
     private int menuX;
@@ -57,33 +57,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private bool _isAdvancedSearchLoading;
     private bool _hasAdvancedSearchCompleted;
     private string _lastCompletedAdvancedSearchQuery = string.Empty;
-    private bool _focusContextMenuRequested;
     private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
     private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
     private MudTextField<string>? _advancedSearchInputRef;
-    private bool _moveFocusAfterAdvancedSearch;
-    private bool _focusFirstAdvancedSearchResultAfterRender;
-    private bool _focusAdvancedSearchFallbackAfterRender;
     private bool IsViewingAnotherDashboard =>
         !string.IsNullOrWhiteSpace(_schedulerState.SchedulerDisplayed) &&
         !string.Equals(_schedulerState.SchedulerDisplayed, _schedulerState.IdUser, StringComparison.Ordinal);
     private const string AdvancedSearchPlaceholder =
         "Décriver le document que vous recherchez,\nex : Trouve les documents traitant de musiques africaines";
-
-    private string AdvancedSearchQuery
-    {
-        get => _advancedSearchQuery;
-        set
-        {
-            if (_advancedSearchQuery == value)
-            {
-                return;
-            }
-
-            _advancedSearchQuery = value;
-            _hasAdvancedSearchCompleted = false;
-        }
-    }
 
     private string AdvancedSearchAriaStatus
     {
@@ -105,6 +86,21 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
+    private string AdvancedSearchQuery
+    {
+        get => _advancedSearchQuery;
+        set
+        {
+            if (_advancedSearchQuery == value)
+            {
+                return;
+            }
+
+            _advancedSearchQuery = value;
+            _hasAdvancedSearchCompleted = false;
+        }
+    }
+
     [Parameter] public bool ShowHeader { get; set; } = true;
     [Parameter] public bool ShowFileList { get; set; } = true;
     [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
@@ -114,8 +110,8 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [Parameter] public bool IsBusy { get; set; }
     [Parameter] public string BusyFileName { get; set; } = string.Empty;
     [Parameter] public EventCallback OnAdvancedSearchNoResultFocusFallback { get; set; }
-    
-    
+
+
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
@@ -136,7 +132,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         SyncFromState();
         InvokeAsync(() => { StateHasChanged(); });
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && (ShowFileList || ShowAdvancedSearch))
@@ -146,37 +142,13 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             await _jsRuntime.InvokeVoidAsync("documents.registerOutsideClick");
         }
 
-        if (showContextMenu && _focusContextMenuRequested)
-        {
-            _focusContextMenuRequested = false;
-            await _jsRuntime.InvokeVoidAsync(
-                "documents.focusContextMenuFirstItem",
-                _firstContextMenuItemId,
-                _contextMenuId);
-        }
-
-        if (_focusFirstAdvancedSearchResultAfterRender && _advancedSearchResults.Count > 0)
-        {
-            _focusFirstAdvancedSearchResultAfterRender = false;
-            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", GetAdvancedSearchResultCardId(0));
-        }
-
-        if (_focusAdvancedSearchFallbackAfterRender)
-        {
-            _focusAdvancedSearchFallbackAfterRender = false;
-            if (OnAdvancedSearchNoResultFocusFallback.HasDelegate)
-            {
-                await OnAdvancedSearchNoResultFocusFallback.InvokeAsync();
-            }
-        }
-
         if (ShowFileList && !_horizontalWheelEnabled)
         {
             await _jsRuntime.InvokeVoidAsync("documents.enableHorizontalWheel");
             _horizontalWheelEnabled = true;
         }
     }
-    
+
     private async Task OpenFileInNewTab()
     {
         if (selectedDoc is null)
@@ -185,12 +157,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         string concatString = $"{_schedulerState.SchedulerDisplayed}-{selectedDoc.IdDocument}";
 
         var base64EncodedconcatString = Convert.ToBase64String(Encoding.UTF8.GetBytes(concatString));
-        
+
         var viewerUrl = $"/documents/view/{base64EncodedconcatString}";
-        
+
         await _jsRuntime.InvokeVoidAsync("open", viewerUrl, "_blank");
     }
-    
+
     private async Task DeleteFile()
     {
         if (selectedDoc is null || _isDeleting || IsBusy)
@@ -239,12 +211,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             _lessonState.RenameFile(selectedDoc);
         }
     }
-    
+
     private async Task OnImageClick(MouseEventArgs e, string documentId)
     {
         var x = (int)e.ClientX;
         var y = (int)e.ClientY;
-        
+
         await _jsRuntime.InvokeVoidAsync("documents.handleDocumentClickFromBlazor", documentId, x, y);
     }
 
@@ -303,7 +275,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             menuX = x;
             menuY = y;
             showContextMenu = true;
-            _focusContextMenuRequested = true;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -336,33 +307,16 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         menuX = x;
         menuY = y;
         showContextMenu = true;
-        _focusContextMenuRequested = true;
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private static string GetDocumentCardAriaLabel(Document doc)
-    {
-        var docName = string.IsNullOrWhiteSpace(doc.Name) ? "document sans nom" : doc.Name;
-        return $"Ouvrir le menu du document {docName}";
-    }
-
     private static string GetAdvancedSearchResultCardId(int index) => $"file-explorer-advanced-result-{index}";
-
-    private int GetAdvancedSearchTabIndex() => AllowAdvancedSearchFocus ? 0 : -1;
 
     private string GetLessonChoiceLabel(Appointment appointment)
     {
         var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
         return $"{text} - {appointment.Start.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}";
-    }
-
-    private string GetLessonChoiceAriaLabel(Appointment appointment)
-    {
-        var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
-        var frenchCulture = CultureInfo.GetCultureInfo("fr-FR");
-        var fullDate = appointment.Start.ToString("dddd d MMMM yyyy 'à' HH:mm", frenchCulture);
-        return $"{text}, {fullDate}";
     }
 
     private async Task OpenLessonChoice(Appointment appointment)
@@ -472,34 +426,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task OnAdvancedSearchButtonClick()
     {
-        var shouldMoveFocus = _moveFocusAfterAdvancedSearch;
-        _moveFocusAfterAdvancedSearch = false;
-
         await TriggerAdvancedSearch();
-
-        if (!shouldMoveFocus)
-        {
-            return;
-        }
-
-        if (_advancedSearchResults.Count > 0)
-        {
-            _focusFirstAdvancedSearchResultAfterRender = true;
-        }
-        else
-        {
-            _focusAdvancedSearchFallbackAfterRender = true;
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void HandleAdvancedSearchButtonKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            _moveFocusAfterAdvancedSearch = true;
-        }
     }
 
     private async Task HandleAdvancedSearchKeyDown(KeyboardEventArgs e)
@@ -515,6 +442,11 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
+    private void HandleAdvancedSearchButtonKeyDown(KeyboardEventArgs e)
+    {
+        // Handler conservé pour compatibilité, sans logique de focus.
+    }
+
     public async Task FocusAdvancedSearchInputAsync()
     {
         if (!ShowAdvancedSearch || !AllowAdvancedSearchFocus || _advancedSearchInputRef is null)
@@ -524,7 +456,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
         await _advancedSearchInputRef.FocusAsync();
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         _lessonState.OnChange -= RefreshState;

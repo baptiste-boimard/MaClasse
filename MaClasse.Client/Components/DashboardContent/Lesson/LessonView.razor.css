@@ -22,13 +22,6 @@
     font-weight: 700;
 }
 
-.lesson-header-title:focus,
-.lesson-header-title:focus-visible {
-    outline: 3px solid #ffcc66;
-    outline-offset: 2px;
-    border-radius: 8px;
-}
-
 .lesson-header-chip {
     margin-left: 1rem;
 }
@@ -332,31 +325,6 @@
     box-shadow: inset 0 0 0 2px #3f6fbf, 0 2px 8px rgba(24, 57, 112, 0.12);
 }
 
-.lesson-tab-button:focus-visible {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.35) !important;
-}
-
-/* MudButton rend le <button> en interne: forcer le focus visible sur l'élément réel. */
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button:focus,
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button:focus-visible,
-::deep .lesson-tab-buttons [role="tab"]:focus,
-::deep .lesson-tab-buttons [role="tab"]:focus-visible {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px !important;
-    box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.35) !important;
-    border-radius: 10px !important;
-}
-
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active:focus,
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button.is-active:focus-visible,
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"]:focus,
-::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button[aria-selected="true"]:focus-visible {
-    border-color: #ffcc66 !important;
-    box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.35) !important;
-}
-
 ::deep .lesson-tab-buttons .mud-button-root.lesson-tab-button {
     border: 1px solid transparent;
     transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
@@ -409,23 +377,6 @@
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-}
-
-/* Focus visible à contraste élevé pour navigation clavier (WCAG). */
-.lesson-card :is(.mud-button-root, .mud-tab, input, textarea):focus-visible {
-    outline: 3px solid #ffcc66;
-    outline-offset: 2px;
-    border-radius: 8px;
-}
-
-/* Boutons d'actions: forcer l'indicateur jaune en navigation clavier. */
-::deep .lesson-actions .mud-button-root:focus-visible,
-::deep .lesson-actions .mud-button-root.mud-focus-visible,
-::deep .lesson-actions .mud-button-root:focus {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px !important;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18) !important;
-    border-radius: 8px !important;
 }
 
 @media (max-width: 960px) {

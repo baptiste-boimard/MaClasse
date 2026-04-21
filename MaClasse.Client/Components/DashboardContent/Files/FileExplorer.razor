@@ -12,11 +12,10 @@
             @if (ShowAdvancedSearch)
             {
                 <div class="file-explorer-advanced-search">
-                    <span class="sr-only" aria-live="polite" aria-atomic="true">@AdvancedSearchAriaStatus</span>
+                    <span class="sr-only">@AdvancedSearchAriaStatus</span>
                     <MudTextField T="string"
                                   Class="file-explorer-advanced-search-input"
                                   @ref="_advancedSearchInputRef"
-                                  tabindex="@GetAdvancedSearchTabIndex()"
                                   Disabled="@(!AllowAdvancedSearchFocus)"
                                   Placeholder="@AdvancedSearchPlaceholder"
                                   @bind-Value="AdvancedSearchQuery"
@@ -27,15 +26,11 @@
                     <MudButton Variant="MudBlazor.Variant.Filled"
                                id="file-explorer-advanced-search-button-entry"
                                Class="file-explorer-advanced-search-button"
-                               tabindex="@GetAdvancedSearchTabIndex()"
                                Color="Color.Primary"
                                StartIcon="@(_isAdvancedSearchLoading ? null : Icons.Material.Filled.Search)"
                                OnClick="OnAdvancedSearchButtonClick"
                                @onkeydown="HandleAdvancedSearchButtonKeyDown"
-                               Disabled="@_isAdvancedSearchLoading"
-                    
-                    
-                               >
+                               Disabled="@_isAdvancedSearchLoading">
                         @if (_isAdvancedSearchLoading)
                         {
                             <span>Rechercher</span>
@@ -61,9 +56,7 @@
                                     var doc = _advancedSearchResults[i];
                                     <MudCard Class="file-explorer-card"
                                              id="@GetAdvancedSearchResultCardId(i)"
-                                             role="button"
-                                             tabindex="@GetAdvancedSearchTabIndex()"
-                                             aria-label="@GetDocumentCardAriaLabel(doc)"
+                                             tabindex="0"
                                              @onclick="@((MouseEventArgs e) => OnAdvancedSearchImageClick(e, doc))"
                                              @onkeydown="@((KeyboardEventArgs e) => OnAdvancedSearchCardKeyDown(e, doc))">
                                         <div class="file-explorer-card-body">
@@ -103,14 +96,12 @@
     @if (showContextMenu)
     {
         <div class="file-explorer-context-backdrop"
-             aria-hidden="true"
              @onmousedown="CloseDocumentMenu"
              @onkeydown="HandleMenuBackdropKeyDown"></div>
         <MudPaper id="@_contextMenuId"
                   Class="mud-elevation-8 file-explorer-context-menu"
                   Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
                   role="menu"
-                  aria-label="Actions du document"
                   tabindex="-1"
                   @onkeydown="HandleContextMenuKeyDown"
                   @onmousedown:stopPropagation>
@@ -172,7 +163,6 @@
                         <button type="button"
                                 class="file-explorer-menu-item"
                                 role="menuitem"
-                                aria-label="@GetLessonChoiceAriaLabel(lessonChoice)"
                                 @onclick="@(async () => await OpenLessonChoice(lessonChoice))">
                             @GetLessonChoiceLabel(lessonChoice)
                         </button>
@@ -221,9 +211,7 @@
                             @foreach (var doc in files)
                             {
                                 <MudCard Class="file-explorer-card"
-                                         role="button"
                                          tabindex="0"
-                                         aria-label="@GetDocumentCardAriaLabel(doc)"
                                          @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))"
                                          @onkeydown="@((KeyboardEventArgs e) => OnFileCardKeyDown(e, doc))">
                                     <div class="file-explorer-card-body">

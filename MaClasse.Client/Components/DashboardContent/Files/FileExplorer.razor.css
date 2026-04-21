@@ -265,25 +265,6 @@
     box-shadow: 0 10px 20px rgba(18, 52, 102, 0.18);
 }
 
-.file-explorer ::deep .file-explorer-card:focus {
-    outline: none !important;
-    border-color: #7a5bd6 !important;
-    box-shadow:
-        inset 0 0 0 2px rgba(122, 91, 214, 0.88) !important,
-        inset 0 0 0 4px rgba(237, 232, 255, 0.9) !important,
-        0 10px 20px rgba(18, 52, 102, 0.18) !important;
-}
-
-.file-explorer ::deep .file-explorer-card:focus-visible {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px;
-    border-color: #f0b94b !important;
-    box-shadow:
-        inset 0 0 0 2px rgba(255, 204, 102, 0.98) !important,
-        inset 0 0 0 4px rgba(255, 246, 221, 0.92) !important,
-        0 10px 20px rgba(18, 52, 102, 0.18) !important;
-}
-
 .file-explorer-card-body {
     display: flex;
     flex-direction: column;

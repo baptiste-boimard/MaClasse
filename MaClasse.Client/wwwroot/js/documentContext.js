@@ -73,49 +73,4 @@
         });
     },
 
-    focusContextMenuFirstItem: function (firstItemId, menuId) {
-        const tryFocus = (attempt = 0) => {
-            const firstItem = firstItemId ? document.getElementById(firstItemId) : null;
-            if (firstItem instanceof HTMLElement && !firstItem.hasAttribute("disabled")) {
-                firstItem.focus();
-                return;
-            }
-
-            const menu = menuId ? document.getElementById(menuId) : null;
-            if (menu instanceof HTMLElement) {
-                const fallbackItem = menu.querySelector(".file-explorer-menu-item:not(:disabled)");
-                if (fallbackItem instanceof HTMLElement) {
-                    fallbackItem.focus();
-                    return;
-                }
-
-                menu.focus();
-                return;
-            }
-
-            if (attempt < 6) {
-                window.setTimeout(() => tryFocus(attempt + 1), 30);
-            }
-        };
-
-        window.requestAnimationFrame(() => tryFocus());
-    },
-
-    focusElementById: function (elementId) {
-        const tryFocus = (attempt = 0) => {
-            const element = elementId ? document.getElementById(elementId) : null;
-            if (element instanceof HTMLElement) {
-                element.focus();
-                return;
-            }
-
-            if (attempt < 6) {
-                window.setTimeout(() => tryFocus(attempt + 1), 30);
-            }
-        };
-
-        window.requestAnimationFrame(() => tryFocus());
-    }
-    
-    
 };

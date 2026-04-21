@@ -4,12 +4,11 @@
 
 <div class="scheduler-view"
      id="scheduler-view-root">
-    <div id="scheduler-toolbar" class="scheduler-toolbar" tabindex="0">
+    <div id="scheduler-toolbar" class="scheduler-toolbar">
 
         <div class="scheduler-toolbar-row">
             <MudButton id="scheduler-toolbar-today"
                        StartIcon="@Icons.Material.Filled.Today"
-                       aria-label="Revenir à la date d'aujourd'hui"
                        title="Aujourd'hui"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -19,20 +18,15 @@
 
             <div class="scheduler-view-switch">
                 <MudButtonGroup Color="Color.Info"
-                                Variant="Variant.Outlined"
-                                aria-label="Choix de la vue du calendrier">
+                                Variant="Variant.Outlined">
                     <MudIconButton id="scheduler-view-switch-today"
                                    Icon="@Icons.Material.Filled.Today"
-                                   aria-label="Afficher la vue jour"
-                                   aria-pressed="@(selectedViewIndex == 0)"
                                    title="Vue jour"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(0))"/>
 
                     <MudIconButton id="scheduler-view-switch-week"
                                    Icon="@Icons.Material.Filled.ViewWeek"
-                                   aria-label="Afficher la vue semaine"
-                                   aria-pressed="@(selectedViewIndex == 1)"
                                    title="Vue semaine"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(1))"/>
@@ -43,20 +37,17 @@
         <div class="scheduler-toolbar-row">
             <MudIconButton id="scheduler-view-select-date"
                            Icon="@Icons.Material.Filled.DateRange"
-                           aria-label="Ouvrir le sélecteur de date"
                            title="Choisir une date"
                            Color="Color.Primary"
                            OnClick="@(() => datePickerOpen = true)" />
 
             <MudIconButton id="scheduler-view-previous-date"
                            Icon="@Icons.Material.Filled.ArrowBackIosNew"
-                           aria-label="Aller à la période précédente"
                            title="Période précédente"
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
 
             <MudText id="scheduler-view-select-period"
-                     tabindex="0"
                      Typo="Typo.body1"
                      Class="@($"scheduler-date-label{(selectedViewIndex == 1 ? " scheduler-date-label--week" : string.Empty)}")">
                 @DisplayedDateLabel
@@ -64,14 +55,12 @@
 
             <MudIconButton id="scheduler-view-next-date"
                            Icon="@Icons.Material.Filled.ArrowForwardIos"
-                           aria-label="Aller à la période suivante"
                            title="Période suivante"
                            Color="Color.Info"
                            OnClick="@GoToNext" />
 
             <MudIconButton id="scheduler-view-new-appointment"
                            Icon="@Icons.Material.Filled.PostAdd"
-                           aria-label="Ajouter un rendez-vous"
                            title="Ajouter un rendez-vous"
                            Disabled="_schedulerState.isReadOnly"
                            Color="Color.Success"
@@ -123,7 +112,7 @@
         </div>
     }
 
-    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0">
+    <div id="scheduler-canvas" class="scheduler-canvas">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"
