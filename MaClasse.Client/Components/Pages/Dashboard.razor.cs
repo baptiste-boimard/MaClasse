@@ -108,13 +108,19 @@ public partial class Dashboard : ComponentBase, IDisposable
 
             await _jsRuntime.InvokeVoidAsync(
                 "focusHelpers.wireTabRedirectFromSelf",
+                "dashboard-reading-card-entry",
+                "dashboard-stats-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
+                "dashboard-stats-card-entry",
+                "dashboard-files-card-entry");
+
+            await _jsRuntime.InvokeVoidAsync(
+                "focusHelpers.wireTabRedirectFromSelf",
                 "lesson-action-delete",
                 "dashboard-scheduler-card-entry");
 
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireEnterSpaceRedirectFromSelf",
-                "top-menu-entry",
-                "view-dashboard-current-entry");
 
 
             await _jsRuntime.InvokeVoidAsync(

@@ -2,6 +2,7 @@ using System.Globalization;
 using MaClasse.Client.Services;
 using MaClasse.Client.States;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
 
@@ -67,6 +68,14 @@ public partial class TopMenu : ComponentBase, IDisposable
         await _jsRuntime.InvokeVoidAsync(
             "focusHelpers.wireMudMenuFocusFirstOnOpen",
             "top-menu-dashboard-select");
+    }
+
+    private async Task HandleTopMenuEntryKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
+        {
+            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "view-dashboard-current-entry");
+        }
     }
 
     public async Task OpenProfileDialog()

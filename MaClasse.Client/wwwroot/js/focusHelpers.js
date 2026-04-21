@@ -194,6 +194,35 @@ window.focusHelpers.wireTabRedirectFromSelf = function (fromElementId, toElement
     }, true);
 };
 
+window.focusHelpers.wireEnterSpaceToFirstInContainer = function (fromId, containerId) {
+    if (!fromId || !containerId) {
+        return;
+    }
+
+    const wireKey = fromId + "|enter-space-first|" + containerId;
+    window.focusHelpers.__enterSpaceFirstWired = window.focusHelpers.__enterSpaceFirstWired || {};
+    if (window.focusHelpers.__enterSpaceFirstWired[wireKey]) {
+        return;
+    }
+    window.focusHelpers.__enterSpaceFirstWired[wireKey] = true;
+
+    document.addEventListener("keydown", function (e) {
+        const isEnter = e.key === "Enter";
+        const isSpace = e.key === " " || e.key === "Space" || e.key === "Spacebar";
+        if (!isEnter && !isSpace) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (!active || active.id !== fromId) {
+            return;
+        }
+
+        e.preventDefault();
+        window.focusHelpers.focusFirstInContainer(containerId);
+    }, true);
+};
+
 window.focusHelpers.wireEnterSpaceRedirectFromSelf = function (fromElementId, toElementId) {
     if (!fromElementId || !toElementId) {
         return;
