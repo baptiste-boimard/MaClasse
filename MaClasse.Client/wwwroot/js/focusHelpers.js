@@ -1,5 +1,23 @@
 window.focusHelpers = window.focusHelpers || {};
 
+// Tracker global souris/clavier : ajoute "using-mouse" ou "using-keyboard" sur le body
+(function () {
+    if (window.focusHelpers.__modalityTrackerWired) return;
+    window.focusHelpers.__modalityTrackerWired = true;
+
+    document.addEventListener("mousedown", function () {
+        document.body.classList.add("using-mouse");
+        document.body.classList.remove("using-keyboard");
+    }, true);
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Tab" || e.key === "Enter" || e.key === " " || e.key.startsWith("Arrow")) {
+            document.body.classList.add("using-keyboard");
+            document.body.classList.remove("using-mouse");
+        }
+    }, true);
+}());
+
 window.focusHelpers.wireTabSequenceByIds = function (ids) {
     if (!Array.isArray(ids) || ids.length === 0) {
         return;

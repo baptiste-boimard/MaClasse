@@ -115,7 +115,7 @@
     color: #12345b;
 }
 
-/* Supprime les halos bleus potentiels Radzen/Mud dans le scheduler et impose le focus jaune. */
+/* Supprime les halos bleus potentiels Radzen/Mud dans le scheduler et impose le focus jaune (clavier uniquement). */
 ::deep .scheduler-view :is(
     .mud-button-root:focus-visible,
     .mud-icon-button:focus-visible,
@@ -130,3 +130,4 @@
     outline-offset: 2px !important;
     box-shadow: none !important;
 }
+

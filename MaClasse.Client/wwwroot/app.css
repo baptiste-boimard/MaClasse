@@ -190,6 +190,13 @@ section[tabindex]:focus-visible {
     min-height: 40px;
 }
 
+/* Supprime le ring de focus dans le Scheduler lors d'une navigation souris */
+body.using-mouse .scheduler-view *:focus,
+body.using-mouse .scheduler-view *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
