@@ -66,6 +66,7 @@ public partial class Scheduler : ComponentBase
     private bool isReadOnly;
     private bool _pendingScrollToCurrentTime;
     private string? _pendingFocusAppointmentId;
+    private bool _shouldFocusAppointmentPanel;
 
 
     
@@ -136,8 +137,15 @@ public partial class Scheduler : ComponentBase
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
         }
 
-        if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null)
+        if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null && !_shouldFocusAppointmentPanel)
         {
+            return;
+        }
+
+        if (_shouldFocusAppointmentPanel)
+        {
+            _shouldFocusAppointmentPanel = false;
+            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", "scheduler-appointment-panel");
             return;
         }
 
@@ -233,6 +241,7 @@ public partial class Scheduler : ComponentBase
             selectedEnd = args.End;
             showAppointmentPanel = true;
             isEditMode = false;
+            _shouldFocusAppointmentPanel = true;
         }
     }
     
@@ -241,6 +250,7 @@ public partial class Scheduler : ComponentBase
         selectedStart = DateTime.Now;
         selectedEnd = DateTime.Now.AddHours(1);
         showAppointmentPanel = true;
+        _shouldFocusAppointmentPanel = true;
     }
     
     void OnAppointmentSaved(Appointment appointment)
@@ -277,6 +287,7 @@ public partial class Scheduler : ComponentBase
             selectedEnd = selectedAppointment.End;
             isEditMode = true;
             showAppointmentPanel = true;
+            _shouldFocusAppointmentPanel = true;
         }
     }
 
