@@ -1,10 +1,8 @@
-﻿using MaClasse.Client.States;
+using MaClasse.Client.States;
 using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Scheduler;
 using MaClasse.Shared.Models.ViewDashboard;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace MaClasse.Client.Components.DashboardContent.Menu;
@@ -17,7 +15,6 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly LessonState _lessonState;
-    private readonly IJSRuntime _jsRuntime;
 
     public ViewDashBoard(
         UserState userState,
@@ -25,8 +22,7 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         SchedulerState schedulerState,
         HttpClient httpClient,
         IConfiguration configuration,
-        LessonState lessonState,
-        IJSRuntime jsRuntime)
+        LessonState lessonState)
     {
         _userState = userState;
         _viewDashboardState = viewDashboardState;
@@ -34,22 +30,19 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         _httpClient = httpClient;
         _configuration = configuration;
         _lessonState = lessonState;
-        _jsRuntime = jsRuntime;
     }
 
     private MudMenu? _dashboardMenu;
-    private DotNetObjectReference<ViewDashBoard>? _dotNetRef;
 
     private List<UserDashboard> Dashboards;
     private static string _buttonTextOwner = "Vous";
     private string _buttonText = _buttonTextOwner;
 
-    
     protected override async Task OnInitializedAsync()
     {
         _viewDashboardState.OnChange += RefreshViewDashboards;
     }
-    
+
     private void RefreshViewDashboards()
     {
         Dashboards = _viewDashboardState.DashBoards
@@ -60,7 +53,7 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
                 UserName = d.UserName,
                 UserScheduler = d.UserScheduler})
             .ToList();
-        
+
         InvokeAsync(() => { StateHasChanged(); });
     }
 
@@ -69,37 +62,11 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         if (firstRender)
         {
             _viewDashboardState.GetViewDashboardFromDatabase();
-
-            _dotNetRef = DotNetObjectReference.Create(this);
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireMudMenuCloseOnFocusOut",
-                "top-menu-dashboard-select",
-                _dotNetRef);
-        }
-    }
-
-    private async Task OnActivatorKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " ")
-        {
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.focusFirstOpenMudMenuItemDelayed", 150);
-        }
-    }
-
-    [JSInvokable]
-    public async Task CloseMenuAsync()
-    {
-        if (_dashboardMenu is not null)
-        {
-            await _dashboardMenu.CloseMenuAsync();
-            await InvokeAsync(StateHasChanged);
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        _dotNetRef?.Dispose();
         _viewDashboardState.OnChange -= RefreshViewDashboards;
     }
 
@@ -110,7 +77,5 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         _schedulerState.SetViewDashboard(userId);
         _lessonState.SetViewDashboard(userId);
         _viewDashboardState.GetUserAppointments(userId);
-        // _lessonState.SelectedAppointment = new Appointment();
-        
     }
 }

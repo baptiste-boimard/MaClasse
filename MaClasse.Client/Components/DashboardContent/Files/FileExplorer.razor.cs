@@ -58,13 +58,9 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private bool _hasAdvancedSearchCompleted;
     private string _lastCompletedAdvancedSearchQuery = string.Empty;
     private string _selectedDocumentId = string.Empty;
-    private bool _focusContextMenuRequested;
     private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
     private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
     private MudTextField<string>? _advancedSearchInputRef;
-    private bool _moveFocusAfterAdvancedSearch;
-    private bool _focusFirstAdvancedSearchResultAfterRender;
-    private bool _focusAdvancedSearchFallbackAfterRender;
     private bool IsViewingAnotherDashboard =>
         !string.IsNullOrWhiteSpace(_schedulerState.SchedulerDisplayed) &&
         !string.Equals(_schedulerState.SchedulerDisplayed, _schedulerState.IdUser, StringComparison.Ordinal);
@@ -86,26 +82,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
-    private string AdvancedSearchAriaStatus
-    {
-        get
-        {
-            if (_isAdvancedSearchLoading)
-            {
-                return "Recherche en cours";
-            }
-
-            if (_hasAdvancedSearchCompleted)
-            {
-                return _advancedSearchResults.Count > 0
-                    ? $"{_advancedSearchResults.Count} document(s) trouvé(s)"
-                    : "Aucun document trouvé";
-            }
-
-            return string.Empty;
-        }
-    }
-
     [Parameter] public bool ShowHeader { get; set; } = true;
     [Parameter] public bool ShowFileList { get; set; } = true;
     [Parameter] public string HeaderTitle { get; set; } = "Mes Documents";
@@ -114,9 +90,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [Parameter] public bool AllowAdvancedSearchFocus { get; set; } = true;
     [Parameter] public bool IsBusy { get; set; }
     [Parameter] public string BusyFileName { get; set; } = string.Empty;
-    [Parameter] public EventCallback OnAdvancedSearchNoResultFocusFallback { get; set; }
-    
-    
     protected override void OnInitialized()
     {
         _lessonState.OnChange += RefreshState;
@@ -153,34 +126,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsRuntime.InvokeVoidAsync("documents.setInstance", _dotNetRef);
             await _jsRuntime.InvokeVoidAsync("documents.registerOutsideClick");
-        }
-
-        if (showContextMenu && _focusContextMenuRequested)
-        {
-            _focusContextMenuRequested = false;
-            await _jsRuntime.InvokeVoidAsync(
-                "documents.focusContextMenuFirstItem",
-                _firstContextMenuItemId,
-                _contextMenuId);
-            await _jsRuntime.InvokeVoidAsync(
-                "documents.watchFocusOutsideMenu",
-                _contextMenuId,
-                _dotNetRef);
-        }
-
-        if (_focusFirstAdvancedSearchResultAfterRender && _advancedSearchResults.Count > 0)
-        {
-            _focusFirstAdvancedSearchResultAfterRender = false;
-            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", GetAdvancedSearchResultCardId(0));
-        }
-
-        if (_focusAdvancedSearchFallbackAfterRender)
-        {
-            _focusAdvancedSearchFallbackAfterRender = false;
-            if (OnAdvancedSearchNoResultFocusFallback.HasDelegate)
-            {
-                await OnAdvancedSearchNoResultFocusFallback.InvokeAsync();
-            }
         }
 
         if (ShowFileList && !_horizontalWheelEnabled)
@@ -332,7 +277,6 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             menuX = x;
             menuY = y;
             showContextMenu = true;
-            _focusContextMenuRequested = true;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -392,15 +336,8 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         menuX = x;
         menuY = y;
         showContextMenu = true;
-        _focusContextMenuRequested = true;
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    private static string GetDocumentCardAriaLabel(Document doc)
-    {
-        var docName = string.IsNullOrWhiteSpace(doc.Name) ? "document sans nom" : doc.Name;
-        return $"Ouvrir le menu du document {docName}";
     }
 
     private static string GetAdvancedSearchResultCardId(int index) => $"file-explorer-advanced-result-{index}";
@@ -439,20 +376,10 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
             : "file-explorer-card";
     }
 
-    private int GetAdvancedSearchTabIndex() => AllowAdvancedSearchFocus ? 0 : -1;
-
     private string GetLessonChoiceLabel(Appointment appointment)
     {
         var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
         return $"{text} - {appointment.Start.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}";
-    }
-
-    private string GetLessonChoiceAriaLabel(Appointment appointment)
-    {
-        var text = string.IsNullOrWhiteSpace(appointment.Text) ? "Leçon" : appointment.Text;
-        var frenchCulture = CultureInfo.GetCultureInfo("fr-FR");
-        var fullDate = appointment.Start.ToString("dddd d MMMM yyyy 'à' HH:mm", frenchCulture);
-        return $"{text}, {fullDate}";
     }
 
     private async Task OpenLessonChoice(Appointment appointment)
@@ -562,34 +489,12 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
 
     private async Task OnAdvancedSearchButtonClick()
     {
-        var shouldMoveFocus = _moveFocusAfterAdvancedSearch;
-        _moveFocusAfterAdvancedSearch = false;
-
         await TriggerAdvancedSearch();
-
-        if (!shouldMoveFocus)
-        {
-            return;
-        }
-
-        if (_advancedSearchResults.Count > 0)
-        {
-            _focusFirstAdvancedSearchResultAfterRender = true;
-        }
-        else
-        {
-            _focusAdvancedSearchFallbackAfterRender = true;
-        }
-
         await InvokeAsync(StateHasChanged);
     }
 
     private void HandleAdvancedSearchButtonKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            _moveFocusAfterAdvancedSearch = true;
-        }
     }
 
     private async Task HandleAdvancedSearchKeyDown(KeyboardEventArgs e)

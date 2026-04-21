@@ -17,7 +17,6 @@ html, body {
     --mc-text-600: #54627d;
     --mc-mint-500: #45b36f;
     --mc-orange-500: #e7933d;
-    --wcag-focus-ring: #ffcc66;
 }
 
 .page {
@@ -38,20 +37,12 @@ a, .btn-link {
     border-color: #6d67bb;
 }
 
-.btn:focus-visible, .btn:active:focus-visible, .btn-link.nav-link:focus-visible, .form-control:focus-visible, .form-check-input:focus-visible {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #ffcc66;
-}
-
 .content {
     overflow: hidden;
     width: 100%;
     height: 100%;
     margin: 0 !important;
     padding: 0 !important;
-}
-
-h1:focus-visible {
-    outline: none;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -116,107 +107,6 @@ h1:focus-visible {
 div.mud-popover[data-ticks*="63849588"] {
     background: rgba(255, 0, 0, 0.2);
     left: 600px !important;
-}
-
-/* WCAG: focus visible cohérent sur tous les éléments interactifs et navigables. Clavier uniquement (:focus-visible). */
-:where(a, button, input, textarea, select, [role="button"], [role="tab"], [tabindex]):focus-visible,
-.rz-event:focus-visible {
-    outline: 3px solid var(--wcag-focus-ring) !important;
-    outline-offset: 2px !important;
-}
-
-div[tabindex]:focus-visible,
-section[tabindex]:focus-visible {
-    outline: 3px solid var(--wcag-focus-ring);
-    outline-offset: 2px;
-}
-
-.mud-button-root:focus-visible,
-.mud-icon-button:focus-visible {
-    outline: 3px solid var(--wcag-focus-ring) !important;
-    outline-offset: 2px !important;
-    box-shadow: none !important;
-}
-
-/* Outline des items de menu MudBlazor 8 — clavier uniquement (classe ajoutée par focusHelpers.js) */
-.mud-popover-open .mud-menu-item.focus-keyboard,
-.mud-popover-open .mud-menu-item:focus-visible {
-    outline: 3px solid var(--wcag-focus-ring) !important;
-    outline-offset: -3px !important;
-    box-shadow: none !important;
-}
-
-/* Force un focus lisible sur les miniatures de documents (même si d'autres règles globales passent après). */
-.lesson-general-documents-panel .file-explorer .file-explorer-card:focus-visible,
-.lesson-general-documents-panel .file-explorer .file-explorer-card.mud-focus-visible {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px !important;
-    border-color: #ffcc66 !important;
-    box-shadow:
-        inset 0 0 0 2px rgba(255, 255, 255, 0.96) !important,
-        inset 0 0 0 4px #ffcc66 !important,
-        inset 0 0 0 6px #2a4d7b !important,
-        0 0 0 4px rgba(255, 204, 102, 0.55) !important,
-        0 10px 20px rgba(18, 52, 102, 0.18) !important;
-    z-index: 2;
-}
-
-.lesson-general-documents-panel .file-explorer .file-explorer-card.is-selected {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px !important;
-    border-color: #ffcc66 !important;
-    box-shadow:
-        0 0 0 2px #ffffff !important,
-        0 0 0 4px #ffcc66 !important,
-        0 0 0 6px #2a4d7b !important,
-        0 10px 20px rgba(18, 52, 102, 0.18) !important;
-    z-index: 2;
-}
-
-.sr-only {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-}
-
-/* WCAG: cible minimale confortable pour interactions tactiles/souris. */
-:where(button, .mud-button-root, [role="button"], [role="tab"]) {
-    min-height: 40px;
-}
-
-/* Supprime le ring de focus dans le Scheduler lors d'une navigation souris */
-body.using-mouse .scheduler-view *:focus,
-body.using-mouse .scheduler-view *:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* Supprime le focus violet Radzen sur les cellules de slot (souris ET clavier) */
-.scheduler-canvas td:focus,
-.scheduler-canvas td:focus-visible,
-.scheduler-canvas [class*="rz-slot"]:focus,
-.scheduler-canvas [class*="rz-slot"]:focus-visible,
-.scheduler-canvas .rz-view-slot:focus,
-.scheduler-canvas .rz-view-slot:focus-visible,
-.scheduler-canvas table:focus,
-.scheduler-canvas table:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: inherit !important;
-}
-
-/* Supprime le border violet Radzen sur les cellules de slot focusées */
-.rz-state-focused,
-.rz-slots.rz-state-focused {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

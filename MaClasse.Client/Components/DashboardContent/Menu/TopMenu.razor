@@ -2,17 +2,15 @@
 
 <div class="top-menu"
      id="top-menu-entry"
-     tabindex="0"
-     @onkeydown="HandleTopMenuEntryKeyDown">
-    <div class="top-menu-left" role="toolbar" aria-label="Navigation tableau de bord">
+     tabindex="0">
+
+    <div class="top-menu-left">
         <img class="top-menu-logo"
              src="Images/IconMaClasse.png"
              alt="Logo MaClasse" />
 
-        <div class="top-menu-dashboard-cluster" role="group" aria-label="Sélecteur de tableau de bord">
-            <span class="top-menu-dashboard-label"
-                  role="note"
-                  aria-label="Section Tableau de bord">
+        <div class="top-menu-dashboard-cluster">
+            <span class="top-menu-dashboard-label">
                 Tableau de bord
             </span>
 
@@ -23,14 +21,8 @@
         </div>
     </div>
 
-    <div id="top-menu-date-time" 
-         class="top-menu-date-time"
-         role="status"
-         tabindex="0"
-         aria-live="polite"
-         aria-atomic="true"
-         aria-label="@CurrentDateTimeAriaLabel"
-         title="@CurrentDateTimeAriaLabel">
+    <div id="top-menu-date-time"
+         class="top-menu-date-time">
         <Date/>
         <Hour/>
     </div>
@@ -39,12 +31,10 @@
         <button id="top-menu-avatar-button"
                 class="top-menu-avatar-button"
                 title="Mon profil"
-                aria-label="Avatar Google, vous rendre sur votre profil"
-                @onclick="@OpenProfileDialog">
+                @onclick="OpenProfileDialog">
             <img src="@Picture"
                  class="top-menu-avatar"
                  alt=""
-                 aria-hidden="true"
                  referrerpolicy="no-referrer" />
         </button>
 

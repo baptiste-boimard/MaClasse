@@ -34,8 +34,6 @@ public partial class LessonView : ComponentBase
     private int activeLessonTabIndex;
     private bool _isUploading;
     private string _uploadFileName = string.Empty;
-    private ElementReference _headerTitleRef;
-    private string? _pendingPanelFocusContainerId;
     private bool CanUploadFiles => !isReadOnly && !string.IsNullOrWhiteSpace(appointement?.Id);
 
     private string GetTabButtonClass(int tabIndex)
@@ -45,35 +43,8 @@ public partial class LessonView : ComponentBase
             : "lesson-tab-button";
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void HandleTabKeyDown(KeyboardEventArgs e, int currentIndex)
     {
-        await _jsRuntime.InvokeVoidAsync(
-            "focusHelpers.wireSuccessTabNavigation",
-            "lesson-tab-succes",
-            "lesson-action-save");
-
-        if (!string.IsNullOrWhiteSpace(_pendingPanelFocusContainerId))
-        {
-            var containerId = _pendingPanelFocusContainerId;
-            _pendingPanelFocusContainerId = null;
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", containerId);
-        }
-    }
-
-    private async Task HandleTabKeyDown(KeyboardEventArgs e, int currentIndex)
-    {
-        if (e.Key == "Tab" && currentIndex == 3)
-        {
-            if (e.ShiftKey)
-            {
-                await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "lesson-tab-eleves");
-                return;
-            }
-
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusElementById", "lesson-action-save");
-            return;
-        }
-
         if (e.Key == "ArrowRight")
         {
             activeLessonTabIndex = (currentIndex + 1) % 4;
@@ -90,23 +61,6 @@ public partial class LessonView : ComponentBase
         {
             activeLessonTabIndex = 3;
         }
-        else if (e.Key is "Enter" or "NumpadEnter" or " " or "Space" or "Spacebar")
-        {
-            activeLessonTabIndex = currentIndex;
-            _pendingPanelFocusContainerId = GetPanelIdByTabIndex(currentIndex);
-        }
-    }
-
-    private static string GetPanelIdByTabIndex(int tabIndex)
-    {
-        return tabIndex switch
-        {
-            0 => "lesson-panel-general",
-            1 => "lesson-panel-pedagogie",
-            2 => "lesson-panel-eleves",
-            3 => "lesson-panel-succes",
-            _ => "lesson-panel-general"
-        };
     }
 
     protected override void OnInitialized()
@@ -221,21 +175,5 @@ public partial class LessonView : ComponentBase
         isPasteDisabled = true;
     }
 
-    public async Task FocusHeaderTitleAsync()
-    {
-        await _headerTitleRef.FocusAsync();
-    }
-
-    public async Task FocusGeneralTabAsync()
-    {
-        await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", "lesson-tab-buttons-bar");
-    }
-
-    private async Task HandleHeaderTitleKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Tab" && !e.ShiftKey)
-        {
-            await FocusGeneralTabAsync();
-        }
-    }
 }
+

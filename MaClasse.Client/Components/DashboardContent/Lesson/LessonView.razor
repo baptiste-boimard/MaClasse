@@ -8,11 +8,7 @@
     <div id="lesson-view-header-title" class="lesson-header">
         @if (appointement.Id == null)
         {
-            <p class="lesson-header-title"
-               tabindex="-1"
-               @ref="_headerTitleRef"
-               @onkeydown="HandleHeaderTitleKeyDown"
-               @onkeydown:preventDefault="true">
+            <p class="lesson-header-title">
                 Aucun événement sélectionné dans l'agenda
             </p>    
         }
@@ -24,11 +20,7 @@
                     var startLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.Start, parisTimeZone);
                     var endLocal = TimeZoneInfo.ConvertTimeFromUtc(appointement.End, parisTimeZone);
                 }
-                <p class="lesson-header-title"
-                   tabindex="-1"
-                   @ref="_headerTitleRef"
-                   @onkeydown="HandleHeaderTitleKeyDown"
-                   @onkeydown:preventDefault="true">
+                <p class="lesson-header-title">
                     Cours du
                     @startLocal.ToString("dddd d MMMM", new CultureInfo("fr-FR"))
                     de

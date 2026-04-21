@@ -102,37 +102,7 @@ public partial class Scheduler : ComponentBase
     {
         if (firstRender)
         {
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireEnterSpaceRedirectFromSelf",
-                "scheduler-toolbar",
-                "scheduler-toolbar-today");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabSequenceByIds",
-                (object)new[]
-                {
-                    "scheduler-toolbar-today",
-                    "scheduler-view-switch-today",
-                    "scheduler-view-switch-week",
-                    "scheduler-view-select-date",
-                    "scheduler-view-previous-date",
-                    "scheduler-view-select-period",
-                    "scheduler-view-next-date",
-                    "scheduler-view-new-appointment",
-                });
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "scheduler-toolbar-today",
-                "scheduler-toolbar");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "scheduler-view-new-appointment",
-                "scheduler-canvas");
-
             await _jsRuntime.InvokeVoidAsync("appointments.wireCanvasNavigation", "scheduler-canvas");
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.wireEscapeToClosePanel", _dotNetRef);
             await PushAppointmentsDataToJs();
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
         }
@@ -145,7 +115,6 @@ public partial class Scheduler : ComponentBase
         if (_shouldFocusAppointmentPanel)
         {
             _shouldFocusAppointmentPanel = false;
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", "scheduler-appointment-panel");
             return;
         }
 

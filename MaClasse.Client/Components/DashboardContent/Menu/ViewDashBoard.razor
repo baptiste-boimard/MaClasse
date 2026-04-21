@@ -1,14 +1,8 @@
 <div class="view-dashboard-switch">
-    <div class="view-dashboard-switch-group"
-         role="group"
-         aria-label="Dashboard actif et liste de sélection">
+    <div class="view-dashboard-switch-group">
         <span class="view-dashboard-current"
               id="view-dashboard-current-entry"
-              tabindex="0"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              aria-label="Dashboard actuel @_buttonText">
+              tabindex="0">
             @_buttonText
         </span>
 
@@ -16,14 +10,10 @@
                  id="top-menu-dashboard-select"
                  Class="view-dashboard-menu"
                  Style="align-self: auto;"
-                 title="Ouvrir la liste des dashboards"
-                 aria-label="Ouvrir la liste des dashboards">
+                 title="Ouvrir la liste des dashboards">
             <ActivatorContent>
                 <button type="button"
-                        class="view-dashboard-activator"
-                        aria-label="Ouvrir la liste des dashboards"
-                        aria-haspopup="menu"
-                        @onkeydown="OnActivatorKeyDown">
+                        class="view-dashboard-activator">
                     <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown"
                              Class="view-dashboard-activator-icon" />
                 </button>
