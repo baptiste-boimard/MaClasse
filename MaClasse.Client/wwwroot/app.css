@@ -138,8 +138,8 @@ section[tabindex]:focus-visible {
     box-shadow: none !important;
 }
 
-/* Outline des items de menu MudBlazor 8 : <div class="mud-menu-item" tabindex="0"> */
-.mud-popover-open .mud-menu-item:focus,
+/* Outline des items de menu MudBlazor 8 — clavier uniquement (classe ajoutée par focusHelpers.js) */
+.mud-popover-open .mud-menu-item.focus-keyboard,
 .mud-popover-open .mud-menu-item:focus-visible {
     outline: 3px solid var(--wcag-focus-ring) !important;
     outline-offset: -3px !important;

@@ -815,6 +815,11 @@ window.focusHelpers.focusFirstOpenMudMenuItemDelayed = function (delay) {
             return;
         }
         firstItem.focus({ preventScroll: true });
+        // Marquer comme focus clavier pour le ring CSS (évite l'affichage à la souris)
+        firstItem.classList.add("focus-keyboard");
+        firstItem.addEventListener("blur", function () {
+            firstItem.classList.remove("focus-keyboard");
+        }, { once: true });
 
         // MudMenuItem est un <div> : pas d'activation native par Enter, brancher le clavier
         if (firstItem.tagName !== "BUTTON" && firstItem.tagName !== "A") {
