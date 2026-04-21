@@ -58,10 +58,7 @@
             @foreach (var color in AvailableColors)
             {
                 var isSelected = string.Equals(_colorValue, color, StringComparison.OrdinalIgnoreCase);
-                <div role="button"
-                     tabindex="0"
-                     aria-label="@($"Sélectionner la couleur {color}")"
-                     aria-pressed="@isSelected"
+                <div tabindex="0"
                      title="@color"
                      @onclick="@(() => SelectColor(color))"
                      @onkeydown="@(e => OnColorKeyDown(e, color))"

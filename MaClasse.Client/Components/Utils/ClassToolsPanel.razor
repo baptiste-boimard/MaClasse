@@ -6,24 +6,20 @@
     {
     <section class="class-tools-card"
              id="class-tools-card-entry"
-             tabindex="0"
-             aria-label="Outils de classe">
+             tabindex="0">
         <div class="class-tools-header">
             <h3>
-                <MudIcon Icon="@Icons.Material.Filled.Timer" Class="class-tools-title-icon" aria-hidden="true" />
+                <MudIcon Icon="@Icons.Material.Filled.Timer" Class="class-tools-title-icon" />
                 Outils de classe
             </h3>
 
-            <div class="class-tools-switch" role="tablist" aria-label="Sélection d'outil">
+            <div class="class-tools-switch">
                 <MudButton id="class-tools-timer"
                            Variant="@(_activeTool == ToolMode.Timer ? MudBlazor.Variant.Filled : MudBlazor.Variant.Outlined)"
                            Color="Color.Primary"
                            Size="Size.Small"
                            Class="class-tool-compact-btn"
-                           role="tab"
-                           aria-selected="@(_activeTool == ToolMode.Timer)"
-                           OnClick="@(() => SelectTool(ToolMode.Timer))"
-                           tabindex="0">
+                           OnClick="@(() => SelectTool(ToolMode.Timer))">
                     Minuteur
                 </MudButton>
                 <MudButton id="class-tools-stopwatch"
@@ -31,10 +27,7 @@
                            Color="Color.Primary"
                            Size="Size.Small"
                            Class="class-tool-compact-btn"
-                           role="tab"
-                           aria-selected="@(_activeTool == ToolMode.Stopwatch)"
-                           OnClick="@(() => SelectTool(ToolMode.Stopwatch))"
-                           tabindex="0">
+                           OnClick="@(() => SelectTool(ToolMode.Stopwatch))">
                     Chronomètre
                 </MudButton>
             </div>
@@ -42,15 +35,15 @@
 
         @if (_activeTool == ToolMode.Timer)
         {
-            <div class="class-tool-panel class-tools-mode-panel class-tools-mode-panel-timer" role="tabpanel" aria-label="Panneau minuteur">
-                <div id="class-tools-timer-show" class="class-tool-time class-tool-time-chrono" tabindex="0" aria-live="polite">@GetTimerDisplay()</div>
+            <div class="class-tool-panel class-tools-mode-panel class-tools-mode-panel-timer">
+                <div id="class-tools-timer-show" class="class-tool-time class-tool-time-chrono">@GetTimerDisplay()</div>
                 <div class="class-tool-chip-row class-tool-chip-row-timer">
                     <MudChip id="class-tools-timer-add-1" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(1))">+1m</MudChip>
                     <MudChip id="class-tools-timer-add-5" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(5))">+5m</MudChip>
                     <MudChip id="class-tools-timer-add-30" T="string" Class="class-tool-compact-chip" Color="Color.Primary" Variant="MudBlazor.Variant.Outlined" OnClick="@(() => AddMinutesToTimer(10))">+10m</MudChip>
                 </div>
                 <div class="class-tool-actions">
-                    <span id="class-tools-timer-action-start" tabindex="0">
+                    <span id="class-tools-timer-action-start">
                         <MudButton Variant="MudBlazor.Variant.Filled"
                                    Color="Color.Success"
                                    Size="Size.Small"
@@ -60,7 +53,7 @@
                             Démarrer
                         </MudButton>
                     </span>
-                    <span id="class-tools-timer-action-stop" tabindex="0">
+                    <span id="class-tools-timer-action-stop">
                         <MudButton Variant="MudBlazor.Variant.Outlined"
                                    Color="Color.Error"
                                    Size="Size.Small"
@@ -83,10 +76,10 @@
         }
         else if (_activeTool == ToolMode.Stopwatch)
         {
-            <div class="class-tool-panel class-tools-mode-panel" role="tabpanel" aria-label="Panneau chronomètre">
-                <div id="class-tools-stopwatch-show" class="class-tool-time class-tool-time-chrono" tabindex="0" aria-live="polite">@GetStopwatchDisplay()</div>
+            <div class="class-tool-panel class-tools-mode-panel">
+                <div id="class-tools-stopwatch-show" class="class-tool-time class-tool-time-chrono">@GetStopwatchDisplay()</div>
                 <div class="class-tool-actions">
-                    <span id="class-tools-stopwatch-start" tabindex="0">
+                    <span id="class-tools-stopwatch-start">
                         <MudButton Variant="MudBlazor.Variant.Filled"
                                    Color="Color.Success"
                                    Size="Size.Small"
@@ -96,7 +89,7 @@
                             Démarrer
                         </MudButton>
                     </span>
-                    <span id="class-tools-stopwatch-stop" tabindex="0">
+                    <span id="class-tools-stopwatch-stop">
                         <MudButton Variant="MudBlazor.Variant.Outlined"
                                    Color="Color.Error"
                                    Size="Size.Small"
@@ -124,38 +117,33 @@
     {
     <section class="class-sound-card"
              id="class-sound-card-entry"
-             tabindex="0"
-             aria-label="Sonomètre">
+             tabindex="0">
         <h3>
-            <MudIcon Icon="@Icons.Material.Filled.GraphicEq" Class="class-tools-title-icon" aria-hidden="true" />
+            <MudIcon Icon="@Icons.Material.Filled.GraphicEq" Class="class-tools-title-icon" />
             Sonomètre
         </h3>
-        <div class="class-tool-panel" role="region" aria-label="Mesure sonore">
+        <div class="class-tool-panel">
             <div class="class-sound-head">
                 <span>Niveau sonore (dB)</span>
                 <div class="class-sound-inline-actions">
-                    <span id="class-sound-activate" tabindex="0">
-                        <MudButton Variant="MudBlazor.Variant.Filled"
-                                   Color="Color.Success"
-                                   Size="Size.Small"
-                                   Class="class-sound-action-btn"
-                                   Disabled="@_isSoundMeterActive"
-                                   OnClick="@StartSoundMeterAsync">
-                            Activer
-                        </MudButton>
-                    </span>
-                    <span id="class-sound-desactivate" tabindex="0">
-                        <MudButton Variant="MudBlazor.Variant.Outlined"
-                                   Color="Color.Error"
-                                   Size="Size.Small"
-                                   Class="class-sound-action-btn"
-                                   Disabled="@(!_isSoundMeterActive)"
-                                   OnClick="@StopSoundMeterAsync">
-                            Arrêter
-                        </MudButton>
-                    </span>
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Success"
+                               Size="Size.Small"
+                               Class="class-sound-action-btn"
+                               Disabled="@_isSoundMeterActive"
+                               OnClick="@StartSoundMeterAsync">
+                        Activer
+                    </MudButton>
+                    <MudButton Variant="MudBlazor.Variant.Outlined"
+                               Color="Color.Error"
+                               Size="Size.Small"
+                               Class="class-sound-action-btn"
+                               Disabled="@(!_isSoundMeterActive)"
+                               OnClick="@StopSoundMeterAsync">
+                        Arrêter
+                    </MudButton>
                 </div>
-                <strong aria-live="polite">@GetSoundDbLabel()</strong>
+                <strong>@GetSoundDbLabel()</strong>
             </div>
             <MudProgressLinear Value="@_soundLevel"
                                Min="0"
@@ -164,8 +152,7 @@
                                Color="@GetSoundColor()"
                                Rounded="true"
                                Striped="true"
-                               Size="Size.Large"
-                               aria-label="Niveau sonore en décibels (échelle normalisée)" />
+                               Size="Size.Large" />
             @if (!string.IsNullOrWhiteSpace(_soundMeterError))
             {
                 <p class="class-tool-error">@_soundMeterError</p>

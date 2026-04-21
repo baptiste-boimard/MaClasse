@@ -43,59 +43,41 @@
 
     <MudPaper Class="lesson-card" Elevation="0" Style="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;">
         <div id="lesson-tab-buttons-bar"
-             class="lesson-tab-buttons"
-             role="tablist"
-             aria-label="Sections du cours">
+             class="lesson-tab-buttons">
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(0)"
                        OnClick="() => activeLessonTabIndex = 0"
                        @onkeydown="(e) => HandleTabKeyDown(e, 0)"
-                       role="tab"
-                       aria-selected="@(activeLessonTabIndex == 0)"
-                       aria-controls="lesson-panel-general"
                        id="lesson-tab-general">
                 <MudIcon Icon="@Icons.Material.Filled.Tune"
-                         Class="lesson-tab-icon"
-                         aria-hidden="true" />
+                         Class="lesson-tab-icon" />
                 Général
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(1)"
                        OnClick="() => activeLessonTabIndex = 1"
                        @onkeydown="(e) => HandleTabKeyDown(e, 1)"
-                       role="tab"
-                       aria-selected="@(activeLessonTabIndex == 1)"
-                       aria-controls="lesson-panel-pedagogie"
                        id="lesson-tab-pedagogie">
                 <MudIcon Icon="@Icons.Material.Filled.School"
-                         Class="lesson-tab-icon"
-                         aria-hidden="true" />
+                         Class="lesson-tab-icon" />
                 Pédagogie
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(2)"
                        OnClick="() => activeLessonTabIndex = 2"
                        @onkeydown="(e) => HandleTabKeyDown(e, 2)"
-                       role="tab"
-                       aria-selected="@(activeLessonTabIndex == 2)"
-                       aria-controls="lesson-panel-eleves"
                        id="lesson-tab-eleves">
                 <MudIcon Icon="@Icons.Material.Filled.Groups"
-                         Class="lesson-tab-icon"
-                         aria-hidden="true" />
+                         Class="lesson-tab-icon" />
                 Élèves
             </MudButton>
             <MudButton Variant="MudBlazor.Variant.Text"
                        Class="@GetTabButtonClass(3)"
                        OnClick="() => activeLessonTabIndex = 3"
                        @onkeydown="(e) => HandleTabKeyDown(e, 3)"
-                       role="tab"
-                       aria-selected="@(activeLessonTabIndex == 3)"
-                       aria-controls="lesson-panel-succes"
                        id="lesson-tab-succes">
                 <MudIcon Icon="@Icons.Material.Filled.EmojiEvents"
-                         Class="lesson-tab-icon"
-                         aria-hidden="true" />
+                         Class="lesson-tab-icon" />
                 Succès
             </MudButton>
         </div>
@@ -103,9 +85,7 @@
         @if (activeLessonTabIndex == 0)
         {
             <section class="lesson-tab-panel"
-                     role="tabpanel"
                      id="lesson-panel-general"
-                     aria-labelledby="lesson-tab-general">
                 <div class="lesson-tab-content lesson-tab-content-general">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Class"
@@ -135,7 +115,7 @@
                                           ReadOnly="@isReadOnly" />
                         </section>
 
-                        <section class="lesson-general-documents-panel" aria-label="Mes documents du cours">
+                        <section class="lesson-general-documents-panel">
                             <div class="lesson-documents-header">
                                 <MudText Typo="Typo.h6" Class="lesson-documents-title">
                                     <MudIcon Icon="@Icons.Material.Filled.FolderOpen" />
@@ -176,9 +156,7 @@
         @if (activeLessonTabIndex == 1)
         {
             <section class="lesson-tab-panel"
-                     role="tabpanel"
                      id="lesson-panel-pedagogie"
-                     aria-labelledby="lesson-tab-pedagogie">
                 <div class="lesson-tab-content lesson-tab-content-pedagogie">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.Objective"
@@ -213,9 +191,7 @@
         @if (activeLessonTabIndex == 2)
         {
             <section class="lesson-tab-panel"
-                     role="tabpanel"
                      id="lesson-panel-eleves"
-                     aria-labelledby="lesson-tab-eleves">
                 <div class="lesson-tab-content lesson-tab-content-eleves">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.StudentTask"
@@ -241,9 +217,7 @@
         @if (activeLessonTabIndex == 3)
         {
             <section class="lesson-tab-panel"
-                     role="tabpanel"
                      id="lesson-panel-succes"
-                     aria-labelledby="lesson-tab-succes">
                 <div class="lesson-tab-content lesson-tab-content-succes">
                     <MudTextField ShrinkLabel
                                   @bind-Value="lesson.SuccessCriteria"
