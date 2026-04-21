@@ -11,7 +11,7 @@
 
         <div class="top-menu-dashboard-cluster">
             <span class="top-menu-dashboard-label">
-                Tableau de bord
+                Tableau de bord affiché
             </span>
 
             @if (_userState.AsDirecteur.Count > 0)
@@ -22,7 +22,8 @@
     </div>
 
     <div id="top-menu-date-time"
-         class="top-menu-date-time">
+         class="top-menu-date-time"
+         tabindex="0">
         <Date/>
         <Hour/>
     </div>

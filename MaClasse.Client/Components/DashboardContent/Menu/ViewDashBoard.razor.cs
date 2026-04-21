@@ -3,7 +3,6 @@ using MaClasse.Shared.Models;
 using MaClasse.Shared.Models.Scheduler;
 using MaClasse.Shared.Models.ViewDashboard;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 
 namespace MaClasse.Client.Components.DashboardContent.Menu;
 
@@ -32,14 +31,12 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         _lessonState = lessonState;
     }
 
-    private MudMenu? _dashboardMenu;
-
-    private List<UserDashboard> Dashboards;
-    private static string _buttonTextOwner = "Vous";
-    private string _buttonText = _buttonTextOwner;
+    private List<UserDashboard> Dashboards = [];
+    private string _selectedUserId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        _selectedUserId = _userState.Id;
         _viewDashboardState.OnChange += RefreshViewDashboards;
     }
 
@@ -70,12 +67,12 @@ public partial class ViewDashBoard : ComponentBase, IAsyncDisposable
         _viewDashboardState.OnChange -= RefreshViewDashboards;
     }
 
-    private void SetButtonText(string userName, string userId)
+    private void OnDashboardChange(ChangeEventArgs e)
     {
-        _buttonText = userName;
+        _selectedUserId = e.Value?.ToString() ?? _userState.Id;
         _lessonState.ResetLessonState();
-        _schedulerState.SetViewDashboard(userId);
-        _lessonState.SetViewDashboard(userId);
-        _viewDashboardState.GetUserAppointments(userId);
+        _schedulerState.SetViewDashboard(_selectedUserId);
+        _lessonState.SetViewDashboard(_selectedUserId);
+        _viewDashboardState.GetUserAppointments(_selectedUserId);
     }
 }
