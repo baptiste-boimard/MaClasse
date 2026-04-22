@@ -4,7 +4,7 @@
 
 <div class="scheduler-view"
      id="scheduler-view-root">
-    <div id="scheduler-toolbar" class="scheduler-toolbar" tabindex="0">
+    <div id="scheduler-toolbar" class="scheduler-toolbar">
 
         <div class="scheduler-toolbar-row">
             <MudButton id="scheduler-toolbar-today"
@@ -48,6 +48,7 @@
                            OnClick="@GoToPrevious" />
 
             <MudText id="scheduler-view-select-period"
+                     tabindex="0"
                      Typo="Typo.body1"
                      Class="@($"scheduler-date-label{(selectedViewIndex == 1 ? " scheduler-date-label--week" : string.Empty)}")">
                 @DisplayedDateLabel
@@ -112,7 +113,7 @@
         </div>
     }
 
-    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0">
+    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0" aria-hidden="true">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"

@@ -28,11 +28,7 @@
 }
 
 #scheduler-toolbar:focus-visible {
-    outline: none !important;
-    box-shadow:
-        inset 0 0 0 2px #ffcc66,
-        inset 0 0 0 4px rgba(255, 246, 221, 0.95);
-    background: rgba(255, 255, 255, 0.45);
+    outline: none;
 }
 
 .scheduler-toolbar-row {
@@ -126,19 +122,4 @@
     box-shadow: none !important;
 }
 
-/* Supprime les halos bleus potentiels Radzen/Mud dans le scheduler et impose le focus jaune (clavier uniquement). */
-::deep .scheduler-view :is(
-    .mud-button-root:focus-visible,
-    .mud-icon-button:focus-visible,
-    .rz-button:focus-visible,
-    .rz-inputtext:focus-visible,
-    .rz-state-focus,
-    .rz-state-focused,
-    [tabindex]:focus-visible,
-    button:focus-visible
-) {
-    outline: 3px solid #ffcc66 !important;
-    outline-offset: 2px !important;
-    box-shadow: none !important;
-}
 

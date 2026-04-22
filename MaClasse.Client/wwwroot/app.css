@@ -155,3 +155,12 @@ div.mud-popover[data-ticks*="63849588"] {
     height: 0 !important;
     display: none !important;
 }
+
+/* Focus jaune sur les boutons de la barre d'outils du scheduler */
+#scheduler-toolbar .mud-button-root:focus-visible,
+#scheduler-toolbar .mud-icon-button:focus-visible,
+#scheduler-toolbar button:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
