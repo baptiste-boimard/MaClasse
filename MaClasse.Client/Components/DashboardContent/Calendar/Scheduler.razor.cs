@@ -88,13 +88,13 @@ public partial class Scheduler : ComponentBase
             .Select(a => new Appointment
             {
                 Id = a.Id,
-                Start = a.Start.ToLocalTime(),
-                End = a.End.ToLocalTime(),
+                Start = a.Start,
+                End = a.End,
                 Text = a.Text,
                 Color = a.Color,
                 Recurring = a.Recurring,
                 IdRecurring = a.IdRecurring
-        
+
             }).ToList();
 
         _schedulerState.SetCurrentDisplayedDate(currentDate);
@@ -164,15 +164,15 @@ public partial class Scheduler : ComponentBase
                 .Select(a => new Appointment
                 {
                     Id = a.Id,
-                    Start = a.Start.ToLocalTime(),
-                    End = a.End.ToLocalTime(),
+                    Start = a.Start,
+                    End = a.End,
                     Text = a.Text,
                     Color = a.Color,
                     Recurring = a.Recurring,
                     IdRecurring = a.IdRecurring
 
                 }).ToList();
-        
+
             InvokeAsync(async () => { StateHasChanged(); await PushAppointmentsDataToJs(); });
         }
         else
@@ -184,8 +184,8 @@ public partial class Scheduler : ComponentBase
                 .Select(a => new Appointment
                 {
                     Id = a.Id,
-                    Start = a.Start.ToLocalTime(),
-                    End = a.End.ToLocalTime(),
+                    Start = a.Start,
+                    End = a.End,
                     Text = a.Text,
                     Color = a.Color,
                     Recurring = a.Recurring,
