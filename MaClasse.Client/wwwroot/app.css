@@ -156,10 +156,23 @@ div.mud-popover[data-ticks*="63849588"] {
     display: none !important;
 }
 
+/* Supprime tout focus à l'intérieur du canvas Radzen */
+#scheduler-canvas *:focus,
+#scheduler-canvas *:focus-visible,
+#scheduler-canvas .rz-state-focused,
+#scheduler-canvas .rz-state-focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+}
+
 /* Focus jaune sur les boutons de la barre d'outils du scheduler */
 #scheduler-toolbar .mud-button-root:focus-visible,
 #scheduler-toolbar .mud-icon-button:focus-visible,
-#scheduler-toolbar button:focus-visible {
+#scheduler-toolbar button:focus-visible,
+#scheduler-view-select-period:focus-visible {
     outline: 3px solid #ffcc66 !important;
     outline-offset: 2px !important;
     box-shadow: none !important;

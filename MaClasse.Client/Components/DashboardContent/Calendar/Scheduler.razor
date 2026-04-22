@@ -113,7 +113,7 @@
         </div>
     }
 
-    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0" aria-hidden="true">
+    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0" role="img" aria-label="Grille du calendrier, navigation à la souris uniquement">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"

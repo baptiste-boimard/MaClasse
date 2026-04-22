@@ -78,6 +78,12 @@
     width: 100%;
 }
 
+#scheduler-canvas:focus-visible {
+    outline: 3px solid #ffcc66;
+    outline-offset: -3px;
+    border-radius: 0.5rem;
+}
+
 /* Cache la scrollbar des conteneurs internes Radzen tout en gardant le scroll (roulette/tactile). */
 ::deep .rz-scheduler-content,
 ::deep .rz-scheduler-view-content,

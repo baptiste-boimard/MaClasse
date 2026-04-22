@@ -1,4 +1,38 @@
-﻿window.documents = {
+﻿// Rend le canvas scheduler inaccessible au clavier et aux lecteurs d'écran
+(function () {
+    const applyCanvasIsolation = (canvas) => {
+        canvas.setAttribute('aria-hidden', 'true');
+        canvas.querySelectorAll('[tabindex]:not([tabindex="-1"]), a[href], button, input, select, textarea')
+            .forEach(el => el.setAttribute('tabindex', '-1'));
+    };
+
+    const canvasObserver = new MutationObserver((_, obs) => {
+        const canvas = document.getElementById('scheduler-canvas');
+        if (!canvas) return;
+        applyCanvasIsolation(canvas);
+    });
+
+    // Attend que Blazor rende #scheduler-canvas dans le DOM
+    const bodyObserver = new MutationObserver(() => {
+        const canvas = document.getElementById('scheduler-canvas');
+        if (!canvas) return;
+        bodyObserver.disconnect();
+        applyCanvasIsolation(canvas);
+        canvasObserver.observe(canvas, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-hidden'] });
+    });
+
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Cas où le canvas existe déjà
+    const canvas = document.getElementById('scheduler-canvas');
+    if (canvas) {
+        bodyObserver.disconnect();
+        applyCanvasIsolation(canvas);
+        canvasObserver.observe(canvas, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-hidden'] });
+    }
+})();
+
+window.documents = {
     dotNetInstance: null,
 
     setInstance: function (instance) {
