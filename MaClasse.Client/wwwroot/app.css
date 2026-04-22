@@ -182,6 +182,46 @@ div.mud-popover[data-ticks*="63849588"] {
     box-shadow: none !important;
 }
 
+/* Focus jaune sur les éléments des modals Politique de confidentialité et CGU */
+.policy-dialog button:focus-visible,
+.policy-dialog a:focus-visible,
+.policy-dialog input:focus-visible,
+.therms-dialog button:focus-visible,
+.therms-dialog a:focus-visible,
+.therms-dialog input:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+.policy-dialog h1:focus-visible,
+.therms-dialog h1:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Focus jaune sur les éléments de la modal Accessibilité */
+.accessibility-dialog button:focus-visible,
+.accessibility-dialog a:focus-visible,
+.accessibility-dialog input:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+.accessibility-dialog h1:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+
+/* Focus jaune sur les éléments de la modal Profil */
+.profile-dialog *:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
 /* Focus jaune sur les éléments de la barre de visualisation document */
 #document-view-topbar *:focus-visible {
     outline: 3px solid #ffcc66 !important;
