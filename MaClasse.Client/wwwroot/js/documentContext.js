@@ -18,7 +18,7 @@
         if (!canvas) return;
         bodyObserver.disconnect();
         applyCanvasIsolation(canvas);
-        canvasObserver.observe(canvas, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-hidden'] });
+        canvasObserver.observe(canvas, { childList: true, subtree: true });
     });
 
     bodyObserver.observe(document.body, { childList: true, subtree: true });
@@ -28,7 +28,7 @@
     if (canvas) {
         bodyObserver.disconnect();
         applyCanvasIsolation(canvas);
-        canvasObserver.observe(canvas, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-hidden'] });
+        canvasObserver.observe(canvas, { childList: true, subtree: true });
     }
 })();
 
@@ -127,7 +127,7 @@ window.documents = {
             }
 
             const clickedCard = target.closest(".file-explorer-card");
-            const clickedMenu = target.closest(".file-explorer-context-menu");
+            const clickedMenu = target.closest(".file-explorer-context-menu, .file-explorer-context-dialog");
             const clickedDialog = target.closest(".mud-dialog-container, .mud-overlay, .mud-dialog");
 
             if (clickedMenu || clickedDialog) {
@@ -138,7 +138,7 @@ window.documents = {
                 return;
             }
 
-            const hasOpenMenu = !!document.querySelector(".file-explorer-context-menu");
+            const hasOpenMenu = !!document.querySelector(".file-explorer-context-menu, .file-explorer-context-dialog[open]");
             const dotnet = window.documents.dotNetInstance;
 
             if (hasOpenMenu) {

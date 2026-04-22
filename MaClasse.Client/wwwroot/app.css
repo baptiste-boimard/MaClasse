@@ -168,6 +168,27 @@ div.mud-popover[data-ticks*="63849588"] {
     border-right-color: transparent !important;
 }
 
+/* Focus jaune sur les boutons des outils de classe */
+#class-tools-card-entry .mud-button-root:focus-visible,
+#class-tools-card-entry .mud-icon-button:focus-visible,
+#class-tools-card-entry button:focus-visible,
+#class-tools-card-entry .mud-chip:focus-visible,
+#class-tools-timer-show:focus-visible,
+#class-tools-stopwatch-show:focus-visible,
+#class-sound-card-entry .mud-button-root:focus-visible,
+#class-sound-card-entry button:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+/* Focus jaune sur les éléments de la barre de visualisation document */
+#document-view-topbar *:focus-visible {
+    outline: 3px solid #ffcc66 !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
 /* Focus jaune sur les boutons de la barre d'outils du scheduler */
 #scheduler-toolbar .mud-button-root:focus-visible,
 #scheduler-toolbar .mud-icon-button:focus-visible,
