@@ -67,6 +67,7 @@ public partial class Scheduler : ComponentBase
     private bool _pendingScrollToCurrentTime;
     private string? _pendingFocusAppointmentId;
     private bool _shouldFocusAppointmentPanel;
+    private bool _shouldFocusDatePicker;
     private bool _escapeListenerActive;
 
 
@@ -108,12 +109,13 @@ public partial class Scheduler : ComponentBase
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
         }
 
-        if (showAppointmentPanel && !_escapeListenerActive)
+        var needsEscape = showAppointmentPanel || datePickerOpen;
+        if (needsEscape && !_escapeListenerActive)
         {
             _escapeListenerActive = true;
             await _jsRuntime.InvokeVoidAsync("appointments.registerEscapeListener", _dotNetRef);
         }
-        else if (!showAppointmentPanel && _escapeListenerActive)
+        else if (!needsEscape && _escapeListenerActive)
         {
             _escapeListenerActive = false;
             await _jsRuntime.InvokeVoidAsync("appointments.unregisterEscapeListener");
@@ -121,6 +123,13 @@ public partial class Scheduler : ComponentBase
 
         if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null && !_shouldFocusAppointmentPanel)
         {
+            return;
+        }
+
+        if (_shouldFocusDatePicker)
+        {
+            _shouldFocusDatePicker = false;
+            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", "scheduler-date-picker-panel");
             return;
         }
 
@@ -341,6 +350,17 @@ public partial class Scheduler : ComponentBase
         isEditMode = false;
     }
 
+    void CloseDatePicker()
+    {
+        datePickerOpen = false;
+    }
+
+    void OpenDatePicker()
+    {
+        datePickerOpen = true;
+        _shouldFocusDatePicker = true;
+    }
+
     private void OnSchedulerKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Escape" && showAppointmentPanel)
@@ -355,6 +375,11 @@ public partial class Scheduler : ComponentBase
         if (showAppointmentPanel)
         {
             ClosePanel();
+            InvokeAsync(StateHasChanged);
+        }
+        else if (datePickerOpen)
+        {
+            CloseDatePicker();
             InvokeAsync(StateHasChanged);
         }
     }

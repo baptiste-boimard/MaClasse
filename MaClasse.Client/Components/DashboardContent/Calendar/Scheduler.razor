@@ -39,7 +39,7 @@
                            Icon="@Icons.Material.Filled.DateRange"
                            title="Choisir une date"
                            Color="Color.Primary"
-                           OnClick="@(() => datePickerOpen = true)" />
+                           OnClick="@OpenDatePicker" />
 
             <MudIconButton id="scheduler-view-previous-date"
                            Icon="@Icons.Material.Filled.ArrowBackIosNew"
@@ -88,14 +88,21 @@
 
     @if (datePickerOpen)
     {
-        <div class="scheduler-floating-panel">
-            <MudPaper>
-                <MudDatePicker PickerMonth="_currentMonth"
-                               Label="Sélectionner une date"
-                               Date="@currentDate"
-                               PickerVariant="PickerVariant.Static"
-                               DateChanged="OnDatePicked" />
-                <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="@(() => datePickerOpen = false)">Fermer</MudButton>
+        <div class="scheduler-floating-panel" id="scheduler-date-picker-panel" tabindex="-1">
+            <MudIconButton Icon="@Icons.Material.Outlined.Cancel"
+                           Size="Size.Medium"
+                           OnClick="@CloseDatePicker"
+                           Style="position:absolute; top:0.1rem; right:0.1rem; z-index:1100; color:white;" />
+            
+            <MudPaper Style="position:relative;">
+                
+                <div style="display:flex; justify-content:center; margin-top:-0.5rem;">
+                    <MudDatePicker PickerMonth="_currentMonth"
+                                   Label="Sélectionner une date"
+                                   Date="@currentDate"
+                                   PickerVariant="PickerVariant.Static"
+                                   DateChanged="OnDatePicked" />
+                </div>
             </MudPaper>
         </div>
     }
