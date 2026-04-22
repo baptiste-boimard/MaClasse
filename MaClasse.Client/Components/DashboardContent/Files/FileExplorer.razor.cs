@@ -41,11 +41,9 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     
     private Document? selectedDoc;
     private bool showContextMenu;
-    private int menuX;
-    private int menuY;
     private DotNetObjectReference<FileExplorer>? _dotNetRef;
-    private string menuXpx => $"{menuX}px";
-    private string menuYpx => $"{menuY}px";
+    private int _dialogX;
+    private int _dialogY;
     private bool isReadOnly;
     private bool _isDeleting;
     private string _deleteFileName = string.Empty;
@@ -59,7 +57,8 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     private string _lastCompletedAdvancedSearchQuery = string.Empty;
     private string _selectedDocumentId = string.Empty;
     private readonly string _contextMenuId = $"file-explorer-context-menu-{Guid.NewGuid():N}";
-    private readonly string _firstContextMenuItemId = $"file-explorer-context-menu-first-item-{Guid.NewGuid():N}";
+    private bool _pendingDialogOpen;
+    private bool _pendingDialogFocus;
     private MudTextField<string>? _advancedSearchInputRef;
     private bool IsViewingAnotherDashboard =>
         !string.IsNullOrWhiteSpace(_schedulerState.SchedulerDisplayed) &&
@@ -132,6 +131,14 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         {
             await _jsRuntime.InvokeVoidAsync("documents.enableHorizontalWheel");
             _horizontalWheelEnabled = true;
+        }
+
+        if (_pendingDialogOpen)
+        {
+            var focus = _pendingDialogFocus;
+            _pendingDialogOpen = false;
+            _pendingDialogFocus = false;
+            await _jsRuntime.InvokeVoidAsync("documents.openContextDialog", _contextMenuId, _dotNetRef, focus, _dialogX, _dialogY);
         }
     }
     
@@ -236,7 +243,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         if (e.Key is "Enter" or " ")
         {
             var pos = await _jsRuntime.InvokeAsync<MenuPosition>("documents.getActiveElementMenuPosition");
-            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, pos.X, pos.Y);
+            await OpenDocumentMenuAsync(doc, fromAdvancedSearch: true, pos.X, pos.Y, focusAfterOpen: true);
         }
     }
 
@@ -274,9 +281,11 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
                 return;
             }
 
-            menuX = x;
-            menuY = y;
+            _dialogX = x;
+            _dialogY = y;
             showContextMenu = true;
+            _pendingDialogOpen = true;
+            _pendingDialogFocus = false;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -290,6 +299,7 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
     [JSInvokable]
     public async Task CloseDocumentMenu()
     {
+        await _jsRuntime.InvokeVoidAsync("documents.closeContextDialog", _contextMenuId);
         await _jsRuntime.InvokeVoidAsync("documents.cancelFocusOutsideMenu");
 
         var hasChanged = showContextMenu ||
@@ -322,20 +332,19 @@ public partial class FileExplorer : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task OpenDocumentMenuAsync(Document? doc, bool fromAdvancedSearch, int x, int y)
+    private async Task OpenDocumentMenuAsync(Document? doc, bool fromAdvancedSearch, int x, int y, bool focusAfterOpen = false)
     {
-        if (doc is null)
-        {
-            return;
-        }
+        if (doc is null) return;
 
         selectedDoc = doc;
         _selectedDocumentId = doc.IdDocument ?? string.Empty;
         _menuFromAdvancedSearch = fromAdvancedSearch;
         _advancedSearchLessonChoices.Clear();
-        menuX = x;
-        menuY = y;
+        _dialogX = x;
+        _dialogY = y;
         showContextMenu = true;
+        _pendingDialogOpen = true;
+        _pendingDialogFocus = focusAfterOpen;
 
         await InvokeAsync(StateHasChanged);
     }

@@ -219,7 +219,46 @@
 
     cancelFocusOutsideMenu: function () {
         window.documents.__cancelFocusOutsideMenu();
-    }
+    },
 
+    openContextDialog: function (dialogId, dotNetRef, focusFirst, anchorX, anchorY) {
+        const dialog = document.getElementById(dialogId);
+        if (!(dialog instanceof HTMLDialogElement)) return;
+
+        const margin = 8;
+        const estimatedW = dialog.offsetWidth || 180;
+        const estimatedH = dialog.offsetHeight || 140;
+        const maxLeft = window.innerWidth - estimatedW - margin;
+        const maxTop = window.innerHeight - estimatedH - margin;
+        const left = Math.min(anchorX + margin, maxLeft);
+        const top = Math.min(anchorY, maxTop);
+
+        dialog.style.cssText = `position: fixed; margin: 0; top: ${top}px; left: ${left}px;`;
+        dialog.showModal();
+
+        if (focusFirst) {
+            const first = dialog.querySelector('button:not([disabled])');
+            if (first instanceof HTMLElement) first.focus();
+        }
+
+        dialog.addEventListener('cancel', function onCancel() {
+            dialog.removeEventListener('cancel', onCancel);
+            if (dotNetRef) dotNetRef.invokeMethodAsync('CloseMenuOnFocusOut').catch(() => {});
+        }, { once: true });
+
+        dialog.addEventListener('click', function onBackdropClick(e) {
+            if (e.target === dialog) {
+                dialog.removeEventListener('click', onBackdropClick);
+                if (dotNetRef) dotNetRef.invokeMethodAsync('CloseMenuOnFocusOut').catch(() => {});
+            }
+        });
+    },
+
+    closeContextDialog: function (dialogId) {
+        const dialog = document.getElementById(dialogId);
+        if (dialog instanceof HTMLDialogElement && dialog.open) {
+            dialog.close();
+        }
+    }
 
 };

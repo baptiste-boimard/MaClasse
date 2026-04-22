@@ -126,8 +126,9 @@ public partial class Dashboard : ComponentBase, IDisposable
         var delay = selectedCourse.StartLocal - now;
         if (delay.TotalMinutes < 60)
         {
-        }            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min";
-
+            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min" +
+                                 $"";
+        }
         else
         {
             _nextCoursePreview = $"Prévu le {selectedCourse.StartLocal:dddd dd MMM}";
