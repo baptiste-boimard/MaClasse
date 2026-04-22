@@ -67,6 +67,7 @@ public partial class Scheduler : ComponentBase
     private bool _pendingScrollToCurrentTime;
     private string? _pendingFocusAppointmentId;
     private bool _shouldFocusAppointmentPanel;
+    private bool _escapeListenerActive;
 
 
     
@@ -105,6 +106,17 @@ public partial class Scheduler : ComponentBase
             await _jsRuntime.InvokeVoidAsync("appointments.wireCanvasNavigation", "scheduler-canvas");
             await PushAppointmentsDataToJs();
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
+        }
+
+        if (showAppointmentPanel && !_escapeListenerActive)
+        {
+            _escapeListenerActive = true;
+            await _jsRuntime.InvokeVoidAsync("appointments.registerEscapeListener", _dotNetRef);
+        }
+        else if (!showAppointmentPanel && _escapeListenerActive)
+        {
+            _escapeListenerActive = false;
+            await _jsRuntime.InvokeVoidAsync("appointments.unregisterEscapeListener");
         }
 
         if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null && !_shouldFocusAppointmentPanel)

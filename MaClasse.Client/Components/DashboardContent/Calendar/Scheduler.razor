@@ -102,7 +102,7 @@
 
     @if (showAppointmentPanel)
     {
-        <div class="scheduler-floating-panel" id="scheduler-appointment-panel">
+        <div class="scheduler-floating-panel" id="scheduler-appointment-panel" @onkeydown="OnSchedulerKeyDown">
             <AddAppointmentPage Model="@selectedAppointment"
                                 Start="@selectedStart"
                                 End="@selectedEnd"

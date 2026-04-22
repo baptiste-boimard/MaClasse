@@ -250,6 +250,22 @@ window.appointments.wireCanvasNavigation = function (canvasId) {
     }, true);
 };
 
+window.appointments.registerEscapeListener = function (dotNetRef) {
+    if (window.appointments.__escapeHandler) return;
+    window.appointments.__escapeHandler = function (e) {
+        if (e.key !== 'Escape') return;
+        e.stopImmediatePropagation();
+        dotNetRef.invokeMethodAsync('EscapePressed');
+    };
+    document.addEventListener('keydown', window.appointments.__escapeHandler, true);
+};
+
+window.appointments.unregisterEscapeListener = function () {
+    if (!window.appointments.__escapeHandler) return;
+    document.removeEventListener('keydown', window.appointments.__escapeHandler, true);
+    window.appointments.__escapeHandler = null;
+};
+
 window.appointments.registerOutsideClick = function () {
     document.addEventListener("mousedown", function (e) {
         const menu = document.getElementById("custom-context-menu");
