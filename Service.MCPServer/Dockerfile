@@ -20,6 +20,6 @@ WORKDIR /app
 COPY --chown=root:root --chmod=555 --from=build /app/out .
 
 EXPOSE 7014
-ENTRYPOINT ["dotnet", "Service.MPCServer.dll"]
+ENTRYPOINT ["dotnet", "Service.MCPServer.dll"]
 
 LABEL "sheperd.autodeploy" = "true"
