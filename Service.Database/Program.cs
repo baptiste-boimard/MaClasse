@@ -4,7 +4,7 @@ using Service.Database.Database;
 using Service.Database.Interfaces;
 using Service.Database.Repositories;
 using Service.Database.Services;
-//TEST PIPELINE
+
 var builder = WebApplication.CreateBuilder(args);
 
 //* Limitation de la taille des requêtes à 2Mo dans tous les services autres que Cloudinary

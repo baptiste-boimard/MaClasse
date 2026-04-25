@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build               
 WORKDIR /src
 
 COPY . .
@@ -9,7 +9,7 @@ ARG PROJECT_FILE=$PROJECT_PATH/$PROJECT_PATH.csproj
 RUN dotnet restore $PROJECT_FILE
 RUN dotnet publish $PROJECT_FILE -c Release -o /app/out --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime            
 
 USER root
 RUN mkdir -p /app/keys && chown -R 1654:1654 /app/keys
