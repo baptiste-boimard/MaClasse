@@ -24,8 +24,7 @@ jobs:
         run: |
           git fetch origin main --depth=2
           CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-#          CHANGED=$(git diff --name-only HEAD^ HEAD)
-
+          
           echo "Files changed:\n$CHANGED"
 
           echo "apigateway=$(echo "$CHANGED" | grep -q '^MaClasse.ApiGateway/' && echo true || echo false)" >> $GITHUB_OUTPUT
