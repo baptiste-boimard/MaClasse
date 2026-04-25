@@ -35,7 +35,7 @@ builder.Services.AddScoped<IValidateGoogleTokenService, ValidateGoogleTokenServi
 builder.Services.AddScoped<IGenerateIdRole, GenerateIdRole>();
 builder.Services.AddScoped<IUserServiceRattachment, UserServiceRattachment>();
 builder.Services.AddScoped<IDeleteUserService, DeleteUserService>();
-
+//TEST PIPELINE
 //* Ajout de l'authentification
 builder.Services.AddAuthentication(options =>
     {

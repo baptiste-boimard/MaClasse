@@ -11,7 +11,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using Radzen;
 
-
+//TEST PIPELINE
 var builder = WebApplication.CreateBuilder(args);
 
 //* Configuration de MudBlazor Snackbar

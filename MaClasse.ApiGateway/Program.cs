@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-//TEST
+//TEST PIPELINE
 var builder = WebApplication.CreateBuilder(args);
 
 //* Configuration du Kernel pour ne laisser entrer que des requêtes de 2Mo max

@@ -1,6 +1,6 @@
 using Service.MCPServer.Interfaces;
 using Service.MCPServer.Services;
-
+//TEST PIPELINE
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(); 

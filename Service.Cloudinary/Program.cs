@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Service.Cloudinary.Interfaces;
 using Service.Cloudinary.Repositories;
 using Service.Database.Services;
-
+//TEST PIPELINE
 var builder = WebApplication.CreateBuilder(args);
 
 //* Active le logging console
