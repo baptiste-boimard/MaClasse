@@ -6,7 +6,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "oauth",
-          "Port": 7011
+          "Port": 7111
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
@@ -21,7 +21,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "database",
-          "Port": 7012
+          "Port": 7112
         }
       ],
       "UpstreamPathTemplate": "/api/database/{everything}",
@@ -36,7 +36,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "cloudinary",
-          "Port": 7013
+          "Port": 7113
         }
       ],
       "UpstreamPathTemplate": "/api/cloud/{everything}",
@@ -51,7 +51,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "mcpserver",
-          "Port": 7014
+          "Port": 7114
         }
       ],
       "UpstreamPathTemplate": "/api/mcp/{everything}",
@@ -62,6 +62,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://apigateway:7261"
+    "BaseUrl": "http://apigateway:7361"
   }
 }

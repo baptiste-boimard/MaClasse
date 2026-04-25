@@ -17,9 +17,12 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+var appName = builder.Configuration["DataProtection:ApplicationName"]
+              ?? "MaClasseSharedProd";
+
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Indique d'utiliser le dossier mappé
-    .SetApplicationName("MaClasseSharedProd");
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+    .SetApplicationName(appName);
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<HolidaysService>();

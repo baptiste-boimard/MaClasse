@@ -20,9 +20,12 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+var appName = builder.Configuration["DataProtection:ApplicationName"]
+              ?? "MaClasseSharedProd";
+
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys")) // Indique d'utiliser le dossier mappé
-    .SetApplicationName("MaClasseSharedProd");
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+    .SetApplicationName(appName);
 
 //* Ajout des interfaces et repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -62,6 +65,14 @@ builder.Services.AddRazorComponents();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
+
+// Permet la migration de la base de données Postgres si nécessaire
+using (var scope = app.Services.CreateScope())
+{
+    var db =
+        scope.ServiceProvider.GetRequiredService<PostgresDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseHttpsRedirection();
 

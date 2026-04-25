@@ -10,9 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+var appName = builder.Configuration["DataProtection:ApplicationName"]
+              ?? "MaClasseSharedProd";
+
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
-    .SetApplicationName("MaClasseSharedProd");
+    .SetApplicationName(appName);
 
 //* Ajout des différents service
 builder.Services.AddScoped<UserCloudService>();
