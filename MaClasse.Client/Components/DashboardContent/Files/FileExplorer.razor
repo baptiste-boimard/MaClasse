@@ -12,12 +12,10 @@
             @if (ShowAdvancedSearch)
             {
                 <div class="file-explorer-advanced-search">
-                    <span class="sr-only" aria-live="polite" aria-atomic="true">@AdvancedSearchAriaStatus</span>
                     <MudTextField id="file-explorer-search"
                                   T="string"
                                   Class="file-explorer-advanced-search-input"
                                   @ref="_advancedSearchInputRef"
-                                  tabindex="@GetAdvancedSearchTabIndex()"
                                   Disabled="@(!AllowAdvancedSearchFocus)"
                                   Placeholder="@AdvancedSearchPlaceholder"
                                   @bind-Value="AdvancedSearchQuery"
@@ -28,7 +26,6 @@
                     <MudButton Variant="MudBlazor.Variant.Filled"
                                id="file-explorer-advanced-search-button-entry"
                                Class="file-explorer-advanced-search-button"
-                               tabindex="@GetAdvancedSearchTabIndex()"
                                Color="Color.Primary"
                                StartIcon="@(_isAdvancedSearchLoading ? null : Icons.Material.Filled.Search)"
                                OnClick="OnAdvancedSearchButtonClick"
@@ -56,15 +53,13 @@
                         }
                         else if (_advancedSearchResults.Any())
                         {
-                            <div class="file-explorer-advanced-search-results-list">
+                            <div class="file-explorer-advanced-search-results-list @(showContextMenu ? "has-open-menu" : "")">
                                 @for (var i = 0; i < _advancedSearchResults.Count; i++)
                                 {
                                     var doc = _advancedSearchResults[i];
                                     <MudCard Class="@GetFileCardClass(doc)"
                                              id="@GetAdvancedSearchResultCardId(i)"
-                                             role="button"
-                                             tabindex="@GetAdvancedSearchTabIndex()"
-                                             aria-label="@GetDocumentCardAriaLabel(doc)"
+                                             tabindex="0"
                                              @onclick="@((MouseEventArgs e) => OnAdvancedSearchImageClick(e, doc))"
                                              @onkeydown="@((KeyboardEventArgs e) => OnAdvancedSearchCardKeyDown(e, doc))">
                                         <div class="file-explorer-card-body">
@@ -101,87 +96,54 @@
         </div>
     }
 
-    @if (showContextMenu)
-    {
-        <div class="file-explorer-context-backdrop"
-             aria-hidden="true"
-             @onmousedown="CloseDocumentMenu"
-             @onkeydown="HandleMenuBackdropKeyDown"></div>
-        <MudPaper id="@_contextMenuId"
-                  Class="mud-elevation-8 file-explorer-context-menu"
-                  Style="@($"position:fixed; top:{menuY}px; left:{menuX}px; z-index:9999; min-width: 150px; padding: 0.5rem; background: white; border-radius: 4px; box-shadow: 0px 2px 8px rgba(0,0,0,0.2);")"
-                  role="menu"
-                  aria-label="Actions du document"
-                  tabindex="-1"
-                  @onkeydown="HandleContextMenuKeyDown"
-                  @onmousedown:stopPropagation>
-            <div class="file-explorer-menu-list">
+    <dialog id="@_contextMenuId"
+            class="file-explorer-context-dialog">
+        <div class="file-explorer-menu-list">
+            <button type="button"
+                    class="file-explorer-menu-item"
+                    @onclick="@(async () => { await OpenFileInNewTab(); await CloseDocumentMenu(); })">
+                Ouvrir
+            </button>
+            @if (!_menuFromAdvancedSearch)
+            {
                 <button type="button"
-                        id="@_firstContextMenuItemId"
                         class="file-explorer-menu-item"
-                        role="menuitem"
-                        @onclick="@(async () =>
-                                   {
-                                       await OpenFileInNewTab();
-                                       await CloseDocumentMenu();
-                                   })">
-                    Ouvrir
+                        disabled="@(isReadOnly || _isDeleting || IsBusy)"
+                        @onclick="@(async () => { await DeleteFile(); await CloseDocumentMenu(); })">
+                    Supprimer
                 </button>
-                @if (!_menuFromAdvancedSearch)
-                {
-                    <button type="button"
-                            class="file-explorer-menu-item"
-                            role="menuitem"
-                            disabled="@(isReadOnly || _isDeleting || IsBusy)"
-                            @onclick="@(async () =>
-                                       {
-                                           await DeleteFile();
-                                           await CloseDocumentMenu();
-                                       })">
-                        Supprimer
-                    </button>
-                    <button type="button"
-                            class="file-explorer-menu-item"
-                            role="menuitem"
-                            disabled="@(isReadOnly || _isDeleting || IsBusy)"
-                            @onclick="@(async () =>
-                                       {
-                                           await RenameFile();
-                                           await CloseDocumentMenu();
-                                       })">
-                        Renommer
-                    </button>
-                }
-                else
-                {
-                    <button type="button"
-                            class="file-explorer-menu-item"
-                            role="menuitem"
-                            @onclick="OpenLessonFromAdvancedSearch">
-                        Ouvre la leçon
-                    </button>
-                    <button type="button"
-                            class="file-explorer-menu-item"
-                            role="menuitem"
-                            disabled="@IsViewingAnotherDashboard"
-                            @onclick="CopyToCurrentLessonFromAdvancedSearch">
-                        Copier dans la leçon
-                    </button>
+                <button type="button"
+                        class="file-explorer-menu-item"
+                        disabled="@(isReadOnly || _isDeleting || IsBusy)"
+                        @onclick="@(async () => { await RenameFile(); await CloseDocumentMenu(); })">
+                    Renommer
+                </button>
+            }
+            else
+            {
+                <button type="button"
+                        class="file-explorer-menu-item"
+                        @onclick="OpenLessonFromAdvancedSearch">
+                    Ouvre la leçon
+                </button>
+                <button type="button"
+                        class="file-explorer-menu-item"
+                        disabled="@IsViewingAnotherDashboard"
+                        @onclick="CopyToCurrentLessonFromAdvancedSearch">
+                    Copier dans la leçon
+                </button>
 
-                    @foreach (var lessonChoice in _advancedSearchLessonChoices)
-                    {
-                        <button type="button"
-                                class="file-explorer-menu-item"
-                                role="menuitem"
-                                aria-label="@GetLessonChoiceAriaLabel(lessonChoice)"
-                                @onclick="@(async () => await OpenLessonChoice(lessonChoice))">
-                            @GetLessonChoiceLabel(lessonChoice)
-                        </button>
-                    }
+                @foreach (var lessonChoice in _advancedSearchLessonChoices)
+                {
+                    <button type="button"
+                            class="file-explorer-menu-item"
+                            @onclick="@(async () => await OpenLessonChoice(lessonChoice))">
+                        @GetLessonChoiceLabel(lessonChoice)
+                    </button>
                 }
-            </div>
-        </MudPaper>
-    }
+            }
+        </div>
+    </dialog>
 
     @if (_isDeleting)
     {
@@ -222,9 +184,7 @@
                             @foreach (var doc in files)
                             {
                                 <MudCard Class="@GetFileCardClass(doc)"
-                                         role="button"
                                          tabindex="0"
-                                         aria-label="@GetDocumentCardAriaLabel(doc)"
                                          @onclick="@((MouseEventArgs e) => OnImageClick(e, doc.IdDocument))"
                                          @onkeydown="@((KeyboardEventArgs e) => OnFileCardKeyDown(e, doc))">
                                     <div class="file-explorer-card-body">

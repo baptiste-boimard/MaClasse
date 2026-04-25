@@ -4,8 +4,6 @@ using MaClasse.Client.Components.DashboardContent.Lesson;
 using MaClasse.Shared.Models.Scheduler;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 
 namespace MaClasse.Client.Components.Pages;
 
@@ -15,20 +13,17 @@ public partial class Dashboard : ComponentBase, IDisposable
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly SchedulerState _schedulerState;
     private readonly LessonState _lessonState;
-    private readonly IJSRuntime _jsRuntime;
 
     public Dashboard(
         UserState userState,
         AuthenticationStateProvider authenticationStateProvider,
         SchedulerState schedulerState,
-        LessonState lessonState,
-        IJSRuntime jsRuntime)
+        LessonState lessonState)
     {
         _userState = userState;
         _authenticationStateProvider = authenticationStateProvider;
         _schedulerState = schedulerState;
         _lessonState = lessonState;
-        _jsRuntime = jsRuntime;
     }
 
     private UserState? userInformation;
@@ -38,12 +33,6 @@ public partial class Dashboard : ComponentBase, IDisposable
     private int _weeklyLessonCount;
     private string _weeklyHoursLabel = "0h00";
     private System.Timers.Timer? _courseRefreshTimer;
-    private bool _isNextCourseCardExpanded;
-    private bool _isStatsCardExpanded;
-    private bool _isFilesCardExpanded = true;
-    private bool _focusNextCoursePreviewAfterRender;
-    private bool _focusStatsLessonsAfterRender;
-    private bool _focusFilesAdvancedSearchAfterRender;
     private ElementReference _nextCoursePreviewRef;
     private ElementReference _nextCourseTitleRef;
     private ElementReference _nextCourseTimeRef;
@@ -79,130 +68,6 @@ public partial class Dashboard : ComponentBase, IDisposable
     {
         RefreshDashboardMetrics();
         InvokeAsync(StateHasChanged);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "dashboard-files-card-entry",
-                "dashboard-center-main-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "dashboard-center-main-card-entry",
-                "dashboard-scheduler-card-entry");
-
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "top-menu-entry",
-                "dashboard-reading-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "top-menu-button-logout",
-                "dashboard-reading-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "dashboard-reading-card-entry",
-                "dashboard-stats-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "dashboard-stats-card-entry",
-                "dashboard-files-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "lesson-action-delete",
-                "dashboard-scheduler-card-entry");
-
-
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireAdvancedSearchTabFlow",
-                "file-explorer-advanced-search-button-entry",
-                "file-explorer-advanced-result-",
-                "dashboard-center-main-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireEnterSpaceRedirectFromSelf",
-                "dashboard-scheduler-card-entry",
-                "scheduler-toolbar");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "dashboard-scheduler-card-entry",
-                "class-tools-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "scheduler-toolbar",
-                "dashboard-scheduler-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "scheduler-toolbar",
-                "scheduler-canvas");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "scheduler-canvas",
-                "class-tools-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "scheduler-canvas",
-                "scheduler-toolbar");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "dashboard-scheduler-card-entry",
-                "dashboard-center-main-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "dashboard-center-main-card-entry",
-                "dashboard-files-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "dashboard-files-card-entry",
-                "dashboard-stats-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "dashboard-stats-card-entry",
-                "dashboard-reading-card-entry");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "dashboard-reading-card-entry",
-                "top-menu-entry");
-        }
-
-        if (_focusNextCoursePreviewAfterRender)
-        {
-            _focusNextCoursePreviewAfterRender = false;
-            await _nextCoursePreviewRef.FocusAsync();
-        }
-
-        if (_focusStatsLessonsAfterRender)
-        {
-            _focusStatsLessonsAfterRender = false;
-            await _statsLessonsRef.FocusAsync();
-        }
-
-        if (_focusFilesAdvancedSearchAfterRender)
-        {
-            _focusFilesAdvancedSearchAfterRender = false;
-            if (_dashboardFileExplorerRef is not null)
-                await _dashboardFileExplorerRef.FocusAdvancedSearchInputAsync();
-        }
     }
 
     private void StartCourseRefreshTimer()
@@ -243,7 +108,7 @@ public partial class Dashboard : ComponentBase, IDisposable
         if (selectedCourse is null)
         {
             _nextCourseAppointment = null;
-            _nextCoursePreview = "Aucun cours à venir.";
+            _nextCoursePreview = "Aucun cours à venir";
             return;
         }
 
@@ -251,18 +116,22 @@ public partial class Dashboard : ComponentBase, IDisposable
 
         if (_hasCurrentCourse)
         {
-            _nextCoursePreview = "Cours actuellement en cours.";
+            var remaining = selectedCourse.EndLocal - now;
+            _nextCoursePreview = remaining.TotalMinutes >= 60
+                ? $"Fini dans {(int)remaining.TotalHours}h{remaining.Minutes:00}"
+                : $"Fini dans {Math.Max(1, (int)Math.Round(remaining.TotalMinutes))} min";
             return;
         }
 
         var delay = selectedCourse.StartLocal - now;
         if (delay.TotalMinutes < 60)
         {
-            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min.";
+            _nextCoursePreview = $"Démarre dans {Math.Max(1, (int)Math.Round(delay.TotalMinutes))} min" +
+                                 $"";
         }
         else
         {
-            _nextCoursePreview = $"Prévu le {selectedCourse.StartLocal:dddd dd MMM}.";
+            _nextCoursePreview = $"Prévu le {selectedCourse.StartLocal:dddd dd MMM}";
         }
     }
 
@@ -322,186 +191,16 @@ public partial class Dashboard : ComponentBase, IDisposable
         _lessonState.SetLessonSelected(_nextCourseAppointment);
     }
 
-    private string GetNextCourseCardAriaLabel()
+    private string GetButtonAriaLabel()
     {
         if (_nextCourseAppointment is null)
-        {
-            return $"{(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")}. {_nextCoursePreview}";
-        }
+            return "Afficher le cours";
 
-        var title = string.IsNullOrWhiteSpace(_nextCourseAppointment.Text)
-            ? "Cours sans titre"
-            : _nextCourseAppointment.Text;
-
+        var heading = _hasCurrentCourse ? "Cours démarré" : "Prochain cours";
+        var courseTitle = _nextCourseAppointment.Text ?? "Cours sans titre";
         var start = _nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm");
         var end = _nextCourseAppointment.End.ToLocalTime().ToString("HH:mm");
-
-        return $"{(_hasCurrentCourse ? "Cours en cours" : "Prochain cours")}. {title}. {start} à {end}. {_nextCoursePreview}. Appuyez sur Espace ou Entrée pour entrer dans la carte.";
-    }
-
-    private async Task HandleNextCourseCardKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            await EnterNextCourseCardAsync();
-        }
-        else if (e.Key == "Escape" && _isNextCourseCardExpanded)
-        {
-            _isNextCourseCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task EnterNextCourseCardAsync()
-    {
-        _isNextCourseCardExpanded = true;
-        _focusNextCoursePreviewAfterRender = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private int GetNextCourseInnerTabIndex() => _isNextCourseCardExpanded ? 0 : -1;
-
-    private string GetNextCoursePreviewAriaLabel() => _nextCoursePreview;
-
-    private string GetNextCourseTitleAriaLabel() =>
-        string.IsNullOrWhiteSpace(_nextCourseAppointment?.Text) ? "Cours sans titre" : _nextCourseAppointment.Text;
-
-    private string GetNextCourseTimeAriaLabel()
-    {
-        if (_nextCourseAppointment is null)
-        {
-            return string.Empty;
-        }
-
-        var start = _nextCourseAppointment.Start.ToLocalTime().ToString("HH:mm");
-        var end = _nextCourseAppointment.End.ToLocalTime().ToString("HH:mm");
-        return $"Horaire du cours, de {start} à {end}";
-    }
-
-    private async Task HandleNextCoursePreviewKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Tab" && e.ShiftKey)
-        {
-            _isNextCourseCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task HandleNextCourseButtonKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Tab" && !e.ShiftKey)
-        {
-            _isNextCourseCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-    }
-
-    private string GetStatsCardAriaLabel() =>
-        $"Indicateurs rapides. Leçons cette semaine {_weeklyLessonCount}. Heures cette semaine {_weeklyHoursLabel}. Appuyez sur Espace ou Entrée pour entrer dans la carte.";
-
-    private string GetWeeklyLessonCountAriaLabel() => $"Leçons cette semaine : {_weeklyLessonCount}";
-
-    private string GetWeeklyHoursAriaLabel() => $"Heures cette semaine : {_weeklyHoursLabel}";
-
-    private async Task HandleStatsCardKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            await EnterStatsCardAsync();
-        }
-        else if (e.Key == "Escape" && _isStatsCardExpanded)
-        {
-            _isStatsCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task EnterStatsCardAsync()
-    {
-        _isStatsCardExpanded = true;
-        _focusStatsLessonsAfterRender = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private int GetStatsInnerTabIndex() => _isStatsCardExpanded ? 0 : -1;
-
-    private async Task HandleStatsLessonsKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Tab" && e.ShiftKey)
-        {
-            _isStatsCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-
-        if (e.Key == "Escape")
-        {
-            _isStatsCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task HandleStatsHoursKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Tab" && !e.ShiftKey)
-        {
-            _isStatsCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-
-        if (e.Key == "Escape")
-        {
-            _isStatsCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private string GetFilesCardAriaLabel() =>
-        "Documents. Recherche avancée. Appuyez sur Espace ou Entrée pour entrer dans la carte et accéder au champ de recherche.";
-
-    private async Task HandleFilesCardKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar")
-        {
-            _isFilesCardExpanded = true;
-            _focusFilesAdvancedSearchAfterRender = true;
-            await InvokeAsync(StateHasChanged);
-        }
-        else if (e.Key == "Escape" && _isFilesCardExpanded)
-        {
-            _isFilesCardExpanded = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task EnterFilesCardAsync()
-    {
-        if (_isFilesCardExpanded)
-            return;
-
-        _isFilesCardExpanded = true;
-        _focusFilesAdvancedSearchAfterRender = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task HandleCenterMainCardKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key is "Enter" or " " or "Space" or "Spacebar" && _lessonViewRef is not null)
-        {
-            await _lessonViewRef.FocusHeaderTitleAsync();
-        }
-    }
-
-    private async Task FocusCenterMainCardFromFilesAsync()
-    {
-        if (_lessonViewRef is null)
-        {
-            return;
-        }
-
-        await _lessonViewRef.FocusGeneralTabAsync();
+        return $"Afficher le cours : {heading}, {_nextCoursePreview}, {courseTitle}, {start} à {end}";
     }
 
     private string GetNextCourseCardStyle()

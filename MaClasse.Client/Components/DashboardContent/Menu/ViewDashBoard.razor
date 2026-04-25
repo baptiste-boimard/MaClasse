@@ -1,43 +1,12 @@
 <div class="view-dashboard-switch">
-    <div class="view-dashboard-switch-group"
-         role="group"
-         aria-label="Dashboard actif et liste de sélection">
-        <span class="view-dashboard-current"
-              id="view-dashboard-current-entry"
-              tabindex="0"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              aria-label="Dashboard actuel @_buttonText">
-            @_buttonText
-        </span>
-
-        <MudMenu @ref="_dashboardMenu"
-                 id="top-menu-dashboard-select"
-                 Class="view-dashboard-menu"
-                 Style="align-self: auto;"
-                 title="Ouvrir la liste des dashboards"
-                 aria-label="Ouvrir la liste des dashboards">
-            <ActivatorContent>
-                <button type="button"
-                        class="view-dashboard-activator"
-                        aria-label="Ouvrir la liste des dashboards"
-                        aria-haspopup="menu"
-                        @onkeydown="OnActivatorKeyDown">
-                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown"
-                             Class="view-dashboard-activator-icon" />
-                </button>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem OnClick="() => SetButtonText(_buttonTextOwner, _userState.Id)">Vous</MudMenuItem>
-
-                @foreach (var dashboard in Dashboards)
-                {
-                    <MudMenuItem OnClick="() => SetButtonText(dashboard.UserName, dashboard.UserId)">
-                        @dashboard.UserEmail
-                    </MudMenuItem>
-                }
-            </ChildContent>
-        </MudMenu>
-    </div>
+    <select class="view-dashboard-select"
+            aria-label="Choisir le dashboard à consulter"
+            value="@_selectedUserId"
+            @onchange="OnDashboardChange">
+        <option value="@_userState.Id">Vous</option>
+        @foreach (var dashboard in Dashboards)
+        {
+            <option value="@dashboard.UserId">@dashboard.UserEmail</option>
+        }
+    </select>
 </div>

@@ -67,6 +67,8 @@ public partial class Scheduler : ComponentBase
     private bool _pendingScrollToCurrentTime;
     private string? _pendingFocusAppointmentId;
     private bool _shouldFocusAppointmentPanel;
+    private bool _shouldFocusDatePicker;
+    private bool _escapeListenerActive;
 
 
     
@@ -86,13 +88,13 @@ public partial class Scheduler : ComponentBase
             .Select(a => new Appointment
             {
                 Id = a.Id,
-                Start = a.Start.ToLocalTime(),
-                End = a.End.ToLocalTime(),
+                Start = a.Start,
+                End = a.End,
                 Text = a.Text,
                 Color = a.Color,
                 Recurring = a.Recurring,
                 IdRecurring = a.IdRecurring
-        
+
             }).ToList();
 
         _schedulerState.SetCurrentDisplayedDate(currentDate);
@@ -102,39 +104,21 @@ public partial class Scheduler : ComponentBase
     {
         if (firstRender)
         {
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireEnterSpaceRedirectFromSelf",
-                "scheduler-toolbar",
-                "scheduler-toolbar-today");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabSequenceByIds",
-                (object)new[]
-                {
-                    "scheduler-toolbar-today",
-                    "scheduler-view-switch-today",
-                    "scheduler-view-switch-week",
-                    "scheduler-view-select-date",
-                    "scheduler-view-previous-date",
-                    "scheduler-view-select-period",
-                    "scheduler-view-next-date",
-                    "scheduler-view-new-appointment",
-                });
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireShiftTabRedirectFromSelf",
-                "scheduler-toolbar-today",
-                "scheduler-toolbar");
-
-            await _jsRuntime.InvokeVoidAsync(
-                "focusHelpers.wireTabRedirectFromSelf",
-                "scheduler-view-new-appointment",
-                "scheduler-canvas");
-
             await _jsRuntime.InvokeVoidAsync("appointments.wireCanvasNavigation", "scheduler-canvas");
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.wireEscapeToClosePanel", _dotNetRef);
             await PushAppointmentsDataToJs();
             await _jsRuntime.InvokeVoidAsync("appointments.setCurrentView", currentDate.ToString("O"), selectedViewIndex);
+        }
+
+        var needsEscape = showAppointmentPanel || datePickerOpen;
+        if (needsEscape && !_escapeListenerActive)
+        {
+            _escapeListenerActive = true;
+            await _jsRuntime.InvokeVoidAsync("appointments.registerEscapeListener", _dotNetRef);
+        }
+        else if (!needsEscape && _escapeListenerActive)
+        {
+            _escapeListenerActive = false;
+            await _jsRuntime.InvokeVoidAsync("appointments.unregisterEscapeListener");
         }
 
         if (!firstRender && !_pendingScrollToCurrentTime && _pendingFocusAppointmentId == null && !_shouldFocusAppointmentPanel)
@@ -142,10 +126,16 @@ public partial class Scheduler : ComponentBase
             return;
         }
 
+        if (_shouldFocusDatePicker)
+        {
+            _shouldFocusDatePicker = false;
+            await _jsRuntime.InvokeVoidAsync("documents.focusElementById", "scheduler-date-picker-panel");
+            return;
+        }
+
         if (_shouldFocusAppointmentPanel)
         {
             _shouldFocusAppointmentPanel = false;
-            await _jsRuntime.InvokeVoidAsync("focusHelpers.focusFirstInContainer", "scheduler-appointment-panel");
             return;
         }
 
@@ -174,15 +164,15 @@ public partial class Scheduler : ComponentBase
                 .Select(a => new Appointment
                 {
                     Id = a.Id,
-                    Start = a.Start.ToLocalTime(),
-                    End = a.End.ToLocalTime(),
+                    Start = a.Start,
+                    End = a.End,
                     Text = a.Text,
                     Color = a.Color,
                     Recurring = a.Recurring,
                     IdRecurring = a.IdRecurring
 
                 }).ToList();
-        
+
             InvokeAsync(async () => { StateHasChanged(); await PushAppointmentsDataToJs(); });
         }
         else
@@ -194,8 +184,8 @@ public partial class Scheduler : ComponentBase
                 .Select(a => new Appointment
                 {
                     Id = a.Id,
-                    Start = a.Start.ToLocalTime(),
-                    End = a.End.ToLocalTime(),
+                    Start = a.Start,
+                    End = a.End,
                     Text = a.Text,
                     Color = a.Color,
                     Recurring = a.Recurring,
@@ -360,6 +350,17 @@ public partial class Scheduler : ComponentBase
         isEditMode = false;
     }
 
+    void CloseDatePicker()
+    {
+        datePickerOpen = false;
+    }
+
+    void OpenDatePicker()
+    {
+        datePickerOpen = true;
+        _shouldFocusDatePicker = true;
+    }
+
     private void OnSchedulerKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Escape" && showAppointmentPanel)
@@ -374,6 +375,11 @@ public partial class Scheduler : ComponentBase
         if (showAppointmentPanel)
         {
             ClosePanel();
+            InvokeAsync(StateHasChanged);
+        }
+        else if (datePickerOpen)
+        {
+            CloseDatePicker();
             InvokeAsync(StateHasChanged);
         }
     }

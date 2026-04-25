@@ -153,6 +153,13 @@
     border-radius: 8px;
 }
 
+.file-explorer-advanced-search-results-list.has-open-menu ::deep .file-explorer-card:not(.is-selected):focus-visible,
+.file-explorer-advanced-search-results-list.has-open-menu ::deep .mud-card.file-explorer-card:not(.is-selected):focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
 .file-explorer-upload ::deep .mud-button-root {
     min-height: var(--file-explorer-control-height);
     height: var(--file-explorer-control-height);
@@ -160,11 +167,21 @@
     padding-bottom: 0;
 }
 
-.file-explorer-context-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 9998;
+.file-explorer-context-dialog {
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    min-width: 160px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    background: white;
+}
+
+.file-explorer-context-dialog::backdrop {
     background: transparent;
+}
+
+.file-explorer-context-dialog:focus-visible {
+    outline: none;
 }
 
 .file-explorer-menu-list {
@@ -187,6 +204,11 @@
 
 .file-explorer-menu-item:hover {
     background: #eef4ff;
+}
+
+.file-explorer-menu-item:focus-visible {
+    outline: 2px solid var(--file-explorer-focus-ring);
+    outline-offset: 1px;
 }
 
 .file-explorer-menu-item:disabled {

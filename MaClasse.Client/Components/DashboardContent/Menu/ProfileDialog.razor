@@ -2,15 +2,15 @@
             border-radius: 0.8rem;
             margin: 0.5rem;
             margin-top: 2rem;">
-    <MudDialog>
+    <MudDialog Class="profile-dialog">
         <DialogContent>
             <h4> Profil</h4>
             <br/>
-            <p>Vous êtes inscrit sous le mail : <strong>@Email</strong></p>
+            <p tabindex="0">Vous êtes inscrit sous le mail : <strong>@Email</strong></p>
             <br/>
-            <p>Votre identifiant de rattachement est le : <strong>@IdRole</strong></p>
+            <p tabindex="0">Votre identifiant de rattachement est le : <strong>@IdRole</strong></p>
             <br/>
-            <p>Votre rôle est : <strong>@Role</strong></p>
+            <p tabindex="0">Votre rôle est : <strong>@Role</strong></p>
             <br/>
             <div style="display: flex;
                         justify-content: space-between">
@@ -39,7 +39,7 @@
 
             </div>
             <br/>
-            <p>Vous avez séléctionné : <strong>@Zone</strong></p>
+            <p tabindex="0">Vous avez séléctionné : <strong>@Zone</strong></p>
             <br/>
             <div style="display: flex;
                         justify-content: space-between">
@@ -77,17 +77,17 @@
             
             @if (Role == "Professeur(e)")
             {
-                <p>Vous êtes rattaché aux N° de Directeur/Directrice suivant : </p>
+                <p tabindex="0">Vous êtes rattaché aux N° de Directeur/Directrice suivant : </p>
                 <div>
                     <div>
                         @foreach(var direct in AsProfesseur)
                         {
-                            <MudChip T="string">@direct.IdDirecteur</MudChip>
+                            <MudChip tabindex="0" T="string">@direct.IdDirecteur</MudChip>
                         }
                     </div>
                 </div>
                 <br/>
-                <p>Se rattacher a un Directeur/Directrice ?</p>
+                <p tabindex="0">Se rattacher a un Directeur/Directrice ?</p>
                 <div style="display: flex;
                             flex-direction: row;    
                             justify-content: space-between;
@@ -108,7 +108,7 @@
                     </MudButton>
                 </div>
                 <br/>
-                <p> Se détacher d'un Directeur/Directrice</p>
+                <p tabindex="0"> Se détacher d'un Directeur/Directrice</p>
                 <div style="display: flex;
                             flex-direction: row;    
                             justify-content: space-between;
@@ -131,18 +131,18 @@
             }
             else
             {
-                <p> Les N° de Professeur(e) suivant vous sont rattachés : </p>
+                <p tabindex="0"> Les N° de Professeur(e) suivant vous sont rattachés : </p>
                 <br/>
                 <div>
                     <div>
                         @foreach(var prof in AsDirecteur)
                         {
-                            <MudChip T="string">@prof.IdProfesseur</MudChip>
+                            <MudChip tabindex="0" T="string">@prof.IdProfesseur</MudChip>
                         }
                     </div>
                 </div>
                 <br/>
-                <p>Rattacher un nouveau Professeur(e) ?</p>
+                <p tabindex="0">Rattacher un nouveau Professeur(e) ?</p>
                 <div style="display: flex;
                             flex-direction: row;    
                             justify-content: space-between;
@@ -162,7 +162,7 @@
                     </MudButton>
                 </div>
                 <br/>
-                <p> Se détacher d'un Professeur(e)</p>
+                <p tabindex="0"> Se détacher d'un Professeur(e)</p>
 
                 <div style="display: flex;
                             flex-direction: row;    

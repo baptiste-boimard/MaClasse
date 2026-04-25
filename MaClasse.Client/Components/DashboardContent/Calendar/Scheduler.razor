@@ -3,14 +3,12 @@
 @using Variant = MudBlazor.Variant
 
 <div class="scheduler-view"
-     id="scheduler-view-root"
-     @onkeydown="OnSchedulerKeyDown">
-    <div id="scheduler-toolbar" class="scheduler-toolbar" tabindex="0">
+     id="scheduler-view-root">
+    <div id="scheduler-toolbar" class="scheduler-toolbar">
 
         <div class="scheduler-toolbar-row">
             <MudButton id="scheduler-toolbar-today"
                        StartIcon="@Icons.Material.Filled.Today"
-                       aria-label="Revenir à la date d'aujourd'hui"
                        title="Aujourd'hui"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -20,20 +18,15 @@
 
             <div class="scheduler-view-switch">
                 <MudButtonGroup Color="Color.Info"
-                                Variant="Variant.Outlined"
-                                aria-label="Choix de la vue du calendrier">
+                                Variant="Variant.Outlined">
                     <MudIconButton id="scheduler-view-switch-today"
                                    Icon="@Icons.Material.Filled.Today"
-                                   aria-label="Afficher la vue jour"
-                                   aria-pressed="@(selectedViewIndex == 0)"
                                    title="Vue jour"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(0))"/>
 
                     <MudIconButton id="scheduler-view-switch-week"
                                    Icon="@Icons.Material.Filled.ViewWeek"
-                                   aria-label="Afficher la vue semaine"
-                                   aria-pressed="@(selectedViewIndex == 1)"
                                    title="Vue semaine"
                                    Color="Color.Info"
                                    OnClick="@(() => SetSchedulerViewAsync(1))"/>
@@ -44,14 +37,12 @@
         <div class="scheduler-toolbar-row">
             <MudIconButton id="scheduler-view-select-date"
                            Icon="@Icons.Material.Filled.DateRange"
-                           aria-label="Ouvrir le sélecteur de date"
                            title="Choisir une date"
                            Color="Color.Primary"
-                           OnClick="@(() => datePickerOpen = true)" />
+                           OnClick="@OpenDatePicker" />
 
             <MudIconButton id="scheduler-view-previous-date"
                            Icon="@Icons.Material.Filled.ArrowBackIosNew"
-                           aria-label="Aller à la période précédente"
                            title="Période précédente"
                            Color="Color.Info"
                            OnClick="@GoToPrevious" />
@@ -65,14 +56,12 @@
 
             <MudIconButton id="scheduler-view-next-date"
                            Icon="@Icons.Material.Filled.ArrowForwardIos"
-                           aria-label="Aller à la période suivante"
                            title="Période suivante"
                            Color="Color.Info"
                            OnClick="@GoToNext" />
 
             <MudIconButton id="scheduler-view-new-appointment"
                            Icon="@Icons.Material.Filled.PostAdd"
-                           aria-label="Ajouter un rendez-vous"
                            title="Ajouter un rendez-vous"
                            Disabled="_schedulerState.isReadOnly"
                            Color="Color.Success"
@@ -99,21 +88,28 @@
 
     @if (datePickerOpen)
     {
-        <div class="scheduler-floating-panel">
-            <MudPaper>
-                <MudDatePicker PickerMonth="_currentMonth"
-                               Label="Sélectionner une date"
-                               Date="@currentDate"
-                               PickerVariant="PickerVariant.Static"
-                               DateChanged="OnDatePicked" />
-                <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="@(() => datePickerOpen = false)">Fermer</MudButton>
+        <div class="scheduler-floating-panel" id="scheduler-date-picker-panel" tabindex="-1">
+            <MudIconButton Icon="@Icons.Material.Outlined.Cancel"
+                           Size="Size.Medium"
+                           OnClick="@CloseDatePicker"
+                           Style="position:absolute; top:0.1rem; right:0.1rem; z-index:1100; color:white;" />
+            
+            <MudPaper Style="position:relative;">
+                
+                <div style="display:flex; justify-content:center; margin-top:-0.5rem;">
+                    <MudDatePicker PickerMonth="_currentMonth"
+                                   Label="Sélectionner une date"
+                                   Date="@currentDate"
+                                   PickerVariant="PickerVariant.Static"
+                                   DateChanged="OnDatePicked" />
+                </div>
             </MudPaper>
         </div>
     }
 
     @if (showAppointmentPanel)
     {
-        <div class="scheduler-floating-panel" id="scheduler-appointment-panel">
+        <div class="scheduler-floating-panel" id="scheduler-appointment-panel" @onkeydown="OnSchedulerKeyDown">
             <AddAppointmentPage Model="@selectedAppointment"
                                 Start="@selectedStart"
                                 End="@selectedEnd"
@@ -124,7 +120,7 @@
         </div>
     }
 
-    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0">
+    <div id="scheduler-canvas" class="scheduler-canvas" tabindex="0" role="img" aria-label="Grille du calendrier, navigation à la souris uniquement">
         <RadzenScheduler @ref="@scheduler"
                          @bind-Date="currentDate"
                          SelectedIndex="@selectedViewIndex"

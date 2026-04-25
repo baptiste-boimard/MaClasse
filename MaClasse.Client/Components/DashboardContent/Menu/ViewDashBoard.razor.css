@@ -3,66 +3,25 @@
     --view-dashboard-focus-ring: #ffcc66;
 }
 
-.view-dashboard-switch-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    width: auto;
-    justify-content: flex-start;
-    padding: 0.12rem;
-}
-
-.view-dashboard-current {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 6rem;
-    max-width: 10rem;
-    min-height: 2rem;
-    padding: 0 0.75rem;
-    border-radius: 999px;
+.view-dashboard-select {
+    background: transparent;
     color: #f2f6ff;
+    border: none;
     font-size: 0.875rem;
     font-weight: 600;
-    line-height: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.view-dashboard-current:focus-visible {
-    outline: 3px solid var(--view-dashboard-focus-ring);
-    outline-offset: 2px;
-}
-
-.view-dashboard-menu {
-    color: #f2f6ff;
-}
-
-.view-dashboard-activator {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
     cursor: pointer;
-    color: #ffffff;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    min-width: 6rem;
+    max-width: 14rem;
 }
 
-.view-dashboard-activator-icon {
-    color: #ffffff !important;
-}
-
-.view-dashboard-activator:focus-visible {
+.view-dashboard-select:focus-visible {
     outline: 3px solid var(--view-dashboard-focus-ring);
     outline-offset: 2px;
 }
 
-::deep(.mud-menu-item.focus-keyboard),
-::deep(.mud-menu-item:focus-visible) {
-    outline: 3px solid var(--view-dashboard-focus-ring) !important;
-    outline-offset: -3px !important;
+.view-dashboard-select option {
+    background: #1e293b;
+    color: #f2f6ff;
 }

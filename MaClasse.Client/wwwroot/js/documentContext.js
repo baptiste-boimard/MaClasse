@@ -1,4 +1,38 @@
-﻿window.documents = {
+﻿// Rend le canvas scheduler inaccessible au clavier et aux lecteurs d'écran
+(function () {
+    const applyCanvasIsolation = (canvas) => {
+        canvas.setAttribute('aria-hidden', 'true');
+        canvas.querySelectorAll('[tabindex]:not([tabindex="-1"]), a[href], button, input, select, textarea')
+            .forEach(el => el.setAttribute('tabindex', '-1'));
+    };
+
+    const canvasObserver = new MutationObserver((_, obs) => {
+        const canvas = document.getElementById('scheduler-canvas');
+        if (!canvas) return;
+        applyCanvasIsolation(canvas);
+    });
+
+    // Attend que Blazor rende #scheduler-canvas dans le DOM
+    const bodyObserver = new MutationObserver(() => {
+        const canvas = document.getElementById('scheduler-canvas');
+        if (!canvas) return;
+        bodyObserver.disconnect();
+        applyCanvasIsolation(canvas);
+        canvasObserver.observe(canvas, { childList: true, subtree: true });
+    });
+
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Cas où le canvas existe déjà
+    const canvas = document.getElementById('scheduler-canvas');
+    if (canvas) {
+        bodyObserver.disconnect();
+        applyCanvasIsolation(canvas);
+        canvasObserver.observe(canvas, { childList: true, subtree: true });
+    }
+})();
+
+window.documents = {
     dotNetInstance: null,
 
     setInstance: function (instance) {
@@ -93,7 +127,7 @@
             }
 
             const clickedCard = target.closest(".file-explorer-card");
-            const clickedMenu = target.closest(".file-explorer-context-menu");
+            const clickedMenu = target.closest(".file-explorer-context-menu, .file-explorer-context-dialog");
             const clickedDialog = target.closest(".mud-dialog-container, .mud-overlay, .mud-dialog");
 
             if (clickedMenu || clickedDialog) {
@@ -104,7 +138,7 @@
                 return;
             }
 
-            const hasOpenMenu = !!document.querySelector(".file-explorer-context-menu");
+            const hasOpenMenu = !!document.querySelector(".file-explorer-context-menu, .file-explorer-context-dialog[open]");
             const dotnet = window.documents.dotNetInstance;
 
             if (hasOpenMenu) {
@@ -219,7 +253,46 @@
 
     cancelFocusOutsideMenu: function () {
         window.documents.__cancelFocusOutsideMenu();
-    }
+    },
 
+    openContextDialog: function (dialogId, dotNetRef, focusFirst, anchorX, anchorY) {
+        const dialog = document.getElementById(dialogId);
+        if (!(dialog instanceof HTMLDialogElement)) return;
+
+        const margin = 8;
+        const estimatedW = dialog.offsetWidth || 180;
+        const estimatedH = dialog.offsetHeight || 140;
+        const maxLeft = window.innerWidth - estimatedW - margin;
+        const maxTop = window.innerHeight - estimatedH - margin;
+        const left = Math.min(anchorX + margin, maxLeft);
+        const top = Math.min(anchorY, maxTop);
+
+        dialog.style.cssText = `position: fixed; margin: 0; top: ${top}px; left: ${left}px;`;
+        dialog.showModal();
+
+        if (focusFirst) {
+            const first = dialog.querySelector('button:not([disabled])');
+            if (first instanceof HTMLElement) first.focus();
+        }
+
+        dialog.addEventListener('cancel', function onCancel() {
+            dialog.removeEventListener('cancel', onCancel);
+            if (dotNetRef) dotNetRef.invokeMethodAsync('CloseMenuOnFocusOut').catch(() => {});
+        }, { once: true });
+
+        dialog.addEventListener('click', function onBackdropClick(e) {
+            if (e.target === dialog) {
+                dialog.removeEventListener('click', onBackdropClick);
+                if (dotNetRef) dotNetRef.invokeMethodAsync('CloseMenuOnFocusOut').catch(() => {});
+            }
+        });
+    },
+
+    closeContextDialog: function (dialogId) {
+        const dialog = document.getElementById(dialogId);
+        if (dialog instanceof HTMLDialogElement && dialog.open) {
+            dialog.close();
+        }
+    }
 
 };
