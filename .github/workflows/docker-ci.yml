@@ -18,15 +18,21 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Detect changed paths
         id: filter
         run: |
-          git fetch origin main --depth=2
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          if git cat-file -e "${{ github.event.before }}"^{commit} 2>/dev/null; then
+            CHANGED=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          fi
           
-          echo "Files changed:\n$CHANGED"
-
+          echo "Files changed:"
+          echo "$CHANGED"
+          
           echo "apigateway=$(echo "$CHANGED" | grep -q '^MaClasse.ApiGateway/' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "client=$(echo "$CHANGED" | grep -q '^MaClasse.Client/' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "database=$(echo "$CHANGED" | grep -q '^Service.Database/' && echo true || echo false)" >> $GITHUB_OUTPUT
@@ -85,7 +91,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
+      - run: | 
           docker build -t ghcr.io/${{ github.repository_owner }}/apigateway:${{ needs.set-docker-tag.outputs.tag }} -f MaClasse.ApiGateway/Dockerfile . --build-arg PROJECT_PATH=MaClasse.ApiGateway
           docker push ghcr.io/${{ github.repository_owner }}/apigateway:${{ needs.set-docker-tag.outputs.tag }}
 
